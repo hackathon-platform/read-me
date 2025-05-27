@@ -30,7 +30,7 @@ export function ResumeSection({ resumeUrl }: ResumeSectionProps) {
                 表示
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl w-[90vw] h-[80vh]">
+            <DialogContent className="max-w-4xl w-[100vw] h-[80vh]">
               <DialogHeader>
                 <DialogTitle>履歴書</DialogTitle>
               </DialogHeader>

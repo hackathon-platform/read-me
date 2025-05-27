@@ -20,15 +20,15 @@ export default function EditPage() {
 
   return (
     <PageLayout>
-      <div className="container max-w-4xl mx-auto py-8 px-4 sm:px-6">
+      <div className="container max-w-4xl mx-auto py-4 px-4 sm:px-6">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-2">
             <Link href="/profile">
               <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-12 w-12" />
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold tracking-tight">ポートフォリオを編集</h1>
+            <h1 className="md:text-2xl text-lg font-bold tracking-tight">プロフィールを編集</h1>
           </div>
         </div>
         

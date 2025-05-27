@@ -9,16 +9,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from "next/image";
 import { Project } from "@/lib/types";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 interface ProjectsSectionProps {
   projects: Project[];
 }
 
 export function ProjectsSection({ projects }: ProjectsSectionProps) {
-  if (!projects.length) {
+  if (!projects?.length) {
     return (
       <Card>
         <CardContent className="pt-6">
@@ -32,17 +40,77 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
     <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
       {projects.map((project, index) => (
         <Card key={index} className="overflow-hidden">
-          <div className="relative h-48 w-full">
-            <Image
-              src={project.imageUrl}
-              alt={project.title}
-              fill
-              className="object-cover"
-            />
-          </div>
+          {project.media && project.media.length > 0 && (
+            <div className="relative">
+              {project.media.length > 1 ? (
+                <Carousel className="w-full px-3">
+                  <CarouselContent>
+                    {project.media.map((media, mediaIndex) => (
+                      <CarouselItem key={mediaIndex}>
+                        <div className="relative aspect-video">
+                          {media.type === 'image' ? (
+                            <Image
+                              src={media.url}
+                              alt={`${project.title} - メディア ${mediaIndex + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <video
+                              src={media.url}
+                              controls
+                              autoPlay
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-2" />
+                  <CarouselNext className="right-2" />
+                </Carousel>
+              ) : (
+                <div className="relative aspect-video">
+                  {project.media[0].type === 'image' ? (
+                    <Image
+                      src={project.media[0].url}
+                      alt={`${project.title} - メディア`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <video
+                      src={project.media[0].url}
+                      controls
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <CardHeader>
             <CardTitle>{project.title}</CardTitle>
             <CardDescription>{project.description}</CardDescription>
+            {project.skills?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {project.skills.map((skill, skillIndex) => (
+                  <Badge
+                    key={skillIndex}
+                    variant={
+                      skill.type === "language" || skill.type === "framework"
+                        ? "default"
+                        : skill.type === "tool"
+                        ? "secondary"
+                        : "outline"
+                    }
+                  >
+                    {skill.name}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </CardHeader>
           {project.url && (
             <CardFooter>

@@ -16,22 +16,29 @@ export const usePortfolioStore = create<PortfolioState>()(
   persist(
     (set) => ({
       portfolio: INITIAL_PORTFOLIO,
-      updatePortfolio: (updatedPortfolio) => 
-        set((state) => ({ 
-          portfolio: { ...state.portfolio, ...updatedPortfolio } 
+      updatePortfolio: (updatedPortfolio) =>
+        set((state) => ({
+          portfolio: { ...state.portfolio, ...updatedPortfolio },
         })),
-      updateSocials: (socials) => 
-        set((state) => ({ 
-          portfolio: { ...state.portfolio, socials } 
+      updateSocials: (socials) =>
+        set((state) => ({
+          portfolio: { ...state.portfolio, socials },
         })),
-      updateExperience: (experience) => 
-        set((state) => ({ 
-          portfolio: { ...state.portfolio, experience } 
+      updateExperience: (experience) =>
+        set((state) => ({
+          portfolio: { ...state.portfolio, experience },
         })),
       resetPortfolio: () => set({ portfolio: INITIAL_PORTFOLIO }),
     }),
     {
       name: 'portfolio-storage',
+      partialize: (state) => ({
+        // Exclude large Base64 media from storage
+        portfolio: {
+          ...state.portfolio,
+          projects: state.portfolio.projects.map(({ media, ...proj }) => proj),
+        },
+      }),
     }
   )
 );

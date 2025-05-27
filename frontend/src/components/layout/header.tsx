@@ -57,8 +57,8 @@ export default function Header() {
 
   if (user) {
     navItems.push({
-      name: "My Events",
-      href: "/dashboard",
+      name: "登録済みイベント",
+      href: "/events/registered",
       icon: <CalendarDays className="mr-2 h-4 w-4" />,
     });
   }
@@ -112,18 +112,18 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel>アカウント</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <Link href="/profile">
                       <DropdownMenuItem>
                         <User className=" h-4 w-4" />
-                        <span>Profile</span>
+                        <span>プロフィール</span>
                       </DropdownMenuItem>
                     </Link>
-                    <Link href="/dashboard">
+                    <Link href="/events/registered">
                       <DropdownMenuItem>
                         <CalendarDays className="h-4 w-4" />
-                        <span>My Events</span>
+                        <span>登録済みイベント</span>
                       </DropdownMenuItem>
                     </Link>
                     <DropdownMenuSeparator />

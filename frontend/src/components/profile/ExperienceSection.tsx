@@ -1,27 +1,65 @@
 'use client';
 
-import { Briefcase } from 'lucide-react';
+import { Building2 } from 'lucide-react';
+import { Experience } from '@/lib/types';
+import Image from 'next/image';
 
 interface ExperienceSectionProps {
-  experience: string[];
+  experience: Experience[];
+}
+
+function formatDate(date: string | undefined | null) {
+  if (!date) return '';
+  if (date === 'present') return '現在';
+  const [year, month] = date.split('-');
+  return `${year}年${month}月`;
 }
 
 export function ExperienceSection({ experience }: ExperienceSectionProps) {
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-3">過去の経験</h3>
+      <h3 className="text-lg font-semibold mb-6">過去の経験</h3>
       {experience.length > 0 ? (
-        <div className="space-y-4">
-          {experience.map((exp, index) => (
-            <div key={index} className="flex items-center gap-3">
-              <div className="mt-0,5 p-2 bg-primary/10 rounded-md">
-                <Briefcase className="h-5 w-5 text-primary" />
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-6 top-2 bottom-2 w-[2px] bg-border" />
+          
+          <div className="space-y-8">
+            {experience.map((exp, index) => (
+              <div key={index} className="flex items-start gap-6">
+                {/* Company Icon */}
+                <div className="relative z-10 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full border-4 border-background bg-card overflow-hidden">
+                    {exp.iconUrl ? (
+                      <Image
+                        src={exp.iconUrl}
+                        alt={exp.company}
+                        width={48}
+                        height={48}
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                        <Building2 className="h-6 w-6 text-primary" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Experience Details */}
+                <div className="flex-1 space-y-2">
+                  <div>
+                    <h4 className="font-medium">{exp.company}</h4>
+                    <p className="text-sm text-muted-foreground">{exp.position}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(exp.startDate)} 〜 {formatDate(exp.endDate)}
+                    </p>
+                  </div>
+                  <p className="text-sm">{exp.description}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-foreground">{exp}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">経験が設定されていません。</p>

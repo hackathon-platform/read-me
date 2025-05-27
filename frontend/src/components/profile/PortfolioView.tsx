@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProfileSection } from '@/components/profile/ProfileSection';
 import { EducationSection } from '@/components/profile/EducationSection';
 import { ExperienceSection } from '@/components/profile/ExperienceSection';
+import { QualificationsSection } from '@/components/profile/QualificationsSection';
 import { ResumeSection } from '@/components/profile/ResumeSection';
 import { ProjectsSection } from '@/components/profile/ProjectsSection';
 import { usePortfolioStore } from '@/lib/store';
@@ -24,38 +25,44 @@ export function PortfolioView() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="animate-in fade-in duration-500">
       <ProfileSection portfolio={portfolio} />
       
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="profile">プロフィール</TabsTrigger>
-          <TabsTrigger value="projects">プロジェクト</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="profile" className="mt-6">
-          <Card>
-            <CardContent className="pt-2">
-              <EducationSection education={portfolio.education} />
-              
-              <Separator className="my-6" />
-              
-              <ExperienceSection experience={portfolio.experience} />
-              
-              {portfolio.resumeUrl && (
-                <>
-                  <Separator className="my-6" />
-                  <ResumeSection resumeUrl={portfolio.resumeUrl} />
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="projects" className="mt-6">
-          <ProjectsSection projects={portfolio.projects} />
-        </TabsContent>
-      </Tabs>
+      <div className="container max-w-6xl mx-auto py-8">
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="profile">プロフィール</TabsTrigger>
+            <TabsTrigger value="projects">プロジェクト</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="profile" className="mt-6">
+            <Card>
+              <CardContent>
+                <EducationSection education={portfolio?.education} />
+                
+                <Separator className="my-6" />
+                
+                <ExperienceSection experience={portfolio?.experience} />
+                
+                <Separator className="my-6" />
+                
+                <QualificationsSection qualifications={portfolio?.qualifications} />
+                
+                {portfolio?.resumeUrl && (
+                  <>
+                    <Separator className="my-6" />
+                    <ResumeSection resumeUrl={portfolio.resumeUrl} />
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+          
+          <TabsContent value="projects" className="mt-6">
+            <ProjectsSection projects={portfolio?.projects} />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

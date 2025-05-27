@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import Header from "@/components/layout/header";
 import { AppSidebar } from "@/components/ui/app-sidebar";
+import { Toaster } from '@/components/ui/sonner';
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
@@ -37,6 +38,7 @@ export default function RootLayout({
         <SupabaseProvider>
           <ThemeProvider attribute="class" defaultTheme="system">
             <Header />
+            <Toaster />
             <main>{children}</main>
           </ThemeProvider>
         </SupabaseProvider>
