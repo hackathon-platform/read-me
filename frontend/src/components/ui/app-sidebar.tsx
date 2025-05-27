@@ -36,30 +36,22 @@ const data = {
   navMain: [
     {
       title: "プロファイル",
-      url: "#",
+      url: "profile",
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "ポートファリオ",
+          url: "profile",
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "質問事項",
+          url: "profile/edit",
         },
       ],
     },
     {
       title: "参加する",
-      url: "#",
+      url: "events",
       icon: SquareTerminal,
       isActive: true,
       items: [
@@ -75,19 +67,15 @@ const data = {
     },
     {
       title: "開催する",
-      url: "#",
+      url: "host",
       icon: Bot,
       items: [
         {
-          title: "運営",
+          title: "運営チーム",
           url: "#",
         },
         {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
+          title: "開催中のイベント",
           url: "#",
         },
       ],
@@ -160,9 +148,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent className="py-2">
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        
+        {/* <NavProjects projects={data.projects} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
     </Sidebar>
   );
 }
