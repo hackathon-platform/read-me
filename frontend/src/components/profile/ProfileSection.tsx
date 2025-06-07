@@ -25,8 +25,7 @@ export function ProfileSection({ portfolio }: ProfileSectionProps) {
   };
 
   return (
-    <div className="relative">
-      <div className="container max-w-6xl mx-auto">
+    <div className="relative py-2.5">
         <div className="flex items-end justify-between">
           <div className="flex items-end md:gap-6 gap-4">
             <Avatar className="md:h-32 md:w-32 h-28 w-28 border-4 border-background">
@@ -83,6 +82,5 @@ export function ProfileSection({ portfolio }: ProfileSectionProps) {
           </div>
         </div>
       </div>
-    </div>
   );
 }
