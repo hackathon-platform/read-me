@@ -504,213 +504,202 @@ export function PortfolioEditForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 pb-10 animate-in fade-in duration-500"
       >
+        {/* Profile Photo & Username */}
+        <div className="flex flex-col items-center justify-center">
+          <Avatar
+            className="h-24 w-24 mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <AvatarImage src={form.watch("imageUrl")} />
+            <AvatarFallback>写真</AvatarFallback>
+          </Avatar>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            プロフィール写真をアップロード
+          </Button>
+          <div className="mt-4 w-full max-w-xs">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel>表示用ユーザーID（Username）</FormLabel>
+                  <FormControl>
+                    <Input placeholder="例: genichihashi" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    ※3文字以上、英数字・アンダースコアのみ可。他の人がこのIDで
+                    あなたのページ ( /profile/[username] ) を見れます。
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Name Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>姓</FormLabel>
+                <FormControl>
+                  <Input placeholder="山田" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>名</FormLabel>
+                <FormControl>
+                  <Input placeholder="太郎" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastNameKana"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>姓（フリガナ）</FormLabel>
+                <FormControl>
+                  <Input placeholder="ヤマダ" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="firstNameKana"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>名（フリガナ）</FormLabel>
+                <FormControl>
+                  <Input placeholder="タロウ" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Separator />
+
+        {/* Social Media Section */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">ソーシャルメディア</h3>
+          </div>
+
+          <div className="space-y-3">
+            {socials.map((social, idx) => (
+              <div
+                key={idx}
+                className="flex flex-wrap gap-2 sm:flex-nowrap items-start"
+              >
+                <Select
+                  defaultValue={social.platform}
+                  onValueChange={(val: Social["platform"]) =>
+                    updateSocial(idx, val, social.url, social.label)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="github">
+                      <div className="flex items-center">
+                        <Github className="h-4 w-4 mr-2" />
+                        GitHub
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="linkedin">
+                      <div className="flex items-center">
+                        <Linkedin className="h-4 w-4 mr-2" />
+                        LinkedIn
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="instagram">
+                      <div className="flex items-center">
+                        <Instagram className="h-4 w-4 mr-2" />
+                        Instagram
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="facebook">
+                      <div className="flex items-center">
+                        <Facebook className="h-4 w-4 mr-2" />
+                        Facebook
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="other">
+                      <div className="flex items-center">
+                        <Link className="h-4 w-4 mr-2" />
+                        その他
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder="URLを入力"
+                  value={social.url}
+                  onChange={(e) =>
+                    updateSocial(
+                      idx,
+                      social.platform,
+                      e.target.value,
+                      social.label,
+                    )
+                  }
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeSocial(idx)}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={addSocial}>
+            <Plus className="h-4 w-4 mr-1" /> 追加
+          </Button>
+        </div>
+
+        <Separator />
+        
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="profile">プロフィール</TabsTrigger>
             <TabsTrigger value="projects">プロジェクト</TabsTrigger>
           </TabsList>
-
-          {/* ============================= */}
-          {/* Tab: Profile (name, image, socials, education, experience, qualifications, resume) */}
-          {/* ============================= */}
           <TabsContent value="profile">
             <Card>
               <CardContent className="pt-6 space-y-8">
-                {/* Profile Photo & Username */}
-                <div className="flex flex-col items-center justify-center">
-                  <Avatar
-                    className="h-24 w-24 mb-4 cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <AvatarImage src={form.watch("imageUrl")} />
-                    <AvatarFallback>写真</AvatarFallback>
-                  </Avatar>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    プロフィール写真をアップロード
-                  </Button>
-                  <div className="mt-4 w-full max-w-xs">
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem className="space-y-2">
-                          <FormLabel>表示用ユーザーID（Username）</FormLabel>
-                          <FormControl>
-                            <Input placeholder="例: genichihashi" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            ※3文字以上、英数字・アンダースコアのみ可。他の人がこのIDで
-                            あなたのページ ( /profile/[username] ) を見れます。
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                {/* Name Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel>姓</FormLabel>
-                        <FormControl>
-                          <Input placeholder="山田" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel>名</FormLabel>
-                        <FormControl>
-                          <Input placeholder="太郎" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastNameKana"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel>姓（フリガナ）</FormLabel>
-                        <FormControl>
-                          <Input placeholder="ヤマダ" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="firstNameKana"
-                    render={({ field }) => (
-                      <FormItem className="space-y-2">
-                        <FormLabel>名（フリガナ）</FormLabel>
-                        <FormControl>
-                          <Input placeholder="タロウ" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Separator />
-
-                {/* Social Media Section */}
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">
-                      ソーシャルメディア
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    {socials.map((social, idx) => (
-                      <div
-                        key={idx}
-                        className="flex flex-wrap gap-2 sm:flex-nowrap items-start"
-                      >
-                        <Select
-                          defaultValue={social.platform}
-                          onValueChange={(val: Social["platform"]) =>
-                            updateSocial(idx, val, social.url, social.label)
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="github">
-                              <div className="flex items-center">
-                                <Github className="h-4 w-4 mr-2" />
-                                GitHub
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="linkedin">
-                              <div className="flex items-center">
-                                <Linkedin className="h-4 w-4 mr-2" />
-                                LinkedIn
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="instagram">
-                              <div className="flex items-center">
-                                <Instagram className="h-4 w-4 mr-2" />
-                                Instagram
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="facebook">
-                              <div className="flex items-center">
-                                <Facebook className="h-4 w-4 mr-2" />
-                                Facebook
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="other">
-                              <div className="flex items-center">
-                                <Link className="h-4 w-4 mr-2" />
-                                その他
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Input
-                          placeholder="URLを入力"
-                          value={social.url}
-                          onChange={(e) =>
-                            updateSocial(
-                              idx,
-                              social.platform,
-                              e.target.value,
-                              social.label,
-                            )
-                          }
-                          className="flex-1"
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeSocial(idx)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={addSocial}
-                  >
-                    <Plus className="h-4 w-4 mr-1" /> 追加
-                  </Button>
-                </div>
-
-                <Separator />
-
                 {/* Education */}
                 <FormField
                   control={form.control}

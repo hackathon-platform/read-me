@@ -37,63 +37,120 @@ export function ProfileSection({ portfolio }: ProfileSectionProps) {
   };
 
   return (
-    <div className="relative py-2.5">
-      <div className="flex items-end justify-between">
-        <div className="flex items-end md:gap-6 gap-4">
-          <Avatar className="md:h-32 md:w-32 h-28 w-28 border-4 border-background">
-            <AvatarImage
-              src={portfolio.imageUrl}
-              alt={`${portfolio.lastName} ${portfolio.firstName}`}
-            />
-            <AvatarFallback className="text-xl">{initials}</AvatarFallback>
-          </Avatar>
+    <>
+      {/* Mobile Layout */}
+      <div className="lg:hidden relative py-2.5">
+        <div className="flex items-end justify-between">
+          <div className="flex items-end gap-4">
+            <Avatar className="h-28 w-28 border-4 border-background">
+              <AvatarImage
+                src={portfolio.imageUrl}
+                alt={`${portfolio.lastName} ${portfolio.firstName}`}
+              />
+              <AvatarFallback className="text-xl">{initials}</AvatarFallback>
+            </Avatar>
 
-          <div className="md:mb-2 space-y-4">
-            <div className="flex flex-col gap-1 ml-1">
-              <p className="text-sm text-muted-foreground tracking-wider">
-                {portfolio.lastNameKana} {portfolio.firstNameKana}
-              </p>
-              <h2 className="md:text-3xl text-2xl font-bold">
-                {portfolio.lastName} {portfolio.firstName}
-              </h2>
-            </div>
+            <div className="space-y-4">
+              <div className="flex flex-col gap-1 ml-1">
+                <p className="text-sm text-muted-foreground tracking-wider">
+                  {portfolio.lastNameKana} {portfolio.firstNameKana}
+                </p>
+                <h2 className="text-2xl font-bold">
+                  {portfolio.lastName} {portfolio.firstName}
+                </h2>
+              </div>
 
-            <div className="flex gap-2">
-              {portfolio.socials.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={
-                    social.platform === "other" ? social.label : social.platform
-                  }
-                >
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    {getSocialIcon(social)}
-                  </Button>
-                </a>
-              ))}
+              <div className="flex gap-2">
+                {portfolio.socials.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={
+                      social.platform === "other"
+                        ? social.label
+                        : social.platform
+                    }
+                  >
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      {getSocialIcon(social)}
+                    </Button>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-        <div className="hidden lg:block">
+
+        <div className="w-full pt-2">
           <NextLink href="/profile/edit">
-            <Button variant="outline" className="gap-2">
-              <PencilIcon className="h-4 w-4" />
-              編集する
-            </Button>
-          </NextLink>
-        </div>
-        <div className="lg:hidden fixed bottom-4 right-4 z-50">
-          <NextLink href="/profile/edit">
-            <Button variant="default" className="gap-2">
+            <Button variant="outline" className="w-full gap-2">
               <PencilIcon className="h-4 w-4" />
               編集する
             </Button>
           </NextLink>
         </div>
       </div>
-    </div>
+
+      {/* Desktop Layout (lg and up)*/}
+      <div className="hidden lg:block max-w-sm">
+        <div className="sticky top-4 bg-transparent">
+          <div className="p-3">
+            <div className="flex flex-col items-center text-center space-y-4">
+              {/* Profile Image */}
+              <Avatar className="h-40 w-40 xl:h-44 xl:w-44 border-4 border-background">
+                <AvatarImage
+                  src={portfolio.imageUrl}
+                  alt={`${portfolio.lastName} ${portfolio.firstName}`}
+                />
+                <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
+              </Avatar>
+
+              {/* Name */}
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground tracking-wider">
+                  {portfolio.lastNameKana} {portfolio.firstNameKana}
+                </p>
+                <h2 className="text-2xl font-bold">
+                  {portfolio.lastName} {portfolio.firstName}
+                </h2>
+              </div>
+
+              {/* Social Icons */}
+              <div className="flex flex-wrap gap-2 justify-center">
+                {portfolio.socials.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={
+                      social.platform === "other"
+                        ? social.label
+                        : social.platform
+                    }
+                  >
+                    <Button variant="ghost" size="icon" className="h-9 w-9">
+                      {getSocialIcon(social)}
+                    </Button>
+                  </a>
+                ))}
+              </div>
+
+              {/* Edit Button */}
+              <div className="w-full pt-2">
+                <NextLink href="/profile/edit">
+                  <Button variant="outline" className="w-full gap-2">
+                    <PencilIcon className="h-4 w-4" />
+                    編集する
+                  </Button>
+                </NextLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

@@ -43,9 +43,9 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
       {projects.map((project, index) => (
         <Card key={index} className="overflow-hidden">
           {project.media && project.media.length > 0 && (
-            <div className="relative">
+            <div className="relative px-3">
               {project.media.length > 1 ? (
-                <Carousel className="w-full px-3">
+                <Carousel className="w-full">
                   <CarouselContent>
                     {project.media.map((media, mediaIndex) => (
                       <CarouselItem key={mediaIndex}>

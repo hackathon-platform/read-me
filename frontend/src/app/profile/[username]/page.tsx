@@ -35,7 +35,7 @@ export default async function ProfilePage({
 }: {
   params: { username: string };
 }) {
-  const { username } = await params; // ← No need to await
+  const { username } = await params;
 
   // 1) Query Supabase for a row with this username
   const { data: rawData, error } = await supabase
@@ -71,41 +71,86 @@ export default async function ProfilePage({
   // 4) Render the Portfolio
   return (
     <PageLayout>
-      <div className="animate-in fade-in duration-500 2xl:mt-8 w-full pb-3 pt-2 max-w-5xl mx-auto">
+      <div className="animate-in fade-in duration-500 2xl:mt-8 w-full pb-3 pt-2 max-w-7xl mx-auto items-center">
         <div className="container mx-auto">
-          <ProfileSection portfolio={portfolio} />
-          <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="profile">プロフィール</TabsTrigger>
-              <TabsTrigger value="projects">プロジェクト</TabsTrigger>
-            </TabsList>
+          {/* Mobile Layout */}
+          <div className="lg:hidden">
+            <ProfileSection portfolio={portfolio} />
+            <div className="mt-1">
+              <Tabs defaultValue="profile" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="profile">プロフィール</TabsTrigger>
+                  <TabsTrigger value="projects">プロジェクト</TabsTrigger>
+                </TabsList>
 
-            {/* PROFILE TAB */}
-            <TabsContent value="profile" className="mt-6">
-              <Card>
-                <CardContent>
-                  <EducationSection education={portfolio.education} />
-                  <Separator className="my-6" />
-                  <ExperienceSection experience={portfolio.experience} />
-                  <Separator className="my-6" />
-                  <QualificationsSection
-                    qualifications={portfolio.qualifications}
-                  />
-                  {portfolio.resumeUrl && (
-                    <>
+                <TabsContent value="profile" className="mt-3">
+                  <Card>
+                    <CardContent>
+                      <EducationSection education={portfolio.education} />
                       <Separator className="my-6" />
-                      <ResumeSection resumeUrl={portfolio.resumeUrl} />
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                      <ExperienceSection experience={portfolio.experience} />
+                      <Separator className="my-6" />
+                      <QualificationsSection
+                        qualifications={portfolio.qualifications}
+                      />
+                      {portfolio.resumeUrl && (
+                        <>
+                          <Separator className="my-6" />
+                          <ResumeSection resumeUrl={portfolio.resumeUrl} />
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
 
-            {/* PROJECTS TAB */}
-            <TabsContent value="projects" className="mt-6">
-              <ProjectsSection projects={portfolio.projects} />
-            </TabsContent>
-          </Tabs>
+                <TabsContent value="projects" className="mt-6">
+                  <ProjectsSection projects={portfolio.projects} />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
+
+          {/* Desktop Layout (lg and up) */}
+          <div className="hidden lg:flex gap-4">
+            {/* Left Sidebar - Profile */}
+            <div className="w-80 flex-shrink-0">
+              <ProfileSection portfolio={portfolio} />
+            </div>
+
+            {/* Right Content Area */}
+            <div className="flex-1 min-w-0">
+              <Tabs defaultValue="profile" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="profile">プロフィール</TabsTrigger>
+                  <TabsTrigger value="projects">プロジェクト</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="profile" className="mt-6">
+                  <Card>
+                    <CardContent>
+                      <EducationSection education={portfolio.education} />
+                      <Separator className="my-6" />
+                      <ExperienceSection experience={portfolio.experience} />
+                      <Separator className="my-6" />
+                      <QualificationsSection
+                        qualifications={portfolio.qualifications}
+                      />
+                      {portfolio.resumeUrl && (
+                        <>
+                          <Separator className="my-6" />
+                          <ResumeSection resumeUrl={portfolio.resumeUrl} />
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="projects" className="mt-6">
+                  <ProjectsSection projects={portfolio.projects} />
+                </TabsContent>
+              </Tabs>
+            </div>
+          </div>
         </div>
       </div>
     </PageLayout>

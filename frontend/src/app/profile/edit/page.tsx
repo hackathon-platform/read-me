@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
-import { PortfolioEditForm } from "@/components/profile/PortfolioEditForm";
+import { PortfolioEditForm } from "@/components/profile/ProfileEditForm";
 import { Portfolio } from "@/lib/types";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
