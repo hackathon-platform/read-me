@@ -34,14 +34,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSupabase } from "@/components/supabase-provider";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from 'sonner';
 
 export default function EventDetailPage() {
   const params = useParams();
   const eventId = params.id as string;
   const router = useRouter();
   const { supabase, user, loading: userLoading } = useSupabase();
-  const { toast } = useToast();
   const [event, setEvent] = useState<any | null>(null);
   const [organizer, setOrganizer] = useState<any | null>(null);
   const [participants, setParticipants] = useState<any[]>([]);
@@ -119,10 +118,9 @@ export default function EventDetailPage() {
         }
       } catch (error: any) {
         console.error("Error fetching event details:", error);
-        toast({
-          title: "Error",
+        toast("Error",{
           description: "Failed to load event details",
-          variant: "destructive",
+          duration: 3000,
         });
       } finally {
         setIsLoading(false);
@@ -137,10 +135,9 @@ export default function EventDetailPage() {
   // Handle join event
   const handleJoinEvent = async (status: "attending" | "interested") => {
     if (!user) {
-      toast({
-        title: "Authentication required",
+      toast("Authentication required", {
         description: "Please sign in to join this event",
-        variant: "destructive",
+        duration: 3000,
       });
       router.push("/login");
       return;
@@ -191,17 +188,15 @@ export default function EventDetailPage() {
       if (countError) throw countError;
       setParticipantCount(count || 0);
 
-      toast({
-        title: `You're ${status} this event!`,
+      toast(`You're ${status} this event!`, {
         description: status === "attending"
           ? "You'll receive updates about this event"
           : "You've marked your interest in this event",
       });
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast("Error",{
         description: error.message || "Failed to join the event",
-        variant: "destructive",
+        duration: 3000,
       });
     } finally {
       setIsJoining(false);
@@ -234,15 +229,13 @@ export default function EventDetailPage() {
       if (countError) throw countError;
       setParticipantCount(count || 0);
 
-      toast({
-        title: "Left event",
+      toast("Left event", {
         description: "You have been removed from this event",
       });
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: error.message || "Failed to leave the event",
-        variant: "destructive",
+        duration: 3000,
       });
     } finally {
       setIsJoining(false);
@@ -263,17 +256,15 @@ export default function EventDetailPage() {
 
       if (error) throw error;
 
-      toast({
-        title: "Event deleted",
+      toast("Event deleted", {
         description: "The event has been successfully deleted",
       });
 
       router.push("/dashboard");
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: error.message || "Failed to delete the event",
-        variant: "destructive",
+        duration: 3000,
       });
     } finally {
       setIsDeleting(false);
@@ -292,8 +283,7 @@ export default function EventDetailPage() {
         .catch((error) => console.error("Error sharing:", error));
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: "Link copied",
+      toast("Link copied", {
         description: "Event link copied to clipboard",
       });
     }

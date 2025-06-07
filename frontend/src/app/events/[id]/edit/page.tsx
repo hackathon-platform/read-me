@@ -41,8 +41,8 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useSupabase } from "@/components/supabase-provider";
-import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { toast } from "sonner";
 
 // Event categories
 const EVENT_CATEGORIES = [
@@ -89,7 +89,6 @@ export default function EditEventPage() {
   const eventId = params.id as string;
   const router = useRouter();
   const { supabase, user, loading } = useSupabase();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -138,10 +137,8 @@ export default function EditEventPage() {
 
         // Check if user is the organizer
         if (user && event.organizer_id !== user.id) {
-          toast({
-            title: "Unauthorized",
+          toast("Unauthorized", {
             description: "You don't have permission to edit this event",
-            variant: "destructive",
           });
           router.push(`/events/${eventId}`);
           return;
@@ -159,10 +156,8 @@ export default function EditEventPage() {
           max_participants: event.max_participants || undefined,
         });
       } catch (error: any) {
-        toast({
-          title: "Error",
+        toast("Error", {
           description: error.message || "Failed to load event data",
-          variant: "destructive",
         });
         router.push("/events");
       } finally {
@@ -177,10 +172,8 @@ export default function EditEventPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user) {
-      toast({
-        title: "Authentication required",
+      toast("Authentication required", {
         description: "You need to be logged in to edit an event",
-        variant: "destructive",
       });
       return;
     }
@@ -207,18 +200,15 @@ export default function EditEventPage() {
         throw error;
       }
 
-      toast({
-        title: "Event updated",
+      toast("Event updated",{
         description: "Your event has been successfully updated",
       });
 
       // Navigate to the event page
       router.push(`/events/${eventId}`);
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: error.message || "Failed to update the event",
-        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);

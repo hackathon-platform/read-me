@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useSupabase } from "@/components/supabase-provider";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 // Event categories
 const EVENT_CATEGORIES = [
@@ -85,7 +85,6 @@ const formSchema = z
 export default function CreateEventPage() {
   const router = useRouter();
   const { supabase, user, loading } = useSupabase();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Redirect if not logged in
@@ -109,10 +108,8 @@ export default function CreateEventPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!user) {
-      toast({
-        title: "Authentication required",
+      toast("Authentication required", {
         description: "You need to be logged in to create an event",
-        variant: "destructive",
       });
       return;
     }
@@ -141,18 +138,15 @@ export default function CreateEventPage() {
         throw error;
       }
 
-      toast({
-        title: "Event created",
+      toast("Event created", {
         description: "Your event has been successfully created",
       });
 
       // Navigate to the event page
       router.push(`/events/${data.id}`);
     } catch (error: any) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: error.message || "Failed to create the event",
-        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);

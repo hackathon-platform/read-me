@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Database } from "@/lib/database.types";
 
 type SupabaseContext = {
@@ -29,10 +29,10 @@ export const SupabaseProvider = ({
 
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     const checkUser = async () => {
+      setLoading(true);
       try {
         const {
           data: { session },
@@ -80,15 +80,12 @@ export const SupabaseProvider = ({
         throw error;
       }
 
-      toast({
-        title: "Successfully signed in",
-        description: "Welcome back to EventMaker!",
+      toast("ログインに成功しました", {
+        description: "おかえりなさい!👋",
       });
     } catch (error: any) {
-      toast({
-        title: "Sign in failed",
+      toast("Sign in failed", {
         description: error.message,
-        variant: "destructive",
       });
       throw error;
     }
@@ -117,15 +114,12 @@ export const SupabaseProvider = ({
         });
       }
 
-      toast({
-        title: "Account created",
+      toast("Account created",　{
         description: "Welcome to EventMaker!",
       });
     } catch (error: any) {
-      toast({
-        title: "Sign up failed",
+      toast("Sign up failed",　{
         description: error.message,
-        variant: "destructive",
       });
       throw error;
     }
@@ -139,15 +133,12 @@ export const SupabaseProvider = ({
         throw error;
       }
 
-      toast({
-        title: "Signed out",
+      toast("Signed out",　{
         description: "You have been successfully signed out.",
       });
     } catch (error: any) {
-      toast({
-        title: "Sign out failed",
+      toast("Sign out failed",　{
         description: error.message,
-        variant: "destructive",
       });
     }
   };
