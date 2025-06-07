@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -17,30 +17,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CalendarDays, Menu, Plus, Search, User, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { NavUser } from "@/components/ui/nav-user";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-}
 
 export default function Header() {
   const pathname = usePathname();
   const { user, signOut, loading } = useSupabase();
-  const [scrolled, setScrolled] = useState(false);
+  console.log("Header → user:", user, "loading:", loading);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const navItems = [
     {
@@ -63,24 +45,25 @@ export default function Header() {
     });
   }
 
-  const headerClasses = `sticky top-0 z-50 w-full transition-all duration-300 ${
-    scrolled
-      ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b"
-      : "bg-transparent"
-  }`;
+  const headerClasses = `
+    sticky top-0 z-50 w-full transition-all duration-300 bg-transparent
+  `;
 
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+  // last_name のイニシャルを取得する（フォールバック）
+  const getInitial = (lastName: string | undefined) => {
+    if (!lastName) return "U";
+    return lastName.charAt(0).toUpperCase();
   };
 
+  const firstName = user?.first_name ?? "";
+  const lastName = user?.last_name ?? "";
+  const fullName = firstName && lastName ? `${lastName} ${firstName} ` : "";
+  const avatarUrl = user?.image_url ?? "";
+  console.log('user', user);
   return (
     <header className={headerClasses}>
-      <div className="w-full flex h-14 items-center justify-between px-4 bg-sidebar">
+      <div className="w-full flex h-12 items-center justify-between px-4 bg-sidebar">
+        {/* Logo / Brand */}
         <div className="flex">
           <Link href="/" className="flex text-2xl font-bold items-center">
             <CalendarDays className="h-6 w-6 mr-2" />
@@ -88,53 +71,60 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="flex ">
+        {/* Right side: Theme toggle + user menu / auth links */}
+        <div className="flex items-center space-x-2">
           <ThemeToggle />
-
+          
           {!loading && (
             <>
               {user ? (
+                // ─── ログイン済みユーザー向けメニュー ───
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-10 w-10 rounded-full"
-                    >
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
                       <Avatar>
-                        <AvatarImage
-                          src={user.avatar_url || ""}
-                          alt={user.full_name}
-                        />
-                        <AvatarFallback>
-                          {getInitials(user.full_name)}
-                        </AvatarFallback>
+                        {avatarUrl ? (
+                          <AvatarImage src={avatarUrl} alt={fullName} />
+                        ) : (
+                          <AvatarFallback>
+                            {getInitial(lastName)}
+                          </AvatarFallback>
+                        )}
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
+
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>アカウント</DropdownMenuLabel>
+                    <DropdownMenuLabel className="font-medium">
+                      {fullName || "ユーザー"}
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+
                     <Link href="/profile">
                       <DropdownMenuItem>
-                        <User className=" h-4 w-4" />
+                        <User className="h-4 w-4 mr-2" />
                         <span>プロフィール</span>
                       </DropdownMenuItem>
                     </Link>
+
                     <Link href="/events/registered">
                       <DropdownMenuItem>
-                        <CalendarDays className="h-4 w-4" />
+                        <CalendarDays className="h-4 w-4 mr-2" />
                         <span>登録済みイベント</span>
                       </DropdownMenuItem>
                     </Link>
+
                     <DropdownMenuSeparator />
+
                     <DropdownMenuItem onClick={() => signOut()}>
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-4 w-4 mr-2" />
                       <span>ログアウト</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <div className="hidden md:flex space-x-2">
+                // ─── 非ログイン時は常にログイン/新規登録を表示 ───
+                <div className="flex space-x-2">
                   <Link href="/auth/login">
                     <Button variant="ghost">ログイン</Button>
                   </Link>
@@ -145,6 +135,8 @@ export default function Header() {
               )}
             </>
           )}
+
+          {/* Mobile メニュー (ハンバーガー) */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -183,18 +175,12 @@ export default function Header() {
                 <div className="mt-auto">
                   {!loading && !user && (
                     <div className="grid gap-2">
-                      <Link
-                        href="/login"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
+                      <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
                         <Button variant="outline" className="w-full">
                           Login
                         </Button>
                       </Link>
-                      <Link
-                        href="/signup"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
+                      <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
                         <Button className="w-full">Sign Up</Button>
                       </Link>
                     </div>
@@ -209,7 +195,7 @@ export default function Header() {
                         setMobileMenuOpen(false);
                       }}
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-4 w-4 mr-2" />
                       Log out
                     </Button>
                   )}

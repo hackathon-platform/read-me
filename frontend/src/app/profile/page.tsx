@@ -1,15 +1,67 @@
-import PageLayout from "@/components/layout/pageLayout";
-import { PortfolioView } from '@/components/profile/PortfolioView';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { PencilIcon } from 'lucide-react';
+// src/app/profile/page.tsx - Optimized Version
+'use client';
 
-export default function Home() {
-  return (
-    <PageLayout>
-      <div className="container max-w-4xl mx-auto py-8 px-4 sm:px-6">
-        <PortfolioView />
-      </div>
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
+import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import PageLayout from "@/components/layout/pageLayout";
+
+export default function YourProfileRedirectPage() {
+  const router = useRouter();
+  const { user, isLoading } = useSupabaseAuth();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    // Early return if still loading auth
+    if (isLoading) return;
+
+    // Immediate redirect if no user
+    if (!user) {
+      router.replace('/auth/login');
+      return;
+    }
+
+    // Only check profile if we haven't started redirecting
+    if (isRedirecting) return;
+
+    const checkProfileAndRedirect = async () => {
+      setIsRedirecting(true);
+      
+      try {
+        // Single optimized query with specific field selection
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+
+        // Handle the redirect based on result
+        if (error || !data?.username) {
+          router.replace('/profile/setup');
+        } else {
+          router.replace(`/profile/${data.username}`);
+        }
+      } catch (err) {
+        console.error('Profile check error:', err);
+        router.replace('/profile/setup');
+      }
+    };
+
+    checkProfileAndRedirect();
+  }, [user, isLoading, router, isRedirecting]);
+
+  // Show loading only when necessary
+  if (isLoading || isRedirecting) {
+    return (
+      <PageLayout>
+        <div className="flex flex-col items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p>読み込み中…</p>
+        </div>
       </PageLayout>
-  );
+    );
+  }
+
+  return null;
 }
