@@ -1,18 +1,20 @@
-'use client';
+"use client";
 
-import { Award } from 'lucide-react';
-import { Qualification } from '@/lib/types';
+import { Award } from "lucide-react";
+import { Qualification } from "@/lib/types";
 
 interface QualificationsSectionProps {
   qualifications?: Qualification[];
 }
 
 function formatDate(date: string) {
-  const [year, month] = date.split('-');
+  const [year, month] = date.split("-");
   return `${year}年${month}月`;
 }
 
-export function QualificationsSection({ qualifications = [] }: QualificationsSectionProps) {
+export function QualificationsSection({
+  qualifications = [],
+}: QualificationsSectionProps) {
   return (
     <div>
       <h3 className="text-lg font-semibold mb-3">資格・スキル</h3>
@@ -37,7 +39,9 @@ export function QualificationsSection({ qualifications = [] }: QualificationsSec
           ))}
         </div>
       ) : (
-        <p className="text-muted-foreground text-sm">資格が設定されていません。</p>
+        <p className="text-muted-foreground text-sm">
+          資格が設定されていません。
+        </p>
       )}
     </div>
   );

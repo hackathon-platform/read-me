@@ -1,28 +1,28 @@
 // src/components/profile/ProfileSetupForm.tsx
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 export function ProfileSetupForm() {
   const router = useRouter();
   const { user, isLoading } = useSupabaseAuth();
 
   // Local state for the required profile fields:
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [firstNameKana, setFirstNameKana] = useState('');
-  const [lastNameKana, setLastNameKana] = useState('');
-  const [imageUrl, setImageUrl] = useState(''); // optional
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [firstNameKana, setFirstNameKana] = useState("");
+  const [lastNameKana, setLastNameKana] = useState("");
+  const [imageUrl, setImageUrl] = useState(""); // optional
+  const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   // file input ref for image upload
@@ -31,7 +31,7 @@ export function ProfileSetupForm() {
   // If user is not logged in, send them back to /auth/login
   useEffect(() => {
     if (!isLoading && !user) {
-      router.replace('/auth/login');
+      router.replace("/auth/login");
     }
   }, [isLoading, user, router]);
 
@@ -64,7 +64,7 @@ export function ProfileSetupForm() {
   // On submit, upsert into profiles
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // 1) validation: required fields must be non-empty
     if (
@@ -74,41 +74,41 @@ export function ProfileSetupForm() {
       !firstNameKana.trim() ||
       !lastNameKana.trim()
     ) {
-      setError('すべての必須項目（ユーザーID、氏名、フリガナ）を入力してください。');
+      setError(
+        "すべての必須項目（ユーザーID、氏名、フリガナ）を入力してください。",
+      );
       return;
     }
     if (!user || !user.id) {
-      setError('認証エラー。もう一度ログインしなおしてください。');
+      setError("認証エラー。もう一度ログインしなおしてください。");
       return;
     }
 
     setIsSaving(true);
 
     // 2) Upsert into profiles. RLS allows only id = auth.uid().
-    const { error: upsertError } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        username: username.trim(),
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
-        first_name_kana: firstNameKana.trim(),
-        last_name_kana: lastNameKana.trim(),
-        image_url: imageUrl || null,
-        // We leave education/socials/experience/qualifications/projects/resume_url as defaults
-      });
+    const { error: upsertError } = await supabase.from("profiles").upsert({
+      id: user.id,
+      username: username.trim(),
+      first_name: firstName.trim(),
+      last_name: lastName.trim(),
+      first_name_kana: firstNameKana.trim(),
+      last_name_kana: lastNameKana.trim(),
+      image_url: imageUrl || null,
+      // We leave education/socials/experience/qualifications/projects/resume_url as defaults
+    });
 
     if (upsertError) {
-      console.error('Error upserting profile:', upsertError.message);
+      console.error("Error upserting profile:", upsertError.message);
       setError(
         upsertError.message ||
-          'プロフィールの保存に失敗しました。もう一度お試しください。'
+          "プロフィールの保存に失敗しました。もう一度お試しください。",
       );
       setIsSaving(false);
       return;
     }
 
-    toast.success('プロフィールを登録しました。');
+    toast.success("プロフィールを登録しました。");
     // 3) Redirect to their newly created public page
     router.replace(`/profile/${username.trim()}`);
   };
@@ -228,13 +228,13 @@ export function ProfileSetupForm() {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isSaving}
               >
-                {imageUrl ? '画像を変更' : 'プロフィール画像をアップロード'}
+                {imageUrl ? "画像を変更" : "プロフィール画像をアップロード"}
               </Button>
             </div>
 
             {/* Submit */}
             <Button type="submit" className="w-full mt-4" disabled={isSaving}>
-              {isSaving ? '保存中…' : 'プロフィールを登録'}
+              {isSaving ? "保存中…" : "プロフィールを登録"}
             </Button>
           </form>
         </CardContent>

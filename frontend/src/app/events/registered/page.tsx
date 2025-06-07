@@ -10,5 +10,5 @@ import { Separator } from "@/components/ui/separator";
 import PageLayout from "@/components/layout/pageLayout";
 
 export default function Page() {
-  return <PageLayout>registered events here</PageLayout>
+  return <PageLayout>registered events here</PageLayout>;
 }

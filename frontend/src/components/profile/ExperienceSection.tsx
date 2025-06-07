@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { Building2 } from 'lucide-react';
-import { Experience } from '@/lib/types';
-import Image from 'next/image';
+import { Building2 } from "lucide-react";
+import { Experience } from "@/lib/types";
+import Image from "next/image";
 
 interface ExperienceSectionProps {
   experience: Experience[];
 }
 
 function formatDate(date: string | undefined | null) {
-  if (!date) return '';
-  if (date === 'present') return '現在';
-  const [year, month] = date.split('-');
+  if (!date) return "";
+  if (date === "present") return "現在";
+  const [year, month] = date.split("-");
   return `${year}年${month}月`;
 }
 
@@ -23,7 +23,7 @@ export function ExperienceSection({ experience }: ExperienceSectionProps) {
         <div className="relative">
           {/* Timeline line */}
           <div className="absolute left-6 top-2 bottom-2 w-[2px] bg-border" />
-          
+
           <div className="space-y-8">
             {experience.map((exp, index) => (
               <div key={index} className="flex items-start gap-6">
@@ -45,12 +45,14 @@ export function ExperienceSection({ experience }: ExperienceSectionProps) {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Experience Details */}
                 <div className="flex-1 space-y-2">
                   <div>
                     <h4 className="font-medium">{exp.company}</h4>
-                    <p className="text-sm text-muted-foreground">{exp.position}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {exp.position}
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {formatDate(exp.startDate)} 〜 {formatDate(exp.endDate)}
                     </p>
@@ -62,7 +64,9 @@ export function ExperienceSection({ experience }: ExperienceSectionProps) {
           </div>
         </div>
       ) : (
-        <p className="text-muted-foreground text-sm">経験が設定されていません。</p>
+        <p className="text-muted-foreground text-sm">
+          経験が設定されていません。
+        </p>
       )}
     </div>
   );

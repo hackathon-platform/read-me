@@ -1,5 +1,5 @@
 // app/providers.tsx
-'use client';
+"use client";
 
 import { ReactNode } from "react";
 import { SupabaseProvider } from "@/components/supabase-provider";

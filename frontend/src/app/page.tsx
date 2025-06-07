@@ -39,7 +39,9 @@ export default function Page() {
         <div className="flex-1 rounded-xl bg-muted/50 md:min-h-min" />
       </div>
       <div>
-        testtesttesttesttesttesttesttesttesttesttesttesttesttest testtesttesttesttesttesttesttesttesttesttestte sttesttesttesttesttesttest
+        testtesttesttesttesttesttesttesttesttesttesttesttesttest
+        testtesttesttesttesttesttesttesttesttesttestte
+        sttesttesttesttesttesttest
       </div>
     </PageLayout>
   );

@@ -1,10 +1,10 @@
 // src/app/profile/page.tsx - Optimized Version
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import PageLayout from "@/components/layout/pageLayout";
 
 export default function YourProfileRedirectPage() {
@@ -18,7 +18,7 @@ export default function YourProfileRedirectPage() {
 
     // Immediate redirect if no user
     if (!user) {
-      router.replace('/auth/login');
+      router.replace("/auth/login");
       return;
     }
 
@@ -27,24 +27,24 @@ export default function YourProfileRedirectPage() {
 
     const checkProfileAndRedirect = async () => {
       setIsRedirecting(true);
-      
+
       try {
         // Single optimized query with specific field selection
         const { data, error } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("username")
+          .eq("id", user.id)
           .single();
 
         // Handle the redirect based on result
         if (error || !data?.username) {
-          router.replace('/profile/setup');
+          router.replace("/profile/setup");
         } else {
           router.replace(`/profile/${data.username}`);
         }
       } catch (err) {
-        console.error('Profile check error:', err);
-        router.replace('/profile/setup');
+        console.error("Profile check error:", err);
+        router.replace("/profile/setup");
       }
     };
 

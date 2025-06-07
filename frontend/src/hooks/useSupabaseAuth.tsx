@@ -1,8 +1,14 @@
 // hooks/useSupabaseAuth.tsx - Optimized Version
-'use client';
-import { useState, useEffect, useContext, createContext, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
-import { Session, User } from '@supabase/supabase-js';
+"use client";
+import {
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+  useCallback,
+} from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { Session, User } from "@supabase/supabase-js";
 
 interface AuthContextValue {
   user: User | null;
@@ -26,11 +32,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Memoized session refresh function
   const refreshSession = useCallback(async () => {
     try {
-      const { data: { session: newSession } } = await supabase.auth.getSession();
+      const {
+        data: { session: newSession },
+      } = await supabase.auth.getSession();
       setSession(newSession);
       setUser(newSession?.user ?? null);
     } catch (error) {
-      console.error('Error refreshing session:', error);
+      console.error("Error refreshing session:", error);
       setSession(null);
       setUser(null);
     }
@@ -42,15 +50,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Initialize session with faster initial load
     const initializeAuth = async () => {
       try {
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
-        
+        const {
+          data: { session: initialSession },
+        } = await supabase.auth.getSession();
+
         if (mounted) {
           setSession(initialSession);
           setUser(initialSession?.user ?? null);
           setIsLoading(false);
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.error("Auth initialization error:", error);
         if (mounted) {
           setSession(null);
           setUser(null);
@@ -62,20 +72,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
 
     // Set up auth state listener with cleanup
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, newSession) => {
-        if (!mounted) return;
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      if (!mounted) return;
 
-        // Optimize state updates based on event type
-        if (event === 'SIGNED_OUT') {
-          setSession(null);
-          setUser(null);
-        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          setSession(newSession);
-          setUser(newSession?.user ?? null);
-        }
+      // Optimize state updates based on event type
+      if (event === "SIGNED_OUT") {
+        setSession(null);
+        setUser(null);
+      } else if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
       }
-    );
+    });
 
     return () => {
       mounted = false;
@@ -93,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export function useSupabaseAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useSupabaseAuth must be used within an AuthProvider');
+    throw new Error("useSupabaseAuth must be used within an AuthProvider");
   }
   return context;
 }

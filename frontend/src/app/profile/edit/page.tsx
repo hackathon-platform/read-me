@@ -1,11 +1,11 @@
-'use client';
+"use client";
 import PageLayout from "@/components/layout/pageLayout";
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
-import { PortfolioEditForm } from '@/components/profile/PortfolioEditForm';
-import { Portfolio } from '@/lib/types';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { PortfolioEditForm } from "@/components/profile/PortfolioEditForm";
+import { Portfolio } from "@/lib/types";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -15,14 +15,16 @@ export default function EditProfilePage() {
   const { user, isLoading } = useSupabaseAuth();
 
   // Local state for loading/fetched profile
-  const [initialPortfolio, setInitialPortfolio] = useState<Portfolio | null>(null);
-  const [initialUsername, setInitialUsername] = useState<string>('');
+  const [initialPortfolio, setInitialPortfolio] = useState<Portfolio | null>(
+    null,
+  );
+  const [initialUsername, setInitialUsername] = useState<string>("");
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   // 1) If there’s no user (or still loading), redirect to /login or show a spinner
   useEffect(() => {
     if (!isLoading && !user) {
-      router.replace('/login'); // or wherever your login page lives
+      router.replace("/login"); // or wherever your login page lives
     }
   }, [user, isLoading, router]);
 
@@ -31,17 +33,17 @@ export default function EditProfilePage() {
     async function fetchProfile() {
       if (!user) return;
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .single();
 
-      if (error && error.code === 'PGRST116') {
+      if (error && error.code === "PGRST116") {
         // No row yet -> leave initialPortfolio as null, we’ll start with defaults
         setInitialPortfolio(null);
       } else if (error) {
-        console.error('Error fetching profile:', error);
-        setFetchError('プロフィールの読み込み中にエラーが発生しました。');
+        console.error("Error fetching profile:", error);
+        setFetchError("プロフィールの読み込み中にエラーが発生しました。");
       } else if (data) {
         // Map to our Portfolio type
         const mapped: Portfolio = {
@@ -49,12 +51,14 @@ export default function EditProfilePage() {
           lastName: data.last_name,
           firstNameKana: data.first_name_kana,
           lastNameKana: data.last_name_kana,
-          imageUrl: data.image_url || '',
+          imageUrl: data.image_url || "",
           socials: Array.isArray(data.socials) ? data.socials : [],
-          education: data.education || '',
+          education: data.education || "",
           experience: Array.isArray(data.experience) ? data.experience : [],
-          qualifications: Array.isArray(data.qualifications) ? data.qualifications : [],
-          resumeUrl: data.resume_url || '',
+          qualifications: Array.isArray(data.qualifications)
+            ? data.qualifications
+            : [],
+          resumeUrl: data.resume_url || "",
           projects: Array.isArray(data.projects) ? data.projects : [],
         };
         setInitialPortfolio(mapped);
@@ -68,8 +72,10 @@ export default function EditProfilePage() {
   }, [user]);
 
   // 3) While fetching profile or user, show a loading state
-  if (isLoading || (!initialPortfolio && user // we only know “no row” after fetching
-  )) {
+  if (
+    isLoading ||
+    (!initialPortfolio && user) // we only know “no row” after fetching
+  ) {
     return (
       <PageLayout>
         <div className="flex flex-col items-center justify-center h-full">
@@ -96,10 +102,12 @@ export default function EditProfilePage() {
                 <ArrowLeft className="h-12 w-12" />
               </Button>
             </Link>
-            <h1 className="md:text-2xl text-lg font-bold tracking-tight">プロフィールを編集</h1>
+            <h1 className="md:text-2xl text-lg font-bold tracking-tight">
+              プロフィールを編集
+            </h1>
           </div>
         </div>
-        
+
         <PortfolioEditForm
           initialPortfolio={initialPortfolio}
           initialUsername={initialUsername}

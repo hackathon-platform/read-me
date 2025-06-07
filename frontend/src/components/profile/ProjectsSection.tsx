@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Card,
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { Project } from "@/lib/types";
 import {
@@ -30,7 +30,9 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
     return (
       <Card>
         <CardContent className="pt-6">
-          <p className="text-muted-foreground text-sm">プロジェクトが設定されていません。</p>
+          <p className="text-muted-foreground text-sm">
+            プロジェクトが設定されていません。
+          </p>
         </CardContent>
       </Card>
     );
@@ -48,7 +50,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                     {project.media.map((media, mediaIndex) => (
                       <CarouselItem key={mediaIndex}>
                         <div className="relative aspect-video">
-                          {media.type === 'image' ? (
+                          {media.type === "image" ? (
                             <Image
                               src={media.url}
                               alt={`${project.title} - メディア ${mediaIndex + 1}`}
@@ -72,7 +74,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                 </Carousel>
               ) : (
                 <div className="relative aspect-video">
-                  {project.media[0].type === 'image' ? (
+                  {project.media[0].type === "image" ? (
                     <Image
                       src={project.media[0].url}
                       alt={`${project.title} - メディア`}
@@ -102,8 +104,8 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                       skill.type === "language" || skill.type === "framework"
                         ? "default"
                         : skill.type === "tool"
-                        ? "secondary"
-                        : "outline"
+                          ? "secondary"
+                          : "outline"
                     }
                   >
                     {skill.name}

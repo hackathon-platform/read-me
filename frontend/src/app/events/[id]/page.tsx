@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSupabase } from "@/components/supabase-provider";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -92,25 +92,27 @@ export default function EventDetailPage() {
         setParticipantCount(count || 0);
 
         // Fetch participants
-        const { data: participantsData, error: participantsError } = await supabase
-          .from("participants")
-          .select("user_id, status, profiles(id, full_name, avatar_url)")
-          .eq("event_id", eventId)
-          .eq("status", "attending")
-          .order("created_at", { ascending: false })
-          .limit(10);
+        const { data: participantsData, error: participantsError } =
+          await supabase
+            .from("participants")
+            .select("user_id, status, profiles(id, full_name, avatar_url)")
+            .eq("event_id", eventId)
+            .eq("status", "attending")
+            .order("created_at", { ascending: false })
+            .limit(10);
 
         if (participantsError) throw participantsError;
         setParticipants(participantsData || []);
 
         // Check if user is participating
         if (user) {
-          const { data: userParticipationData, error: userParticipationError } = await supabase
-            .from("participants")
-            .select("*")
-            .eq("event_id", eventId)
-            .eq("user_id", user.id)
-            .single();
+          const { data: userParticipationData, error: userParticipationError } =
+            await supabase
+              .from("participants")
+              .select("*")
+              .eq("event_id", eventId)
+              .eq("user_id", user.id)
+              .single();
 
           if (!userParticipationError) {
             setUserParticipation(userParticipationData);
@@ -118,7 +120,7 @@ export default function EventDetailPage() {
         }
       } catch (error: any) {
         console.error("Error fetching event details:", error);
-        toast("Error",{
+        toast("Error", {
           description: "Failed to load event details",
           duration: 3000,
         });
@@ -156,13 +158,11 @@ export default function EventDetailPage() {
         if (error) throw error;
       } else {
         // Create new participation
-        const { error } = await supabase
-          .from("participants")
-          .insert({
-            event_id: eventId,
-            user_id: user.id,
-            status,
-          });
+        const { error } = await supabase.from("participants").insert({
+          event_id: eventId,
+          user_id: user.id,
+          status,
+        });
 
         if (error) throw error;
       }
@@ -189,12 +189,13 @@ export default function EventDetailPage() {
       setParticipantCount(count || 0);
 
       toast(`You're ${status} this event!`, {
-        description: status === "attending"
-          ? "You'll receive updates about this event"
-          : "You've marked your interest in this event",
+        description:
+          status === "attending"
+            ? "You'll receive updates about this event"
+            : "You've marked your interest in this event",
       });
     } catch (error: any) {
-      toast("Error",{
+      toast("Error", {
         description: error.message || "Failed to join the event",
         duration: 3000,
       });
@@ -325,7 +326,10 @@ export default function EventDetailPage() {
   if (!event) {
     return (
       <div className="container mx-auto py-8 px-4">
-        <Link href="/events" className="flex items-center text-muted-foreground mb-8">
+        <Link
+          href="/events"
+          className="flex items-center text-muted-foreground mb-8"
+        >
           <ChevronLeft className="mr-2 h-4 w-4" />
           Back to Events
         </Link>
@@ -334,9 +338,7 @@ export default function EventDetailPage() {
           <p className="text-muted-foreground mb-8">
             The event you're looking for doesn't exist or has been removed
           </p>
-          <Button onClick={() => router.push("/events")}>
-            Browse Events
-          </Button>
+          <Button onClick={() => router.push("/events")}>Browse Events</Button>
         </div>
       </div>
     );
@@ -347,12 +349,18 @@ export default function EventDetailPage() {
   const isOrganizer = user?.id === event.organizer_id;
   const isAttending = userParticipation?.status === "attending";
   const isInterested = userParticipation?.status === "interested";
-  const hasReachedLimit = event.max_participants && participantCount >= event.max_participants;
-  const spotsLeft = event.max_participants ? event.max_participants - participantCount : null;
+  const hasReachedLimit =
+    event.max_participants && participantCount >= event.max_participants;
+  const spotsLeft = event.max_participants
+    ? event.max_participants - participantCount
+    : null;
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Link href="/events" className="flex items-center text-muted-foreground hover:text-foreground transition-colors mb-8">
+      <Link
+        href="/events"
+        className="flex items-center text-muted-foreground hover:text-foreground transition-colors mb-8"
+      >
         <ChevronLeft className="mr-2 h-4 w-4" />
         Back to Events
       </Link>
@@ -360,7 +368,10 @@ export default function EventDetailPage() {
       <div className="max-w-4xl mx-auto">
         <div className="relative aspect-[21/9] w-full mb-8 overflow-hidden rounded-xl bg-muted">
           <Image
-            src={event.image_url || 'https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg'}
+            src={
+              event.image_url ||
+              "https://images.pexels.com/photos/2608517/pexels-photo-2608517.jpeg"
+            }
             alt={event.title}
             className="object-cover"
             fill
@@ -407,8 +418,9 @@ export default function EventDetailPage() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete the event
-                        and remove all participant registrations.
+                        This action cannot be undone. This will permanently
+                        delete the event and remove all participant
+                        registrations.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -460,10 +472,15 @@ export default function EventDetailPage() {
                 <div className="flex -space-x-2 mr-3">
                   {participants.length > 0 ? (
                     participants.slice(0, 5).map((participant) => (
-                      <Avatar key={participant.user_id} className="border-2 border-background">
+                      <Avatar
+                        key={participant.user_id}
+                        className="border-2 border-background"
+                      >
                         <AvatarImage src={participant.profiles.avatar_url} />
                         <AvatarFallback>
-                          {participant.profiles.full_name.charAt(0).toUpperCase()}
+                          {participant.profiles.full_name
+                            .charAt(0)
+                            .toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                     ))
@@ -473,17 +490,25 @@ export default function EventDetailPage() {
                     </div>
                   )}
                 </div>
-                <span className="text-muted-foreground">{participantCount} people attending</span>
+                <span className="text-muted-foreground">
+                  {participantCount} people attending
+                </span>
               </div>
               {participants.length === 0 && (
-                <p className="text-muted-foreground text-sm">No attendees yet. Be the first to join!</p>
+                <p className="text-muted-foreground text-sm">
+                  No attendees yet. Be the first to join!
+                </p>
               )}
               {event.max_participants && (
                 <div className="text-sm text-muted-foreground mb-2">
                   {spotsLeft !== null && spotsLeft > 0 ? (
-                    <span>{spotsLeft} spots left out of {event.max_participants}</span>
+                    <span>
+                      {spotsLeft} spots left out of {event.max_participants}
+                    </span>
                   ) : (
-                    <span className="text-destructive">Event is at full capacity</span>
+                    <span className="text-destructive">
+                      Event is at full capacity
+                    </span>
                   )}
                 </div>
               )}
@@ -514,7 +539,10 @@ export default function EventDetailPage() {
                   <CalendarClock className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                   <div>
                     <p>{format(startDate, "EEEE, MMMM d, yyyy")}</p>
-                    <p>{format(startDate, "h:mm a")} - {format(endDate, "h:mm a")}</p>
+                    <p>
+                      {format(startDate, "h:mm a")} -{" "}
+                      {format(endDate, "h:mm a")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -537,9 +565,14 @@ export default function EventDetailPage() {
                   <div className="text-sm flex items-start gap-2">
                     <Users className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                     <div>
-                      <p>{participantCount} attending out of {event.max_participants}</p>
+                      <p>
+                        {participantCount} attending out of{" "}
+                        {event.max_participants}
+                      </p>
                       {spotsLeft !== null && spotsLeft > 0 ? (
-                        <p className="text-muted-foreground">{spotsLeft} spots remaining</p>
+                        <p className="text-muted-foreground">
+                          {spotsLeft} spots remaining
+                        </p>
                       ) : (
                         <p className="text-destructive">No spots remaining</p>
                       )}
@@ -564,7 +597,11 @@ export default function EventDetailPage() {
                       onClick={() => handleJoinEvent("attending")}
                       disabled={isJoining || hasReachedLimit}
                     >
-                      {isJoining ? "Joining..." : hasReachedLimit ? "Event Full" : "Attend Event"}
+                      {isJoining
+                        ? "Joining..."
+                        : hasReachedLimit
+                          ? "Event Full"
+                          : "Attend Event"}
                     </Button>
                   )}
 

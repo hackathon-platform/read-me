@@ -1,12 +1,12 @@
 // components/profile/PortfolioEdit.tsx
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { supabase } from '@/lib/supabaseClient';
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { supabase } from "@/lib/supabaseClient";
 import {
   Portfolio,
   Social,
@@ -15,15 +15,15 @@ import {
   ProjectMedia,
   Skill,
   Qualification,
-} from '@/lib/types';
+} from "@/lib/types";
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
 import {
   Plus,
   Trash2,
@@ -36,7 +36,7 @@ import {
   ArrowUp,
   ArrowDown,
   Link,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   Form,
   FormControl,
@@ -45,15 +45,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
 //
@@ -64,14 +64,18 @@ import { toast } from "sonner";
 const formSchema = z.object({
   username: z
     .string()
-    .min(3, { message: 'Usernameは3文字以上必要です。' })
+    .min(3, { message: "Usernameは3文字以上必要です。" })
     .regex(/^[a-zA-Z0-9_]+$/, {
-      message: 'Usernameは英数字とアンダースコア(_ )のみ使用できます。',
+      message: "Usernameは英数字とアンダースコア(_ )のみ使用できます。",
     }),
-  firstName: z.string().min(1, { message: '名前を入力してください。' }),
-  lastName: z.string().min(1, { message: '姓を入力してください。' }),
-  firstNameKana: z.string().min(1, { message: '名前（フリガナ）を入力してください。' }),
-  lastNameKana: z.string().min(1, { message: '姓（フリガナ）を入力してください。' }),
+  firstName: z.string().min(1, { message: "名前を入力してください。" }),
+  lastName: z.string().min(1, { message: "姓を入力してください。" }),
+  firstNameKana: z
+    .string()
+    .min(1, { message: "名前（フリガナ）を入力してください。" }),
+  lastNameKana: z
+    .string()
+    .min(1, { message: "姓（フリガナ）を入力してください。" }),
   imageUrl: z.string().optional(),
   education: z.string().optional(),
 });
@@ -94,16 +98,16 @@ export function PortfolioEditForm({
   // Local state for the “array” fields (socials, experience, qualifications, projects).
   // Initialize with the data from initialPortfolio (or empty arrays if null).
   const [socials, setSocials] = useState<Social[]>(
-    initialPortfolio?.socials || []
+    initialPortfolio?.socials || [],
   );
   const [experience, setExperience] = useState<Experience[]>(
-    initialPortfolio?.experience || []
+    initialPortfolio?.experience || [],
   );
   const [qualifications, setQualifications] = useState<Qualification[]>(
-    initialPortfolio?.qualifications || []
+    initialPortfolio?.qualifications || [],
   );
   const [projects, setProjects] = useState<Project[]>(
-    initialPortfolio?.projects || []
+    initialPortfolio?.projects || [],
   );
 
   // File input refs for image + PDF
@@ -114,13 +118,13 @@ export function PortfolioEditForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: initialUsername || '',
-      firstName: initialPortfolio?.firstName || '',
-      lastName: initialPortfolio?.lastName || '',
-      firstNameKana: initialPortfolio?.firstNameKana || '',
-      lastNameKana: initialPortfolio?.lastNameKana || '',
-      imageUrl: initialPortfolio?.imageUrl || '',
-      education: initialPortfolio?.education || '',
+      username: initialUsername || "",
+      firstName: initialPortfolio?.firstName || "",
+      lastName: initialPortfolio?.lastName || "",
+      firstNameKana: initialPortfolio?.firstNameKana || "",
+      lastNameKana: initialPortfolio?.lastNameKana || "",
+      imageUrl: initialPortfolio?.imageUrl || "",
+      education: initialPortfolio?.education || "",
     },
   });
 
@@ -133,14 +137,20 @@ export function PortfolioEditForm({
     return newArr;
   };
 
-  const moveExperience = (index: number, dir: 'up' | 'down') => {
-    setExperience((prev) => moveItem(prev, index, dir === 'up' ? index - 1 : index + 1));
+  const moveExperience = (index: number, dir: "up" | "down") => {
+    setExperience((prev) =>
+      moveItem(prev, index, dir === "up" ? index - 1 : index + 1),
+    );
   };
-  const moveQualification = (index: number, dir: 'up' | 'down') => {
-    setQualifications((prev) => moveItem(prev, index, dir === 'up' ? index - 1 : index + 1));
+  const moveQualification = (index: number, dir: "up" | "down") => {
+    setQualifications((prev) =>
+      moveItem(prev, index, dir === "up" ? index - 1 : index + 1),
+    );
   };
-  const moveProject = (index: number, dir: 'up' | 'down') => {
-    setProjects((prev) => moveItem(prev, index, dir === 'up' ? index - 1 : index + 1));
+  const moveProject = (index: number, dir: "up" | "down") => {
+    setProjects((prev) =>
+      moveItem(prev, index, dir === "up" ? index - 1 : index + 1),
+    );
   };
 
   // 3) Handle file uploads (profile image + PDF resume)
@@ -148,7 +158,7 @@ export function PortfolioEditForm({
     const MAX_SIZE_MB = 15;
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > MAX_SIZE_MB) {
-      toast('ファイルサイズが大きすぎます', {
+      toast("ファイルサイズが大きすぎます", {
         description: `ファイルは${MAX_SIZE_MB}MB以下にしてください。`,
         duration: 3000,
       });
@@ -166,11 +176,14 @@ export function PortfolioEditForm({
   const handleImageUpload = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const file = ev.target.files?.[0];
     if (file) {
-      handleFileUpload(file, (url) => form.setValue('imageUrl', url));
+      handleFileUpload(file, (url) => form.setValue("imageUrl", url));
     }
   };
 
-  const handleCompanyIconUpload = (ev: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+  const handleCompanyIconUpload = (
+    ev: React.ChangeEvent<HTMLInputElement>,
+    idx: number,
+  ) => {
     const file = ev.target.files?.[0];
     if (!file) return;
     handleFileUpload(file, (url) => {
@@ -182,11 +195,14 @@ export function PortfolioEditForm({
     });
   };
 
-  const handleProjectMediaUpload = (ev: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+  const handleProjectMediaUpload = (
+    ev: React.ChangeEvent<HTMLInputElement>,
+    idx: number,
+  ) => {
     const files = ev.target.files;
     if (!files) return;
     Array.from(files).forEach((file) => {
-      const type = file.type.startsWith('image/') ? 'image' : 'video';
+      const type = file.type.startsWith("image/") ? "image" : "video";
       handleFileUpload(file, (url) => {
         setProjects((prev) => {
           const newArr = [...prev];
@@ -198,7 +214,7 @@ export function PortfolioEditForm({
         });
       });
     });
-    ev.target.value = '';
+    ev.target.value = "";
   };
 
   const handlePDFUpload = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,7 +229,7 @@ export function PortfolioEditForm({
 
   // Keep resumeUrl in a local state, initialized from initialPortfolio
   const [resumeUrl, setResumeUrl] = useState<string>(
-    initialPortfolio?.resumeUrl || ''
+    initialPortfolio?.resumeUrl || "",
   );
 
   //
@@ -221,28 +237,30 @@ export function PortfolioEditForm({
   //
   const addSocial = () => {
     if (socials.length >= 5) {
-      toast('上限に達しました', {
-        description: 'ソーシャルリンクは最大5つまでです。',
+      toast("上限に達しました", {
+        description: "ソーシャルリンクは最大5つまでです。",
         duration: 3000,
       });
       return;
     }
-    setSocials([...socials, { platform: 'github', url: '' }]);
+    setSocials([...socials, { platform: "github", url: "" }]);
   };
   const removeSocial = (idx: number) => {
     setSocials((prev) => prev.filter((_, i) => i !== idx));
   };
   const updateSocial = (
     idx: number,
-    platform: Social['platform'],
+    platform: Social["platform"],
     url: string,
-    label?: string
+    label?: string,
   ) => {
     // Prevent duplicate platforms
     if (
-      socials.some((s, i) => i !== idx && s.platform === platform && platform !== 'other')
+      socials.some(
+        (s, i) => i !== idx && s.platform === platform && platform !== "other",
+      )
     ) {
-      toast('同じプラットフォームは一度しか追加できません。', {
+      toast("同じプラットフォームは一度しか追加できません。", {
         duration: 3000,
       });
       return;
@@ -258,11 +276,11 @@ export function PortfolioEditForm({
     setExperience((prev) => [
       ...prev,
       {
-        company: '',
-        position: '',
-        startDate: '',
-        endDate: '',
-        description: '',
+        company: "",
+        position: "",
+        startDate: "",
+        endDate: "",
+        description: "",
         skills: [],
       },
     ]);
@@ -270,7 +288,11 @@ export function PortfolioEditForm({
   const removeExperience = (idx: number) => {
     setExperience((prev) => prev.filter((_, i) => i !== idx));
   };
-  const updateExperienceField = (idx: number, field: keyof Experience, value: any) => {
+  const updateExperienceField = (
+    idx: number,
+    field: keyof Experience,
+    value: any,
+  ) => {
     setExperience((prev) => {
       const newArr = [...prev];
       newArr[idx] = { ...newArr[idx], [field]: value };
@@ -281,7 +303,7 @@ export function PortfolioEditForm({
   const addQualification = () => {
     setQualifications((prev) => [
       ...prev,
-      { name: '', acquisitionDate: '', description: '', score: '' },
+      { name: "", acquisitionDate: "", description: "", score: "" },
     ]);
   };
   const removeQualification = (idx: number) => {
@@ -290,7 +312,7 @@ export function PortfolioEditForm({
   const updateQualificationField = (
     idx: number,
     field: keyof Qualification,
-    value: any
+    value: any,
   ) => {
     setQualifications((prev) => {
       const newArr = [...prev];
@@ -302,13 +324,24 @@ export function PortfolioEditForm({
   const addProject = () => {
     setProjects((prev) => [
       ...prev,
-      { title: '', description: '', imageUrl: '', url: '', media: [], skills: [] },
+      {
+        title: "",
+        description: "",
+        imageUrl: "",
+        url: "",
+        media: [],
+        skills: [],
+      },
     ]);
   };
   const removeProject = (idx: number) => {
     setProjects((prev) => prev.filter((_, i) => i !== idx));
   };
-  const updateProjectField = (idx: number, field: keyof Project, value: any) => {
+  const updateProjectField = (
+    idx: number,
+    field: keyof Project,
+    value: any,
+  ) => {
     setProjects((prev) => {
       const newArr = [...prev];
       newArr[idx] = { ...newArr[idx], [field]: value };
@@ -319,26 +352,32 @@ export function PortfolioEditForm({
     setProjects((prev) => {
       const newArr = [...prev];
       newArr[projectIdx].media = newArr[projectIdx].media!.filter(
-        (_, i) => i !== mediaIdx
+        (_, i) => i !== mediaIdx,
       );
       return newArr;
     });
   };
 
   // Helper for editing “skills” inside experience or project
-  const addSkill = (parentIdx: number, type: 'experience' | 'project') => {
-    if (type === 'experience') {
+  const addSkill = (parentIdx: number, type: "experience" | "project") => {
+    if (type === "experience") {
       setExperience((prev) => {
         const newArr = [...prev];
         const skillsArr = newArr[parentIdx].skills || [];
-        newArr[parentIdx].skills = [...skillsArr, { name: '', type: 'language' }];
+        newArr[parentIdx].skills = [
+          ...skillsArr,
+          { name: "", type: "language" },
+        ];
         return newArr;
       });
     } else {
       setProjects((prev) => {
         const newArr = [...prev];
         const skillsArr = newArr[parentIdx].skills || [];
-        newArr[parentIdx].skills = [...skillsArr, { name: '', type: 'language' }];
+        newArr[parentIdx].skills = [
+          ...skillsArr,
+          { name: "", type: "language" },
+        ];
         return newArr;
       });
     }
@@ -346,13 +385,13 @@ export function PortfolioEditForm({
   const removeSkill = (
     parentIdx: number,
     skillIdx: number,
-    type: 'experience' | 'project'
+    type: "experience" | "project",
   ) => {
-    if (type === 'experience') {
+    if (type === "experience") {
       setExperience((prev) => {
         const newArr = [...prev];
         newArr[parentIdx].skills = newArr[parentIdx].skills!.filter(
-          (_, i) => i !== skillIdx
+          (_, i) => i !== skillIdx,
         );
         return newArr;
       });
@@ -360,7 +399,7 @@ export function PortfolioEditForm({
       setProjects((prev) => {
         const newArr = [...prev];
         newArr[parentIdx].skills = newArr[parentIdx].skills!.filter(
-          (_, i) => i !== skillIdx
+          (_, i) => i !== skillIdx,
         );
         return newArr;
       });
@@ -371,9 +410,9 @@ export function PortfolioEditForm({
     skillIdx: number,
     field: keyof Skill,
     value: string,
-    type: 'experience' | 'project'
+    type: "experience" | "project",
   ) => {
-    if (type === 'experience') {
+    if (type === "experience") {
       setExperience((prev) => {
         const newArr = [...prev];
         newArr[parentIdx].skills![skillIdx] = {
@@ -404,14 +443,14 @@ export function PortfolioEditForm({
     if (values.username !== initialUsername) {
       // If they changed their username, verify uniqueness
       const { data: existing, error: usernameErr } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', values.username)
+        .from("profiles")
+        .select("id")
+        .eq("username", values.username)
         .single();
 
       if (existing && existing.id !== userId) {
         setIsSaving(false);
-        toast('Usernameが既に使われています。', {
+        toast("Usernameが既に使われています。", {
           duration: 3000,
         });
         return;
@@ -437,20 +476,20 @@ export function PortfolioEditForm({
 
     // 3) Call upsert (insert if no row exists, update if exists)
     const { error: upsertError } = await supabase
-      .from('profiles')
+      .from("profiles")
       .upsert(rowToUpsert);
 
     if (upsertError) {
-      console.error('Failed to save profile:', upsertError);
-      toast('保存に失敗しました。', {
+      console.error("Failed to save profile:", upsertError);
+      toast("保存に失敗しました。", {
         description: upsertError.message,
       });
       setIsSaving(false);
       return;
     }
 
-    toast('保存しました！', {
-      description: 'あなたのプロフィールが更新されました。',
+    toast("保存しました！", {
+      description: "あなたのプロフィールが更新されました。",
     });
 
     // 4) Redirect to the new “view” page for this username
@@ -483,7 +522,7 @@ export function PortfolioEditForm({
                     className="h-24 w-24 mb-4 cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <AvatarImage src={form.watch('imageUrl')} />
+                    <AvatarImage src={form.watch("imageUrl")} />
                     <AvatarFallback>写真</AvatarFallback>
                   </Avatar>
                   <input
@@ -583,7 +622,9 @@ export function PortfolioEditForm({
                 {/* Social Media Section */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold">ソーシャルメディア</h3>
+                    <h3 className="text-lg font-semibold">
+                      ソーシャルメディア
+                    </h3>
                   </div>
 
                   <div className="space-y-3">
@@ -594,7 +635,7 @@ export function PortfolioEditForm({
                       >
                         <Select
                           defaultValue={social.platform}
-                          onValueChange={(val: Social['platform']) =>
+                          onValueChange={(val: Social["platform"]) =>
                             updateSocial(idx, val, social.url, social.label)
                           }
                         >
@@ -638,7 +679,12 @@ export function PortfolioEditForm({
                           placeholder="URLを入力"
                           value={social.url}
                           onChange={(e) =>
-                            updateSocial(idx, social.platform, e.target.value, social.label)
+                            updateSocial(
+                              idx,
+                              social.platform,
+                              e.target.value,
+                              social.label,
+                            )
                           }
                           className="flex-1"
                         />
@@ -701,7 +747,7 @@ export function PortfolioEditForm({
                               type="button"
                               variant="ghost"
                               size="icon"
-                              onClick={() => moveExperience(idx, 'up')}
+                              onClick={() => moveExperience(idx, "up")}
                               disabled={idx === 0}
                             >
                               <ArrowUp className="h-4 w-4" />
@@ -710,7 +756,7 @@ export function PortfolioEditForm({
                               type="button"
                               variant="ghost"
                               size="icon"
-                              onClick={() => moveExperience(idx, 'down')}
+                              onClick={() => moveExperience(idx, "down")}
                               disabled={idx === experience.length - 1}
                             >
                               <ArrowDown className="h-4 w-4" />
@@ -724,7 +770,11 @@ export function PortfolioEditForm({
                                   placeholder="例: 株式会社テクノロジー"
                                   value={exp.company}
                                   onChange={(e) =>
-                                    updateExperienceField(idx, 'company', e.target.value)
+                                    updateExperienceField(
+                                      idx,
+                                      "company",
+                                      e.target.value,
+                                    )
                                   }
                                 />
                               </div>
@@ -734,7 +784,11 @@ export function PortfolioEditForm({
                                   placeholder="例: ソフトウェアエンジニア"
                                   value={exp.position}
                                   onChange={(e) =>
-                                    updateExperienceField(idx, 'position', e.target.value)
+                                    updateExperienceField(
+                                      idx,
+                                      "position",
+                                      e.target.value,
+                                    )
                                   }
                                 />
                               </div>
@@ -746,7 +800,11 @@ export function PortfolioEditForm({
                                   type="month"
                                   value={exp.startDate}
                                   onChange={(e) =>
-                                    updateExperienceField(idx, 'startDate', e.target.value)
+                                    updateExperienceField(
+                                      idx,
+                                      "startDate",
+                                      e.target.value,
+                                    )
                                   }
                                 />
                               </div>
@@ -755,11 +813,19 @@ export function PortfolioEditForm({
                                 <div className="flex flex-col sm:flex-row gap-2">
                                   <Input
                                     type="month"
-                                    value={exp.endDate === 'present' ? '' : exp.endDate}
-                                    onChange={(e) =>
-                                      updateExperienceField(idx, 'endDate', e.target.value)
+                                    value={
+                                      exp.endDate === "present"
+                                        ? ""
+                                        : exp.endDate
                                     }
-                                    disabled={exp.endDate === 'present'}
+                                    onChange={(e) =>
+                                      updateExperienceField(
+                                        idx,
+                                        "endDate",
+                                        e.target.value,
+                                      )
+                                    }
+                                    disabled={exp.endDate === "present"}
                                   />
                                   <Button
                                     type="button"
@@ -768,12 +834,16 @@ export function PortfolioEditForm({
                                     onClick={() =>
                                       updateExperienceField(
                                         idx,
-                                        'endDate',
-                                        exp.endDate === 'present' ? '' : 'present'
+                                        "endDate",
+                                        exp.endDate === "present"
+                                          ? ""
+                                          : "present",
                                       )
                                     }
                                   >
-                                    {exp.endDate === 'present' ? '終了日を設定' : '現在も在籍中'}
+                                    {exp.endDate === "present"
+                                      ? "終了日を設定"
+                                      : "現在も在籍中"}
                                   </Button>
                                 </div>
                               </div>
@@ -784,7 +854,11 @@ export function PortfolioEditForm({
                                 placeholder="職務内容や成果を入力"
                                 value={exp.description}
                                 onChange={(e) =>
-                                  updateExperienceField(idx, 'description', e.target.value)
+                                  updateExperienceField(
+                                    idx,
+                                    "description",
+                                    e.target.value,
+                                  )
                                 }
                                 rows={3}
                               />
@@ -807,7 +881,9 @@ export function PortfolioEditForm({
                                   type="file"
                                   accept="image/*"
                                   id={`company-icon-${idx}`}
-                                  onChange={(e) => handleCompanyIconUpload(e, idx)}
+                                  onChange={(e) =>
+                                    handleCompanyIconUpload(e, idx)
+                                  }
                                   className="hidden"
                                 />
                                 <Button
@@ -815,7 +891,9 @@ export function PortfolioEditForm({
                                   variant="outline"
                                   size="sm"
                                   onClick={() =>
-                                    document.getElementById(`company-icon-${idx}`)?.click()
+                                    document
+                                      .getElementById(`company-icon-${idx}`)
+                                      ?.click()
                                   }
                                 >
                                   アイコンをアップロード
@@ -835,24 +913,44 @@ export function PortfolioEditForm({
                                     <Select
                                       value={skill.type}
                                       onValueChange={(val) =>
-                                        updateSkill(idx, sIdx, 'type', val, 'experience')
+                                        updateSkill(
+                                          idx,
+                                          sIdx,
+                                          "type",
+                                          val,
+                                          "experience",
+                                        )
                                       }
                                     >
                                       <SelectTrigger>
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        <SelectItem value="language">開発言語</SelectItem>
-                                        <SelectItem value="framework">フレームワーク</SelectItem>
-                                        <SelectItem value="tool">ツール</SelectItem>
-                                        <SelectItem value="other">その他</SelectItem>
+                                        <SelectItem value="language">
+                                          開発言語
+                                        </SelectItem>
+                                        <SelectItem value="framework">
+                                          フレームワーク
+                                        </SelectItem>
+                                        <SelectItem value="tool">
+                                          ツール
+                                        </SelectItem>
+                                        <SelectItem value="other">
+                                          その他
+                                        </SelectItem>
                                       </SelectContent>
                                     </Select>
                                     <Input
                                       placeholder="スキル名"
                                       value={skill.name}
                                       onChange={(e) =>
-                                        updateSkill(idx, sIdx, 'name', e.target.value, 'experience')
+                                        updateSkill(
+                                          idx,
+                                          sIdx,
+                                          "name",
+                                          e.target.value,
+                                          "experience",
+                                        )
                                       }
                                       className="flex-1"
                                     />
@@ -860,7 +958,9 @@ export function PortfolioEditForm({
                                       type="button"
                                       variant="ghost"
                                       size="icon"
-                                      onClick={() => removeSkill(idx, sIdx, 'experience')}
+                                      onClick={() =>
+                                        removeSkill(idx, sIdx, "experience")
+                                      }
                                     >
                                       <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
@@ -870,7 +970,7 @@ export function PortfolioEditForm({
                                   type="button"
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => addSkill(idx, 'experience')}
+                                  onClick={() => addSkill(idx, "experience")}
                                 >
                                   <Plus className="h-4 w-4 mr-1" /> スキルを追加
                                 </Button>
@@ -889,7 +989,12 @@ export function PortfolioEditForm({
                       </div>
                     ))}
                   </div>
-                  <Button type="button" variant="outline" size="sm" onClick={addExperience}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addExperience}
+                  >
                     <Plus className="h-4 w-4 mr-1" /> 追加
                   </Button>
                 </div>
@@ -911,7 +1016,7 @@ export function PortfolioEditForm({
                               type="button"
                               variant="ghost"
                               size="icon"
-                              onClick={() => moveQualification(idx, 'up')}
+                              onClick={() => moveQualification(idx, "up")}
                               disabled={idx === 0}
                             >
                               <ArrowUp className="h-4 w-4" />
@@ -920,7 +1025,7 @@ export function PortfolioEditForm({
                               type="button"
                               variant="ghost"
                               size="icon"
-                              onClick={() => moveQualification(idx, 'down')}
+                              onClick={() => moveQualification(idx, "down")}
                               disabled={idx === qualifications.length - 1}
                             >
                               <ArrowDown className="h-4 w-4" />
@@ -933,7 +1038,11 @@ export function PortfolioEditForm({
                                 placeholder="例: TOEIC"
                                 value={qual.name}
                                 onChange={(e) =>
-                                  updateQualificationField(idx, 'name', e.target.value)
+                                  updateQualificationField(
+                                    idx,
+                                    "name",
+                                    e.target.value,
+                                  )
                                 }
                               />
                             </div>
@@ -943,7 +1052,11 @@ export function PortfolioEditForm({
                                 type="month"
                                 value={qual.acquisitionDate}
                                 onChange={(e) =>
-                                  updateQualificationField(idx, 'acquisitionDate', e.target.value)
+                                  updateQualificationField(
+                                    idx,
+                                    "acquisitionDate",
+                                    e.target.value,
+                                  )
                                 }
                               />
                             </div>
@@ -953,7 +1066,11 @@ export function PortfolioEditForm({
                                 placeholder="例: 850点"
                                 value={qual.score}
                                 onChange={(e) =>
-                                  updateQualificationField(idx, 'score', e.target.value)
+                                  updateQualificationField(
+                                    idx,
+                                    "score",
+                                    e.target.value,
+                                  )
                                 }
                               />
                             </div>
@@ -963,7 +1080,11 @@ export function PortfolioEditForm({
                                 placeholder="補足説明があれば入力"
                                 value={qual.description}
                                 onChange={(e) =>
-                                  updateQualificationField(idx, 'description', e.target.value)
+                                  updateQualificationField(
+                                    idx,
+                                    "description",
+                                    e.target.value,
+                                  )
                                 }
                                 rows={2}
                               />
@@ -1001,9 +1122,13 @@ export function PortfolioEditForm({
                     onClick={() => pdfInputRef.current?.click()}
                   >
                     <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">PDFをアップロード</p>
+                    <p className="text-sm text-muted-foreground">
+                      PDFをアップロード
+                    </p>
                     {resumeUrl && (
-                      <p className="text-xs text-primary mt-2">PDFがアップロード済み</p>
+                      <p className="text-xs text-primary mt-2">
+                        PDFがアップロード済み
+                      </p>
                     )}
                     <input
                       type="file"
@@ -1038,7 +1163,7 @@ export function PortfolioEditForm({
                             type="button"
                             variant="ghost"
                             size="icon"
-                            onClick={() => moveProject(idx, 'up')}
+                            onClick={() => moveProject(idx, "up")}
                             disabled={idx === 0}
                           >
                             <ArrowUp className="h-4 w-4" />
@@ -1047,7 +1172,7 @@ export function PortfolioEditForm({
                             type="button"
                             variant="ghost"
                             size="icon"
-                            onClick={() => moveProject(idx, 'down')}
+                            onClick={() => moveProject(idx, "down")}
                             disabled={idx === projects.length - 1}
                           >
                             <ArrowDown className="h-4 w-4" />
@@ -1060,7 +1185,7 @@ export function PortfolioEditForm({
                               placeholder="プロジェクト名"
                               value={project.title}
                               onChange={(e) =>
-                                updateProjectField(idx, 'title', e.target.value)
+                                updateProjectField(idx, "title", e.target.value)
                               }
                             />
                           </div>
@@ -1070,7 +1195,11 @@ export function PortfolioEditForm({
                               placeholder="プロジェクトの説明"
                               value={project.description}
                               onChange={(e) =>
-                                updateProjectField(idx, 'description', e.target.value)
+                                updateProjectField(
+                                  idx,
+                                  "description",
+                                  e.target.value,
+                                )
                               }
                               rows={3}
                             />
@@ -1081,7 +1210,7 @@ export function PortfolioEditForm({
                               placeholder="https://..."
                               value={project.url}
                               onChange={(e) =>
-                                updateProjectField(idx, 'url', e.target.value)
+                                updateProjectField(idx, "url", e.target.value)
                               }
                             />
                           </div>
@@ -1098,7 +1227,13 @@ export function PortfolioEditForm({
                                   <Select
                                     value={skill.type}
                                     onValueChange={(val) =>
-                                      updateSkill(idx, sIdx, 'type', val, 'project')
+                                      updateSkill(
+                                        idx,
+                                        sIdx,
+                                        "type",
+                                        val,
+                                        "project",
+                                      )
                                     }
                                   >
                                     <SelectTrigger>
@@ -1108,16 +1243,28 @@ export function PortfolioEditForm({
                                       <SelectItem value="language">
                                         開発言語
                                       </SelectItem>
-                                      <SelectItem value="framework">フレームワーク</SelectItem>
-                                      <SelectItem value="tool">ツール</SelectItem>
-                                      <SelectItem value="other">その他</SelectItem>
+                                      <SelectItem value="framework">
+                                        フレームワーク
+                                      </SelectItem>
+                                      <SelectItem value="tool">
+                                        ツール
+                                      </SelectItem>
+                                      <SelectItem value="other">
+                                        その他
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
                                   <Input
                                     placeholder="スキル名"
                                     value={skill.name}
                                     onChange={(e) =>
-                                      updateSkill(idx, sIdx, 'name', e.target.value, 'project')
+                                      updateSkill(
+                                        idx,
+                                        sIdx,
+                                        "name",
+                                        e.target.value,
+                                        "project",
+                                      )
                                     }
                                     className="flex-1"
                                   />
@@ -1125,7 +1272,9 @@ export function PortfolioEditForm({
                                     type="button"
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => removeSkill(idx, sIdx, 'project')}
+                                    onClick={() =>
+                                      removeSkill(idx, sIdx, "project")
+                                    }
                                   >
                                     <Trash2 className="h-4 w-4 text-destructive" />
                                   </Button>
@@ -1135,7 +1284,7 @@ export function PortfolioEditForm({
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => addSkill(idx, 'project')}
+                                onClick={() => addSkill(idx, "project")}
                               >
                                 <Plus className="h-4 w-4 mr-1" /> スキルを追加
                               </Button>
@@ -1148,7 +1297,7 @@ export function PortfolioEditForm({
                             <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {project.media?.map((media, mIdx) => (
                                 <div key={mIdx} className="relative group">
-                                  {media.type === 'image' ? (
+                                  {media.type === "image" ? (
                                     <img
                                       src={media.url}
                                       alt={`${project.title} - メディア ${mIdx + 1}`}
@@ -1166,7 +1315,9 @@ export function PortfolioEditForm({
                                     variant="destructive"
                                     size="icon"
                                     className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    onClick={() => removeProjectMedia(idx, mIdx)}
+                                    onClick={() =>
+                                      removeProjectMedia(idx, mIdx)
+                                    }
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
@@ -1178,7 +1329,9 @@ export function PortfolioEditForm({
                                 type="file"
                                 accept="image/*,video/*"
                                 id={`project-media-${idx}`}
-                                onChange={(e) => handleProjectMediaUpload(e, idx)}
+                                onChange={(e) =>
+                                  handleProjectMediaUpload(e, idx)
+                                }
                                 className="hidden"
                                 multiple
                               />
@@ -1186,7 +1339,9 @@ export function PortfolioEditForm({
                                 type="button"
                                 variant="outline"
                                 onClick={() =>
-                                  document.getElementById(`project-media-${idx}`)?.click()
+                                  document
+                                    .getElementById(`project-media-${idx}`)
+                                    ?.click()
                                 }
                               >
                                 <Upload className="h-4 w-4 mr-2" />
@@ -1204,12 +1359,17 @@ export function PortfolioEditForm({
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
-                      </div>
-                    ))}
-                  <Button type="button" variant="outline" size="sm" onClick={addProject}>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addProject}
+                  >
                     <Plus className="h-4 w-4 mr-1" /> 追加
                   </Button>
-                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -1220,12 +1380,12 @@ export function PortfolioEditForm({
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push(`/profile/${initialUsername || ''}`)}
+            onClick={() => router.push(`/profile/${initialUsername || ""}`)}
           >
             キャンセル
           </Button>
           <Button type="submit" disabled={isSaving}>
-            {isSaving ? '保存中…' : '保存'}
+            {isSaving ? "保存中…" : "保存"}
           </Button>
         </div>
       </form>

@@ -22,12 +22,12 @@ export interface Project {
 }
 
 export interface ProjectMedia {
-  type: 'image' | 'video';
+  type: "image" | "video";
   url: string;
 }
 
 export interface Social {
-  platform: 'linkedin' | 'instagram' | 'github' | 'facebook' | 'other';
+  platform: "linkedin" | "instagram" | "github" | "facebook" | "other";
   url: string;
   label?: string; // For "other" platform
 }
@@ -52,5 +52,5 @@ export interface Qualification {
 
 export interface Skill {
   name: string;
-  type: 'language' | 'framework' | 'tool' | 'other';
+  type: "language" | "framework" | "tool" | "other";
 }

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { GraduationCap } from 'lucide-react';
+import { GraduationCap } from "lucide-react";
 
 interface EducationSectionProps {
   education: string;
@@ -15,7 +15,9 @@ export function EducationSection({ education }: EducationSectionProps) {
           <GraduationCap className="h-5 w-5 text-primary" />
         </div>
         <div>
-          <p className="text-foreground">{education || '学歴が設定されていません。'}</p>
+          <p className="text-foreground">
+            {education || "学歴が設定されていません。"}
+          </p>
         </div>
       </div>
     </div>

@@ -43,21 +43,30 @@ export default function EventsPage({
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox id="filter-status-upcoming" />
-                <Label htmlFor="filter-status-upcoming" className="flex items-center">
+                <Label
+                  htmlFor="filter-status-upcoming"
+                  className="flex items-center"
+                >
                   Upcoming
                   <span className="ml-2 inline-block h-2 w-2 rounded-full bg-orange-600" />
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="filter-status-open" />
-                <Label htmlFor="filter-status-open" className="flex items-center">
+                <Label
+                  htmlFor="filter-status-open"
+                  className="flex items-center"
+                >
                   Open
                   <span className="ml-2 inline-block h-2 w-2 rounded-full bg-green-600" />
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="filter-status-ended" />
-                <Label htmlFor="filter-status-ended" className="flex items-center">
+                <Label
+                  htmlFor="filter-status-ended"
+                  className="flex items-center"
+                >
                   Ended
                   <span className="ml-2 inline-block h-2 w-2 rounded-full bg-gray-600" />
                 </Label>
@@ -83,7 +92,6 @@ export default function EventsPage({
               </div>
             </div>
           </div>
-
         </aside>
 
         {/* ← divider */}

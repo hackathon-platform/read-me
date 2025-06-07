@@ -1,10 +1,10 @@
 // src/app/profile/setup/page.tsx
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSupabaseAuth } from '@/hooks/useSupabaseAuth';
-import { ProfileSetupForm } from '@/components/profile/ProfileSetupForm';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { ProfileSetupForm } from "@/components/profile/ProfileSetupForm";
 
 export default function ProfileSetupPage() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function ProfileSetupPage() {
   // If not logged in, redirect to /auth/login
   useEffect(() => {
     if (!isLoading && !user) {
-      router.replace('/auth/login');
+      router.replace("/auth/login");
     }
   }, [user, isLoading, router]);
 

@@ -1,11 +1,11 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { format, isBefore, isAfter } from 'date-fns';
-import { ja } from 'date-fns/locale';
-import { MapPin, Calendar, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import Link from "next/link";
+import { format, isBefore, isAfter } from "date-fns";
+import { ja } from "date-fns/locale";
+import { MapPin, Calendar, Users } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function EventCard({ event }: { event: any }) {
   const {
@@ -41,7 +41,7 @@ export default function EventCard({ event }: { event: any }) {
     closed: {
       base: "bg-gray-500",
       hover: "hover:border-gray-500",
-    }
+    },
   };
 
   const { base, hover } = statusColors[status];
@@ -52,7 +52,8 @@ export default function EventCard({ event }: { event: any }) {
           className={cn(
             "relativ h-full p-6 rounded shadow transition-shadow w-full",
             "border border-l-4 border-gray-200", // hover:border-r-12
-            "group-hover:shadow-md", hover
+            "group-hover:shadow-md",
+            hover,
           )}
         >
           <h3 className="text-xl font-semibold">{title}</h3>
@@ -60,6 +61,5 @@ export default function EventCard({ event }: { event: any }) {
         </div>
       </div>
     </Link>
-
   );
 }

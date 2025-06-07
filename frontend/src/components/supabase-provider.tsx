@@ -114,11 +114,11 @@ export const SupabaseProvider = ({
         });
       }
 
-      toast("Account created",　{
+      toast("Account created", {
         description: "Welcome to EventMaker!",
       });
     } catch (error: any) {
-      toast("Sign up failed",　{
+      toast("Sign up failed", {
         description: error.message,
       });
       throw error;
@@ -133,11 +133,11 @@ export const SupabaseProvider = ({
         throw error;
       }
 
-      toast("Signed out",　{
+      toast("Signed out", {
         description: "You have been successfully signed out.",
       });
     } catch (error: any) {
-      toast("Sign out failed",　{
+      toast("Sign out failed", {
         description: error.message,
       });
     }

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { FcGoogle } from "react-icons/fc";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export default function GoogleLoginButton() {
   const [loading, setLoading] = useState(false);
@@ -16,7 +16,14 @@ export default function GoogleLoginButton() {
   };
 
   return (
-    <Button onClick={handleLogin} variant="outline" disabled={loading} type="submit" size="lg" className="w-full">
+    <Button
+      onClick={handleLogin}
+      variant="outline"
+      disabled={loading}
+      type="submit"
+      size="lg"
+      className="w-full"
+    >
       <FcGoogle className="text-xl" />
       {loading ? "処理中..." : "Googleで続ける"}
     </Button>

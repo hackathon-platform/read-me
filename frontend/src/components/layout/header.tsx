@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -59,7 +59,7 @@ export default function Header() {
   const lastName = user?.last_name ?? "";
   const fullName = firstName && lastName ? `${lastName} ${firstName} ` : "";
   const avatarUrl = user?.image_url ?? "";
-  console.log('user', user);
+  console.log("user", user);
   return (
     <header className={headerClasses}>
       <div className="w-full flex h-12 items-center justify-between px-4 bg-sidebar">
@@ -74,14 +74,17 @@ export default function Header() {
         {/* Right side: Theme toggle + user menu / auth links */}
         <div className="flex items-center space-x-2">
           <ThemeToggle />
-          
+
           {!loading && (
             <>
               {user ? (
                 // ─── ログイン済みユーザー向けメニュー ───
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                    <Button
+                      variant="ghost"
+                      className="relative h-10 w-10 rounded-full p-0"
+                    >
                       <Avatar>
                         {avatarUrl ? (
                           <AvatarImage src={avatarUrl} alt={fullName} />
@@ -175,12 +178,18 @@ export default function Header() {
                 <div className="mt-auto">
                   {!loading && !user && (
                     <div className="grid gap-2">
-                      <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                      <Link
+                        href="/auth/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                         <Button variant="outline" className="w-full">
                           Login
                         </Button>
                       </Link>
-                      <Link href="/auth/signin" onClick={() => setMobileMenuOpen(false)}>
+                      <Link
+                        href="/auth/signin"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
                         <Button className="w-full">Sign Up</Button>
                       </Link>
                     </div>

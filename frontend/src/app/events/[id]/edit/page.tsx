@@ -200,7 +200,7 @@ export default function EditEventPage() {
         throw error;
       }
 
-      toast("Event updated",{
+      toast("Event updated", {
         description: "Your event has been successfully updated",
       });
 
