@@ -39,7 +39,7 @@ export const SupabaseProvider = ({
         } = await supabase.auth.getSession();
         if (session?.user) {
           const { data } = await supabase
-            .from("profiles")
+            .from("profile")
             .select("*")
             .eq("id", session.user.id)
             .single();
@@ -106,7 +106,7 @@ export const SupabaseProvider = ({
       }
 
       if (data.user) {
-        await supabase.from("profiles").upsert({
+        await supabase.from("profile").upsert({
           id: data.user.id,
           full_name: name,
           email: email,

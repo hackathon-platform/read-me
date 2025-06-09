@@ -31,7 +31,7 @@ export default function YourProfileRedirectPage() {
       try {
         // Single optimized query with specific field selection
         const { data, error } = await supabase
-          .from("profiles")
+          .from("profile")
           .select("username")
           .eq("id", user.id)
           .single();

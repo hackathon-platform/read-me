@@ -13,13 +13,13 @@ export default function AuthCallback() {
         return;
       }
 
-      // Upsert into profiles now that we have a real user ID
-      const { error: upsertError } = await supabase.from("profiles").upsert({
+      // Upsert into profile now that we have a real user ID
+      const { error: upsertError } = await supabase.from("profile").upsert({
         id: session.user.id,
         email: session.user.email,
         locale: session.user.user_metadata.locale || "ja",
       });
-      if (upsertError) console.error("profiles upsert error:", upsertError);
+      if (upsertError) console.error("profile upsert error:", upsertError);
 
       // Then send them into profile setup
       router.replace("/profile/setup");

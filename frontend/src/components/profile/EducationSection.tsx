@@ -1,25 +1,39 @@
 "use client";
 
-import { GraduationCap } from "lucide-react";
+import { useState } from "react";
+import { EducationDisplay } from "./display/EducationDisplay";
+import { EducationEdit } from "./edit/EducationEdit";
+import { Education } from "@/lib/types";
+import { EditIcon } from "lucide-react";
 
-interface EducationSectionProps {
-  education: string;
+interface Props {
+  profileId: string;
+  educations: Education[];
 }
 
-export function EducationSection({ education }: EducationSectionProps) {
+export function EducationSection({ profileId, educations }: Props) {
+  const [isEditingProfile, setEditingProfile] = useState(false);
+
   return (
-    <div>
-      <h3 className="text-lg font-semibold mb-3">最終学歴</h3>
-      <div className="flex items-center gap-3">
-        <div className="mt-0.5 p-2 bg-primary/10 rounded-md">
-          <GraduationCap className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <p className="text-foreground">
-            {education || "学歴が設定されていません。"}
-          </p>
-        </div>
-      </div>
+    <div className="relative">
+      {isEditingProfile ? (
+        <EducationEdit
+          profileId={profileId}
+          initialData={educations}
+          onSave={() => setEditingProfile(false)}
+          onCancel={() => setEditingProfile(false)}
+        />
+      ) : (
+        <>
+          <EducationDisplay educations={educations} />
+          <button
+            className="absolute top-2 right-2"
+            onClick={() => setEditingProfile(true)}
+          >
+            <EditIcon size={16} />
+          </button>
+        </>
+      )}
     </div>
   );
 }

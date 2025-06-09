@@ -10,25 +10,7 @@ import { ExperienceSection } from "@/components/profile/ExperienceSection";
 import { QualificationsSection } from "@/components/profile/QualificationsSection";
 import { ResumeSection } from "@/components/profile/ResumeSection";
 import { ProjectsSection } from "@/components/profile/ProjectsSection";
-import type { Portfolio } from "@/lib/types";
-
-interface ProfileRow {
-  id: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  first_name_kana: string;
-  last_name_kana: string;
-  image_url: string | null;
-  education: string | null;
-  socials: unknown; // JSONB
-  experience: unknown; // JSONB
-  qualifications: unknown; // JSONB
-  projects: unknown; // JSONB
-  resume_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
+import type { Profile } from "@/lib/types";
 
 export default async function ProfilePage({
   params,
@@ -37,120 +19,119 @@ export default async function ProfilePage({
 }) {
   const { username } = await params;
 
-  // 1) Query Supabase for a row with this username
-  const { data: rawData, error } = await supabase
-    .from("profiles")
-    .select("*")
+  // Fetch the profile
+  const { data: profileData, error: profileDataError } = await supabase
+    .from("profile")
+    .select()
     .eq("username", username)
     .single();
 
-  if (error || !rawData) {
+  if (profileDataError || !profileData) {
+    console.error("Profile fetch error:", profileDataError);
     return notFound();
   }
 
-  // 2) Cast rawData → ProfileRow
-  const data = rawData as ProfileRow;
+  const { data: eduData, error: eduError } = await supabase
+    .from("education")
+    .select()
 
-  // 3) Map to our Portfolio type
-  const portfolio: Portfolio = {
-    firstName: data.first_name,
-    lastName: data.last_name,
-    firstNameKana: data.first_name_kana,
-    lastNameKana: data.last_name_kana,
-    imageUrl: data.image_url || "",
-    socials: Array.isArray(data.socials) ? data.socials : [],
-    education: data.education || "",
-    experience: Array.isArray(data.experience) ? data.experience : [],
-    qualifications: Array.isArray(data.qualifications)
-      ? data.qualifications
-      : [],
-    resumeUrl: data.resume_url || "",
-    projects: Array.isArray(data.projects) ? data.projects : [],
+  // Fetch socials, educations, experience, etc
+  const [
+    { data: socialData, error: socialError },
+    { data: educationData, error: educationError },
+    { data: experienceData, error: experienceError },
+    { data: projectData, error: projectError },
+    { data: qualificationData, error: qualificationError },
+  ] = await Promise.all([
+    supabase.from("social").select().eq("profile_id", profileData.id),
+    supabase.from("education").select().eq("profile_id", profileData.id),
+    supabase.from("experience").select().eq("profile_id", profileData.id),
+    supabase.from("project").select().eq("profile_id", profileData.id),
+    supabase.from("qualification").select().eq("profile_id", profileData.id),
+  ]);
+  console.log('profile.id', profileData.id)
+  console.log('eduData', eduData);
+
+  // check fetch error
+  if (socialError) console.error("Socials fetch error:", socialError);
+  if (educationError) console.error("Educations fetch error:", educationError);
+  if (experienceError)
+    console.error("Experience fetch error:", experienceError);
+  if (projectError) console.error("Projects fetch error:", projectError);
+  if (qualificationError)
+    console.error("Qualifications fetch error:", qualificationError);
+
+  // Build Profile object
+  const profile: Profile = {
+    id: profileData.id,
+    username: profileData.username,
+    firstName: profileData.first_name,
+    lastName: profileData.last_name,
+    firstNameKana: profileData.first_name_kana,
+    lastNameKana: profileData.last_name_kana,
+    imageUrl: profileData.image_url ?? "",
+    description: profileData.description,
+    socials: socialData ?? [],
+    educations: educationData ?? [],
+    experiences: experienceData ?? [],
+    qualifications: qualificationData ?? [],
+    resumeUrl: profileData.resume_url ?? "",
+    projects: projectData ?? [],
   };
 
-  // 4) Render the Portfolio
+  const ProfileTabs = () => (
+    <Tabs defaultValue="profile" className="w-full">
+      <TabsList className="grid grid-cols-2 w-full">
+        <TabsTrigger value="profile">プロフィール</TabsTrigger>
+        <TabsTrigger value="projects">プロジェクト</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="profile" className="mt-6">
+        <Card>
+          <CardContent>
+            <ExperienceSection experiences={profile.experiences} />
+            <Separator className="my-6" />
+            <EducationSection
+              profileId={profile.id}
+              educations={profile.educations}
+            />
+            <Separator className="my-6" />
+            <QualificationsSection qualifications={profile.qualifications} />
+            {profile.resumeUrl && (
+              <>
+                <Separator className="my-6" />
+                <ResumeSection resumeUrl={profile.resumeUrl} />
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="projects" className="mt-6">
+        <ProjectsSection projects={profile.projects} />
+      </TabsContent>
+    </Tabs>
+  );
+
   return (
     <PageLayout>
-      <div className="animate-in fade-in duration-500 2xl:mt-8 w-full pb-3 pt-2 max-w-7xl mx-auto items-center">
-        <div className="container mx-auto">
-          {/* Mobile Layout */}
-          <div className="lg:hidden">
-            <ProfileSection portfolio={portfolio} />
-            <div className="mt-1">
-              <Tabs defaultValue="profile" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="profile">プロフィール</TabsTrigger>
-                  <TabsTrigger value="projects">プロジェクト</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="profile" className="mt-3">
-                  <Card>
-                    <CardContent>
-                      <EducationSection education={portfolio.education} />
-                      <Separator className="my-6" />
-                      <ExperienceSection experience={portfolio.experience} />
-                      <Separator className="my-6" />
-                      <QualificationsSection
-                        qualifications={portfolio.qualifications}
-                      />
-                      {portfolio.resumeUrl && (
-                        <>
-                          <Separator className="my-6" />
-                          <ResumeSection resumeUrl={portfolio.resumeUrl} />
-                        </>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="projects" className="mt-6">
-                  <ProjectsSection projects={portfolio.projects} />
-                </TabsContent>
-              </Tabs>
-            </div>
+      <div className="animate-in fade-in duration-500 lg:mt-6 md:mt-2 max-w-7xl mx-auto w-full pb-3">
+        {/* Mobile View */}
+        <div className="lg:hidden">
+          <ProfileSection profile={profile} />
+          <div className="mt-4">
+            <ProfileTabs />
           </div>
+        </div>
 
-          {/* Desktop Layout (lg and up) */}
-          <div className="hidden lg:flex gap-4">
-            {/* Left Sidebar - Profile */}
-            <div className="w-80 flex-shrink-0">
-              <ProfileSection portfolio={portfolio} />
-            </div>
-
-            {/* Right Content Area */}
-            <div className="flex-1 min-w-0">
-              <Tabs defaultValue="profile" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="profile">プロフィール</TabsTrigger>
-                  <TabsTrigger value="projects">プロジェクト</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="profile" className="mt-6">
-                  <Card>
-                    <CardContent>
-                      <EducationSection education={portfolio.education} />
-                      <Separator className="my-6" />
-                      <ExperienceSection experience={portfolio.experience} />
-                      <Separator className="my-6" />
-                      <QualificationsSection
-                        qualifications={portfolio.qualifications}
-                      />
-                      {portfolio.resumeUrl && (
-                        <>
-                          <Separator className="my-6" />
-                          <ResumeSection resumeUrl={portfolio.resumeUrl} />
-                        </>
-                      )}
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="projects" className="mt-6">
-                  <ProjectsSection projects={portfolio.projects} />
-                </TabsContent>
-              </Tabs>
-            </div>
-          </div>
+        {/* Desktop View */}
+        <div className="hidden lg:flex gap-8">
+          <aside className="w-80 flex-shrink-0">
+            <ProfileSection profile={profile} />
+          </aside>
+          <main className="flex-1">
+            <ProfileTabs />
+          </main>
         </div>
       </div>
     </PageLayout>

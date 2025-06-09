@@ -73,7 +73,7 @@ export interface Database {
           status?: "attending" | "interested" | "not_attending";
         };
       };
-      profiles: {
+      profile: {
         Row: {
           id: string;
           updated_at: string;

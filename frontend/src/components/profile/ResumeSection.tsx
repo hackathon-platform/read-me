@@ -16,7 +16,6 @@ interface ResumeSectionProps {
 
 export function ResumeSection({ resumeUrl }: ResumeSectionProps) {
   if (!resumeUrl) return null;
-
   return (
     <div>
       <h3 className="text-lg font-semibold mb-3">履歴書</h3>
@@ -34,13 +33,11 @@ export function ResumeSection({ resumeUrl }: ResumeSectionProps) {
               <DialogHeader>
                 <DialogTitle>履歴書</DialogTitle>
               </DialogHeader>
-              <div className="flex-1 w-full h-full min-h-[60vh]">
-                <iframe
-                  src={resumeUrl}
-                  className="w-full h-full rounded-md"
-                  title="履歴書"
-                />
-              </div>
+              <iframe
+                src={resumeUrl}
+                className="w-full h-full rounded-md"
+                title="履歴書"
+              />
             </DialogContent>
           </Dialog>
           <a href={resumeUrl} download="履歴書.pdf">

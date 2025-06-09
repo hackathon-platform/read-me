@@ -73,7 +73,7 @@ export default function EventDetailPage() {
 
         // Fetch organizer details
         const { data: organizerData, error: organizerError } = await supabase
-          .from("profiles")
+          .from("profile")
           .select("*")
           .eq("id", eventData.organizer_id)
           .single();
@@ -95,7 +95,7 @@ export default function EventDetailPage() {
         const { data: participantsData, error: participantsError } =
           await supabase
             .from("participants")
-            .select("user_id, status, profiles(id, full_name, avatar_url)")
+            .select("user_id, status, profile(id, full_name, avatar_url)")
             .eq("event_id", eventId)
             .eq("status", "attending")
             .order("created_at", { ascending: false })
@@ -476,9 +476,9 @@ export default function EventDetailPage() {
                         key={participant.user_id}
                         className="border-2 border-background"
                       >
-                        <AvatarImage src={participant.profiles.avatar_url} />
+                        <AvatarImage src={participant.profile.avatar_url} />
                         <AvatarFallback>
-                          {participant.profiles.full_name
+                          {participant.profile.full_name
                             .charAt(0)
                             .toUpperCase()}
                         </AvatarFallback>

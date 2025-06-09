@@ -100,7 +100,7 @@ const DUMMY_EVENTS = [
   },
 ];
 
-// Dummy data for users/profiles
+// Dummy data for users/profile
 const DUMMY_PROFILES = [
   {
     id: "123",
