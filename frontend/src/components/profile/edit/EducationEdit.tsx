@@ -26,13 +26,13 @@ const eduSchema = z.object({
   institution: z.string().min(1, "学校名を入力してください"),
   degree: z.string().optional(),
   fieldOfStudy: z.string().optional(),
-  startDate: z.string().min(1, "開始日を入力してください"),
-  endDate: z.string().optional(),
+  startMonth: z.string().regex(/^\d{4}-\d{2}$/, "開始月を入力して下さい"),
+  endMonth: z.string().regex(/^\d{4}-\d{2}$/, "終了月を入力して下さい").optional(),
   description: z.string().optional(),
 });
 
 const schema = z.object({
-  educations: z.array(eduSchema),
+  education: z.array(eduSchema),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -53,33 +53,34 @@ export function EducationEdit({
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
+  console.log('initialData', initialData);
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { educations: initialData },
+    defaultValues: { education: initialData },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "educations",
+    name: "education",
   });
 
   const onSubmit = async (values: FormValues) => {
     setIsSaving(true);
     // delete old entries
-    await supabase.from("educations").delete().eq("profile_id", profileId);
+    await supabase.from("education").delete().eq("profile_id", profileId);
 
     // insert new
-    if (values.educations.length) {
-      const payload = values.educations.map((e) => ({
+    if (values.education.length) {
+      const payload = values.education.map((e) => ({
         profile_id: profileId,
         institution: e.institution,
         degree: e.degree || null,
         field_of_study: e.fieldOfStudy || null,
-        start_date: e.startDate,
-        end_date: e.endDate || null,
+        start_month: `${e.startMonth}-01`,
+        end_month: e.endMonth ? `${e.endMonth}-01` : null,
         description: e.description || null,
       }));
-      const { error } = await supabase.from("educations").insert(payload);
+      const { error } = await supabase.from("education").insert(payload);
       if (error) {
         toast.error(error.message);
         setIsSaving(false);
@@ -106,8 +107,8 @@ export function EducationEdit({
                 institution: "",
                 degree: "",
                 fieldOfStudy: "",
-                startDate: "",
-                endDate: "",
+                startMonth: "",
+                endMonth: "",
                 description: "",
               })
             }
@@ -121,7 +122,7 @@ export function EducationEdit({
           <div key={field.id} className="p-4 border rounded space-y-4">
             <FormField
               control={form.control}
-              name={`educations.${idx}.institution` as const}
+              name={`education.${idx}.institution` as const}
               render={({ field }) => (
                 <FormItem>
                   <Label>学校名</Label>
@@ -136,12 +137,12 @@ export function EducationEdit({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name={`educations.${idx}.startDate` as const}
+                name={`education.${idx}.startMonth` as const}
                 render={({ field }) => (
                   <FormItem>
                     <Label>開始日</Label>
                     <FormControl>
-                      <Input {...field} type="date" />
+                      <Input {...field} type="month" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -149,12 +150,12 @@ export function EducationEdit({
               />
               <FormField
                 control={form.control}
-                name={`educations.${idx}.endDate` as const}
+                name={`education.${idx}.endMonth` as const}
                 render={({ field }) => (
                   <FormItem>
                     <Label>終了日</Label>
                     <FormControl>
-                      <Input {...field} type="date" />
+                      <Input {...field} type="month" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -164,7 +165,7 @@ export function EducationEdit({
 
             <FormField
               control={form.control}
-              name={`educations.${idx}.degree` as const}
+              name={`education.${idx}.degree` as const}
               render={({ field }) => (
                 <FormItem>
                   <Label>学位</Label>
@@ -178,7 +179,7 @@ export function EducationEdit({
 
             <FormField
               control={form.control}
-              name={`educations.${idx}.fieldOfStudy` as const}
+              name={`education.${idx}.fieldOfStudy` as const}
               render={({ field }) => (
                 <FormItem>
                   <Label>専攻</Label>
@@ -192,7 +193,7 @@ export function EducationEdit({
 
             <FormField
               control={form.control}
-              name={`educations.${idx}.description` as const}
+              name={`education.${idx}.description` as const}
               render={({ field }) => (
                 <FormItem>
                   <Label>説明</Label>

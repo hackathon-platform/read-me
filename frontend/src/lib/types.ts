@@ -9,7 +9,7 @@ export interface Profile {
   description: string;
   resumeUrl: string;
   socials: Social[];
-  educations: Education[];
+  education: Education[];
   experiences: Experience[];
   qualifications: Qualification[];
   projects: Project[];
@@ -27,9 +27,9 @@ export interface Education {
   id: string;
   institution: string;
   degree?: string;
-  field_of_study?: string;
-  start_date: string;
-  end_date?: string;
+  fieldOfStudy?: string;
+  startMonth: string;
+  endMonth?: string;
   description?: string;
 }
 
@@ -37,8 +37,8 @@ export interface Experience {
   profileId: string;
   company: string;
   position: string;
-  startDate: string; // YYYY-MM
-  endDate: string; // YYYY-MM or 'present'
+  startMonth: string; // YYYY-MM
+  endMonth: string; // YYYY-MM or 'present'
   description: string;
   iconUrl?: string;
   url?: string;

@@ -35,7 +35,7 @@ export default async function ProfilePage({
     .from("education")
     .select()
 
-  // Fetch socials, educations, experience, etc
+  // Fetch socials, education, experience, etc
   const [
     { data: socialData, error: socialError },
     { data: educationData, error: educationError },
@@ -49,8 +49,6 @@ export default async function ProfilePage({
     supabase.from("project").select().eq("profile_id", profileData.id),
     supabase.from("qualification").select().eq("profile_id", profileData.id),
   ]);
-  console.log('profile.id', profileData.id)
-  console.log('eduData', eduData);
 
   // check fetch error
   if (socialError) console.error("Socials fetch error:", socialError);
@@ -72,7 +70,17 @@ export default async function ProfilePage({
     imageUrl: profileData.image_url ?? "",
     description: profileData.description,
     socials: socialData ?? [],
-    educations: educationData ?? [],
+    education: educationData
+      ? educationData.map((edu) => ({
+          id: edu.id,
+          institution: edu.institution,
+          degree: edu.degree,
+          fieldOfStudy: edu.field_of_study,
+          startMonth: edu.start_month.slice(0, 7),
+          endMonth: edu.end_month.slice(0, 7),
+          description: edu.description,
+        }))
+      : [],
     experiences: experienceData ?? [],
     qualifications: qualificationData ?? [],
     resumeUrl: profileData.resume_url ?? "",
@@ -93,7 +101,7 @@ export default async function ProfilePage({
             <Separator className="my-6" />
             <EducationSection
               profileId={profile.id}
-              educations={profile.educations}
+              education={profile.education}
             />
             <Separator className="my-6" />
             <QualificationsSection qualifications={profile.qualifications} />

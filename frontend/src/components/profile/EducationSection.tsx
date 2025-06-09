@@ -8,10 +8,10 @@ import { EditIcon } from "lucide-react";
 
 interface Props {
   profileId: string;
-  educations: Education[];
+  education: Education[];
 }
 
-export function EducationSection({ profileId, educations }: Props) {
+export function EducationSection({ profileId, education }: Props) {
   const [isEditingProfile, setEditingProfile] = useState(false);
 
   return (
@@ -19,13 +19,13 @@ export function EducationSection({ profileId, educations }: Props) {
       {isEditingProfile ? (
         <EducationEdit
           profileId={profileId}
-          initialData={educations}
+          initialData={education}
           onSave={() => setEditingProfile(false)}
           onCancel={() => setEditingProfile(false)}
         />
       ) : (
         <>
-          <EducationDisplay educations={educations} />
+          <EducationDisplay education={education} />
           <button
             className="absolute top-2 right-2"
             onClick={() => setEditingProfile(true)}
