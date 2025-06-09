@@ -241,6 +241,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
           name="username"
           render={({ field }) => (
             <FormItem>
+              <Label className="pl-0.5">アカウント名</Label>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -256,6 +257,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
             name="lastName"
             render={({ field }) => (
               <FormItem>
+                <Label className="pl-0.5">性</Label>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -268,6 +270,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
             name="firstName"
             render={({ field }) => (
               <FormItem>
+                <Label className="pl-0.5">名</Label>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -280,6 +283,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
             name="lastNameKana"
             render={({ field }) => (
               <FormItem>
+                <Label className="pl-0.5">セイ</Label>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -292,6 +296,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
             name="firstNameKana"
             render={({ field }) => (
               <FormItem>
+                <Label className="pl-0.5">メイ</Label>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -307,11 +312,9 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <div className="flex justify-between items-center">
-                <Label className={remaining <= 0 ? "text-red-500" : ""}>
-                  自己紹介（残り{remaining}文字）
-                </Label>
-              </div>
+              <Label  className={`pl-0.5 ${remaining <= 0 ? "text-red-500" : ""}`}>
+                自己紹介（残り{remaining}文字）
+              </Label>
               <FormControl>
                 <Textarea
                   {...field}
