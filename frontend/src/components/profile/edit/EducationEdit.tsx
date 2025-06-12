@@ -27,7 +27,7 @@ const eduSchema = z.object({
   degree: z.string().optional(),
   fieldOfStudy: z.string().optional(),
   startMonth: z.string().regex(/^\d{4}-\d{2}$/, "開始月を入力して下さい"),
-  endMonth: z.string().regex(/^\d{4}-\d{2}$/, "終了月を入力して下さい").optional(),
+  endMonth: z.string().regex(/^\d{4}-\d{2}$/, "終了月を入力して下さい"),
   description: z.string().optional(),
 });
 
