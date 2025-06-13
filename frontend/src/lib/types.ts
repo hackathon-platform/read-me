@@ -28,17 +28,17 @@ export interface Education {
   institution: string;
   degree?: string;
   fieldOfStudy?: string;
-  startMonth: string;
-  endMonth?: string;
+  startMonth: string; // YYYY-MM
+  endMonth?: string; // YYYY-MM
   description?: string;
 }
 
 export interface Experience {
-  profileId: string;
+  id: string;
   company: string;
   position: string;
   startMonth: string; // YYYY-MM
-  endMonth: string; // YYYY-MM or 'present'
+  endMonth: string; // YYYY-MM
   description: string;
   iconUrl?: string;
   url?: string;

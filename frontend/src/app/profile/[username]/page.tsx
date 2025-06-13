@@ -10,56 +10,55 @@ import { ExperienceSection } from "@/components/profile/ExperienceSection";
 import { QualificationsSection } from "@/components/profile/QualificationsSection";
 import { ResumeSection } from "@/components/profile/ResumeSection";
 import { ProjectsSection } from "@/components/profile/ProjectsSection";
-import type { Profile } from "@/lib/types";
+import type { Profile, Skill } from "@/lib/types";
 
 export default async function ProfilePage({
   params,
 }: {
   params: { username: string };
 }) {
-  const { username } = await params;
+  const { username } = params;
 
-  // Fetch the profile
-  const { data: profileData, error: profileDataError } = await supabase
+  // Fetch profile row
+  const { data: profileData, error: profileError } = await supabase
     .from("profile")
     .select()
     .eq("username", username)
     .single();
+  if (profileError || !profileData) return notFound();
 
-  if (profileDataError || !profileData) {
-    console.error("Profile fetch error:", profileDataError);
-    return notFound();
-  }
-
-  const { data: eduData, error: eduError } = await supabase
-    .from("education")
-    .select()
-
-  // Fetch socials, education, experience, etc
+  // Fetch all related tables in parallel
   const [
     { data: socialData, error: socialError },
     { data: educationData, error: educationError },
     { data: experienceData, error: experienceError },
     { data: projectData, error: projectError },
     { data: qualificationData, error: qualificationError },
+    { data: expSkillData = [], error: expSkillError },
   ] = await Promise.all([
     supabase.from("social").select().eq("profile_id", profileData.id),
     supabase.from("education").select().eq("profile_id", profileData.id),
     supabase.from("experience").select().eq("profile_id", profileData.id),
     supabase.from("project").select().eq("profile_id", profileData.id),
     supabase.from("qualification").select().eq("profile_id", profileData.id),
+    supabase.from("experience_skill").select().eq("profile_id", profileData.id),
   ]);
 
-  // check fetch error
-  if (socialError) console.error("Socials fetch error:", socialError);
-  if (educationError) console.error("Educations fetch error:", educationError);
-  if (experienceError)
-    console.error("Experience fetch error:", experienceError);
-  if (projectError) console.error("Projects fetch error:", projectError);
-  if (qualificationError)
-    console.error("Qualifications fetch error:", qualificationError);
+  // (Optional) log any fetch errors
+  [socialError, educationError, experienceError, projectError, qualificationError, expSkillError]
+    .forEach((err, i) => err && console.error(`Fetch error #${i}:`, err));
 
-  // Build Profile object
+  // Group skills by experience_id
+  const skillsByExp: Record<string, Skill[]> = {};
+  (expSkillData ?? []).forEach((row: any) => {
+    if (!skillsByExp[row.experience_id]) skillsByExp[row.experience_id] = [];
+    skillsByExp[row.experience_id].push({
+      name: row.name,
+      type: row.type,
+    });
+  });
+
+  // Build Profile model
   const profile: Profile = {
     id: profileData.id,
     username: profileData.username,
@@ -69,21 +68,29 @@ export default async function ProfilePage({
     lastNameKana: profileData.last_name_kana,
     imageUrl: profileData.image_url ?? "",
     description: profileData.description,
-    socials: socialData ?? [],
-    education: educationData
-      ? educationData.map((edu) => ({
-          id: edu.id,
-          institution: edu.institution,
-          degree: edu.degree,
-          fieldOfStudy: edu.field_of_study,
-          startMonth: edu.start_month.slice(0, 7),
-          endMonth: edu.end_month.slice(0, 7),
-          description: edu.description,
-        }))
-      : [],
-    experiences: experienceData ?? [],
-    qualifications: qualificationData ?? [],
     resumeUrl: profileData.resume_url ?? "",
+    socials: socialData ?? [],
+    education: (educationData ?? []).map((e: any) => ({
+      id: e.id,
+      institution: e.institution,
+      degree: e.degree,
+      fieldOfStudy: e.field_of_study,
+      startMonth: e.start_month.slice(0, 7),
+      endMonth: e.end_month?.slice(0, 7),
+      description: e.description,
+    })),
+    experiences: (experienceData ?? []).map((exp: any) => ({
+      id: exp.id,
+      company: exp.company,
+      position: exp.position,
+      startMonth: exp.start_month.slice(0, 7),
+      endMonth: exp.end_month?.slice(0, 7) ?? "現在",
+      description: exp.description,
+      iconUrl: exp.icon_url,
+      url: exp.url,
+      skills: skillsByExp[exp.id] ?? [],
+    })),
+    qualifications: qualificationData ?? [],
     projects: projectData ?? [],
   };
 
@@ -97,11 +104,14 @@ export default async function ProfilePage({
       <TabsContent value="profile" className="mt-6">
         <Card>
           <CardContent>
-            <ExperienceSection experiences={profile.experiences} />
+            <ExperienceSection
+              profileId={profile.id}
+              experiences={profile.experiences}
+            />
             <Separator className="my-6" />
             <EducationSection
               profileId={profile.id}
-              education={profile.education}
+              educations={profile.education}
             />
             <Separator className="my-6" />
             <QualificationsSection qualifications={profile.qualifications} />
@@ -124,15 +134,14 @@ export default async function ProfilePage({
   return (
     <PageLayout>
       <div className="animate-in fade-in duration-500 lg:mt-6 md:mt-2 max-w-7xl mx-auto w-full pb-3">
-        {/* Mobile View */}
+        {/* Mobile */}
         <div className="lg:hidden">
           <ProfileSection profile={profile} />
           <div className="mt-4">
             <ProfileTabs />
           </div>
         </div>
-
-        {/* Desktop View */}
+        {/* Desktop */}
         <div className="hidden lg:flex gap-8">
           <aside className="w-80 flex-shrink-0">
             <ProfileSection profile={profile} />
