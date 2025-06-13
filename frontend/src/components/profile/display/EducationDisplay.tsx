@@ -1,8 +1,8 @@
 import { Education } from "@/lib/types";
 import { GraduationCap } from "lucide-react";
 
-export function EducationDisplay({ education }: { education: Education[] }) {
-  if (!education.length) {
+export function EducationDisplay({ educations }: { educations: Education[] }) {
+  if (!educations.length) {
     return (
         <div className="space-y-4">
             <h3 className="text-lg font-semibold">学歴</h3>
@@ -21,7 +21,7 @@ export function EducationDisplay({ education }: { education: Education[] }) {
         <div className="absolute md:left-5 left-4 top-2 bottom-2 md:w-[4px] w-[3px] bg-border" />
         
         <div className="space-y-8">
-          {education.map((edu) => (
+          {educations.map((edu) => (
             <div key={edu.id} className="flex items-start gap-6">
               {/* Icon */}
               <div className="relative z-10 flex-shrink-0">
