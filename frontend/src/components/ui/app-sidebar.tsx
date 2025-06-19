@@ -36,70 +36,70 @@ const data = {
   navMain: [
     {
       title: "プロファイル",
-      url: "profile",
+      url: "/profile",
       icon: Settings2,
       items: [
         {
           title: "ポートファリオ",
-          url: "profile",
+          url: "/profile",
         },
         {
           title: "質問事項",
-          url: "profile/edit",
+          url: "/profile/edit",
         },
       ],
     },
     {
       title: "参加する",
-      url: "events",
+      url: "/events",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
           title: "イベント検索",
-          url: "events",
+          url: "/events",
         },
         {
           title: "登録済みイベント",
-          url: "#",
+          url: "/#",
         },
       ],
     },
     {
       title: "開催する",
-      url: "host",
+      url: "/host",
       icon: Bot,
       items: [
         {
           title: "運営チーム",
-          url: "#",
+          url: "/#",
         },
         {
           title: "開催中のイベント",
-          url: "#",
+          url: "/#",
         },
       ],
     },
     {
       title: "ドキュメント",
-      url: "#",
+      url: "/#",
       icon: BookOpen,
       items: [
         {
           title: "ようこそ！",
-          url: "#",
+          url: "/#",
         },
         {
           title: "はじめに",
-          url: "#",
+          url: "/#",
         },
         {
           title: "イベント参加方法",
-          url: "#",
+          url: "/#",
         },
         {
           title: "イベント開催方法",
-          url: "#",
+          url: "/#",
         },
       ],
     },
@@ -107,29 +107,29 @@ const data = {
   navSecondary: [
     {
       title: "Support",
-      url: "#",
+      url: "/#",
       icon: LifeBuoy,
     },
     {
       title: "Feedback",
-      url: "#",
+      url: "/#",
       icon: Send,
     },
   ],
   projects: [
     {
       name: "Design Engineering",
-      url: "#",
+      url: "/#",
       icon: Frame,
     },
     {
       name: "Sales & Marketing",
-      url: "#",
+      url: "/#",
       icon: PieChart,
     },
     {
       name: "Travel",
-      url: "#",
+      url: "/#",
       icon: Map,
     },
   ],
