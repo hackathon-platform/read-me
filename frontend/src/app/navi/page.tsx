@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
-import PageLayout from "@/components/layout/pageLayout";
 
 export default function YourProfileRedirectPage() {
   const router = useRouter();
@@ -54,12 +53,10 @@ export default function YourProfileRedirectPage() {
   // Show loading only when necessary
   if (isLoading || isRedirecting) {
     return (
-      <PageLayout>
-        <div className="flex flex-col items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p>読み込み中…</p>
-        </div>
-      </PageLayout>
+      <div className="flex flex-col items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+        <p>読み込み中…</p>
+      </div>
     );
   }
 

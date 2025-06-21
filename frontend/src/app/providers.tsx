@@ -1,4 +1,3 @@
-// app/providers.tsx
 "use client";
 
 import { ReactNode } from "react";
@@ -7,6 +6,7 @@ import { AuthProvider } from "@/hooks/useSupabaseAuth";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/layout/header";
 import { Toaster } from "@/components/ui/sonner";
+import PageLayout from "@/components/layout/pageLayout";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -19,7 +19,9 @@ export default function Providers({ children }: ProvidersProps) {
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
           <Toaster />
-          {children}
+          <PageLayout>
+            {children}
+          </PageLayout>
           <Toaster richColors closeButton />
         </ThemeProvider>
       </AuthProvider>

@@ -1,4 +1,3 @@
-import PageLayout from "@/components/layout/pageLayout";
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import { QualificationsSection } from "@/components/navi/QualificationsSection";
 import { ResumeSection } from "@/components/navi/ResumeSection";
 import { ProjectsSection } from "@/components/navi/ProjectsSection";
 import type { Profile, Skill } from "@/lib/types";
+import PageHeader from "@/components/layout/PageHeader";
 
 export default async function ProfilePage({
   params,
@@ -132,7 +132,13 @@ export default async function ProfilePage({
   );
 
   return (
-    <PageLayout>
+    <div>
+      <PageHeader
+          breadcrumbs={[
+            { label: "プロファイル", href: "/navi" },
+            { label: username, current: true },
+          ]}
+        />
       <div className="animate-in fade-in duration-500 lg:mt-6 md:mt-2 max-w-7xl mx-auto w-full pb-3">
         {/* Mobile */}
         <div className="lg:hidden">
@@ -151,6 +157,6 @@ export default async function ProfilePage({
           </main>
         </div>
       </div>
-    </PageLayout>
+    </div>
   );
 }

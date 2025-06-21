@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,8 @@ import { CalendarDays, Menu, Plus, Search, User, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Header() {
-  const pathname = usePathname();
   const { user, signOut, loading } = useSupabase();
   console.log("Header → user:", user, "loading:", loading);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
     {
@@ -67,7 +65,7 @@ export default function Header() {
         <div className="flex">
           <Link href="/" className="flex text-2xl font-bold items-center">
             <CalendarDays className="h-6 w-6 mr-2" />
-            <span className="hidden sm:inline">EventNavi</span>
+            <span>EventNavi</span>
           </Link>
         </div>
 
@@ -138,80 +136,6 @@ export default function Header() {
               )}
             </>
           )}
-
-          {/* Mobile メニュー (ハンバーガー) */}
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-[250px] sm:w-[300px]">
-              <div className="flex flex-col h-full">
-                <Link
-                  href="/"
-                  className="flex items-center text-2xl font-bold mb-6"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <CalendarDays className="h-6 w-6 mr-2" />
-                  <span>EventMaker</span>
-                </Link>
-
-                <nav className="flex flex-col space-y-4">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Button
-                        variant={pathname === item.href ? "default" : "ghost"}
-                        className="w-full justify-start"
-                      >
-                        {item.icon}
-                        {item.name}
-                      </Button>
-                    </Link>
-                  ))}
-                </nav>
-
-                <div className="mt-auto">
-                  {!loading && !user && (
-                    <div className="grid gap-2">
-                      <Link
-                        href="/auth/login"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Button variant="outline" className="w-full">
-                          Login
-                        </Button>
-                      </Link>
-                      <Link
-                        href="/auth/signin"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Button className="w-full">Sign Up</Button>
-                      </Link>
-                    </div>
-                  )}
-
-                  {user && (
-                    <Button
-                      variant="outline"
-                      className="w-full flex items-center justify-center"
-                      onClick={() => {
-                        signOut();
-                        setMobileMenuOpen(false);
-                      }}
-                    >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Log out
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
     </header>
