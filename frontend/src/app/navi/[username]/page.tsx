@@ -4,12 +4,12 @@ import { supabase } from "@/lib/supabaseClient";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileSection } from "@/components/profile/ProfileSection";
-import { EducationSection } from "@/components/profile/EducationSection";
-import { ExperienceSection } from "@/components/profile/ExperienceSection";
-import { QualificationsSection } from "@/components/profile/QualificationsSection";
-import { ResumeSection } from "@/components/profile/ResumeSection";
-import { ProjectsSection } from "@/components/profile/ProjectsSection";
+import { ProfileSection } from "@/components/navi/ProfileSection";
+import { EducationSection } from "@/components/navi/EducationSection";
+import { ExperienceSection } from "@/components/navi/ExperienceSection";
+import { QualificationsSection } from "@/components/navi/QualificationsSection";
+import { ResumeSection } from "@/components/navi/ResumeSection";
+import { ProjectsSection } from "@/components/navi/ProjectsSection";
 import type { Profile, Skill } from "@/lib/types";
 
 export default async function ProfilePage({
