@@ -4,12 +4,12 @@ import { GraduationCap } from "lucide-react";
 export function EducationDisplay({ educations }: { educations: Education[] }) {
   if (!educations.length) {
     return (
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold">学歴</h3>
-            <p className="text-sm text-muted-foreground">
-                学歴が登録されていません。
-            </p>
-        </div>
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">学歴</h3>
+        <p className="text-sm text-muted-foreground">
+          学歴が登録されていません。
+        </p>
+      </div>
     );
   }
 
@@ -19,7 +19,7 @@ export function EducationDisplay({ educations }: { educations: Education[] }) {
       <div className="relative">
         {/* Timeline line */}
         <div className="absolute md:left-5 left-4 top-2 bottom-2 md:w-[4px] w-[3px] bg-border" />
-        
+
         <div className="space-y-8">
           {educations.map((edu) => (
             <div key={edu.id} className="flex items-start gap-6">
@@ -31,7 +31,7 @@ export function EducationDisplay({ educations }: { educations: Education[] }) {
                   </div>
                 </div>
               </div>
-              
+
               {/* Education Details */}
               <div className="flex-1 space-y-2">
                 <div>

@@ -25,7 +25,10 @@ const expSchema = z.object({
   company: z.string().min(1, "会社名を入力してください"),
   position: z.string().min(1, "役職を入力してください"),
   startMonth: z.string().regex(/^\d{4}-\d{2}$/, "開始月を入力して下さい"),
-  endMonth: z.string().regex(/^\d{4}-\d{2}$/, "終了月を入力して下さい").optional(),
+  endMonth: z
+    .string()
+    .regex(/^\d{4}-\d{2}$/, "終了月を入力して下さい")
+    .optional(),
   description: z.string().optional(),
 });
 

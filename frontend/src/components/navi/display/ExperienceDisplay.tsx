@@ -1,12 +1,18 @@
 import { Experience } from "@/lib/types";
 import { Briefcase } from "lucide-react";
 
-export function ExperienceDisplay({ experiences }: { experiences: Experience[] }) {
+export function ExperienceDisplay({
+  experiences,
+}: {
+  experiences: Experience[];
+}) {
   if (!experiences.length) {
     return (
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">職歴</h3>
-        <p className="text-sm text-muted-foreground">職歴が登録されていません。</p>
+        <p className="text-sm text-muted-foreground">
+          職歴が登録されていません。
+        </p>
       </div>
     );
   }
@@ -36,7 +42,9 @@ export function ExperienceDisplay({ experiences }: { experiences: Experience[] }
                     {exp.startMonth} 〜 {exp.endMonth ?? "現在"}
                   </p>
                 </div>
-                {exp.description && <p className="text-sm">{exp.description}</p>}
+                {exp.description && (
+                  <p className="text-sm">{exp.description}</p>
+                )}
               </div>
             </div>
           ))}

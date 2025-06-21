@@ -129,7 +129,6 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
     control: form.control,
     name: "social",
   });
-  
 
   const getIcon = (platform: string) => {
     switch (platform) {
@@ -318,7 +317,9 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <Label  className={`pl-0.5 ${remaining <= 0 ? "text-red-500" : ""}`}>
+              <Label
+                className={`pl-0.5 ${remaining <= 0 ? "text-red-500" : ""}`}
+              >
                 自己紹介（残り{remaining}文字）
               </Label>
               <FormControl>
@@ -400,10 +401,10 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
             onClick={() => append({ platform: "github", url: "" })}
             disabled={isSaving}
           >
-            <Plus className="mr-1 w-4 h-4" />SNSリンク追加
+            <Plus className="mr-1 w-4 h-4" />
+            SNSリンク追加
           </Button>
         </div>
-
 
         {/* Form Actions */}
         <div className="flex justify-end gap-3 pt-6 border-t">

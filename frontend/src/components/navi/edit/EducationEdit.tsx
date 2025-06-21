@@ -53,7 +53,7 @@ export function EducationEdit({
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
-  console.log('initialData', initialData);
+  console.log("initialData", initialData);
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { education: initialData },

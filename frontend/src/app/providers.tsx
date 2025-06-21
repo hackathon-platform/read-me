@@ -19,9 +19,7 @@ export default function Providers({ children }: ProvidersProps) {
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
           <Toaster />
-          <PageLayout>
-            {children}
-          </PageLayout>
+          <PageLayout>{children}</PageLayout>
           <Toaster richColors closeButton />
         </ThemeProvider>
       </AuthProvider>

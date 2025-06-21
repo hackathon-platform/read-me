@@ -21,7 +21,10 @@ interface PageHeaderProps {
   className?: string;
 }
 
-export default function PageHeader({ breadcrumbs, className = "" }: PageHeaderProps) {
+export default function PageHeader({
+  breadcrumbs,
+  className = "",
+}: PageHeaderProps) {
   return (
     <header className={`flex shrink-0 items-center gap-2 ${className}`}>
       <div className="flex items-center gap-2 px-1">
@@ -35,8 +38,12 @@ export default function PageHeader({ breadcrumbs, className = "" }: PageHeaderPr
             {breadcrumbs.map((item, idx) => (
               <React.Fragment key={item.label}>
                 {"href" in item ? (
-                  <BreadcrumbItem className={idx === 0 ? "hidden md:block" : ""}>
-                    <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+                  <BreadcrumbItem
+                    className={idx === 0 ? "hidden md:block" : ""}
+                  >
+                    <BreadcrumbLink href={item.href}>
+                      {item.label}
+                    </BreadcrumbLink>
                   </BreadcrumbItem>
                 ) : (
                   <BreadcrumbItem>
