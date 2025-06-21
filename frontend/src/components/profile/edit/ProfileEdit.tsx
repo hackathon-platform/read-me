@@ -125,6 +125,12 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
     if (file) handleFile(file, setImageUrl);
   };
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "social",
+  });
+  
+
   const getIcon = (platform: string) => {
     switch (platform) {
       case "github":
@@ -329,7 +335,75 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
         />
 
         {/* Social Links */}
-        {/* ...unchanged social code... */}
+        {/* Social Links Section */}
+        <div>
+          <Label className="pl-0.5 mb-2 block">SNSリンク</Label>
+          {fields.map((item, idx) => (
+            <div key={item.id} className="flex items-center gap-3 mb-2">
+              <FormField
+                control={form.control}
+                name={`social.${idx}.platform`}
+                render={({ field }) => (
+                  <FormItem className="w-32">
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isSaving}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="選択" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="github">GitHub</SelectItem>
+                        <SelectItem value="linkedin">LinkedIn</SelectItem>
+                        <SelectItem value="instagram">Instagram</SelectItem>
+                        <SelectItem value="facebook">Facebook</SelectItem>
+                        <SelectItem value="other">その他</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`social.${idx}.url`}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="url"
+                        placeholder="URLを入力"
+                        disabled={isSaving}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => remove(idx)}
+                disabled={isSaving}
+              >
+                <Trash2 className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-2"
+            onClick={() => append({ platform: "github", url: "" })}
+            disabled={isSaving}
+          >
+            <Plus className="mr-1 w-4 h-4" />SNSリンク追加
+          </Button>
+        </div>
+
 
         {/* Form Actions */}
         <div className="flex justify-end gap-3 pt-6 border-t">
