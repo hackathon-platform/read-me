@@ -36,16 +36,16 @@ const data = {
   navMain: [
     {
       title: "プロファイル",
-      url: "/profile",
+      url: "/navi",
       icon: Settings2,
       items: [
         {
           title: "ポートファリオ",
-          url: "/profile",
+          url: "/navi",
         },
         {
           title: "質問事項",
-          url: "/profile/edit",
+          url: "/navi/edit",
         },
       ],
     },

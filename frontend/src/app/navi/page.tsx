@@ -38,13 +38,13 @@ export default function YourProfileRedirectPage() {
 
         // Handle the redirect based on result
         if (error || !data?.username) {
-          router.replace("/profile/setup");
+          router.replace("/navi/setup");
         } else {
-          router.replace(`/profile/${data.username}`);
+          router.replace(`/navi/${data.username}`);
         }
       } catch (err) {
         console.error("Profile check error:", err);
-        router.replace("/profile/setup");
+        router.replace("/navi/setup");
       }
     };
 

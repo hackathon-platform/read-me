@@ -17,7 +17,7 @@ export default async function ProfilePage({
 }: {
   params: { username: string };
 }) {
-  const { username } = params;
+  const { username } = await params;
 
   // Fetch profile row
   const { data: profileData, error: profileError } = await supabase
