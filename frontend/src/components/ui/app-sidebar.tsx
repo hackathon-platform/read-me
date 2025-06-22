@@ -37,7 +37,7 @@ const data = {
     },
     {
       title: "開催する",
-      url: "/host",
+      url: "/orgs",
       icon: Megaphone,
       items: [
         { title: "運営チーム", url: "/#" },
