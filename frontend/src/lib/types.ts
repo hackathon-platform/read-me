@@ -75,3 +75,32 @@ export interface ProjectMedia {
   type: "image" | "video";
   url: string;
 }
+
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string; // Date & Time in ISO format
+  endDate?: string; // Date & Time in ISO format
+  location?: string;
+  url?: string;
+  imageUrl?: string;
+  organizerId: string;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: string; // Date & Time in ISO format
+  ownerId: string;
+}
+
+export interface Organizer {
+  id: string;
+  userId: string;
+  organizationId: string;
+  role: "owner" | "admin" | "member";
+  joinedAt: string; // Date & Time in ISO format
+}

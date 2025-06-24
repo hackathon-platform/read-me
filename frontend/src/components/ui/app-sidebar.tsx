@@ -8,6 +8,7 @@ import {
   BookOpen,
   LifeBuoy,
   MessageSquare,
+  Briefcase,
 } from "lucide-react";
 
 import { NavMain } from "@/components/ui/nav-main";
@@ -40,8 +41,17 @@ const data = {
       url: "/orgs",
       icon: Megaphone,
       items: [
-        { title: "運営チーム", url: "/#" },
         { title: "開催中のイベント", url: "/#" },
+        { title: "運営チーム", url: "/#" },
+      ],
+    },
+    {
+      title: "応募する",
+      url: "/apply",
+      icon: Briefcase,
+      items: [
+        { title: "インターン受付", url: "/#" },
+        { title: "メール", url: "/#" },
       ],
     },
     {

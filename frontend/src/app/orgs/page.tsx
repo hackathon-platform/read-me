@@ -10,8 +10,8 @@ export default function EventsPage() {
           { label: "運営", current: true },
         ]}
       />
-      <div className="animate-in fade-in duration-500 lg:mt-4 md:mt-2 max-w-7xl mx-auto w-full pb-3">
-      <OrganizerDashboard />
+      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full pb-3">
+        <OrganizerDashboard />
       </div>
     </div>
   );
