@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageHeader from "@/components/layout/PageHeader";
+import EventPage from "@/components/event/EventPage";
 
 // --- Mock Data Definitions ---
 const mockEvent = {
@@ -127,101 +128,8 @@ export default function EventDetailPageMock() {
         ]}
       />
 
-      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full pb-3">
-        {/* Banner + Info Side-by-Side */}
-        <Card className="mb-8">
-          <CardContent>
-            <EventBanner
-            imageUrl={event.image_url}
-            title={event.title}
-            category={event.category}
-            startDate={event.start_date}
-            endDate={event.end_date}
-            location={event.location}
-            onShare={() => navigator.clipboard.writeText(window.location.href)}
-           />
-          </CardContent>
-        </Card>
-
-        {/* Main Grid: Details and Sidebar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Left Column */}
-          <div className="md:col-span-2">
-            {/* Description */}
-            <h2 className="text-xl font-semibold mb-4">About this event</h2>
-            <p className="mb-8">{event.description}</p>
-
-            {/* Attendees */}
-            <h2 className="text-xl font-semibold mb-4">Attendees</h2>
-            <div className="flex items-center mb-4">
-              <div className="flex -space-x-2 mr-3">
-                {participants.map((p) => (
-                  <Avatar key={p.user_id} className="border-2 border-background">
-                    <AvatarImage src={p.profile.avatar_url} />
-                    <AvatarFallback>
-                      {p.profile.full_name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                ))}
-              </div>
-              <span>{participantCount} attending</span>
-            </div>
-            <p className="mb-8">
-              {spotsLeft > 0 ? `${spotsLeft} spots left` : "Event is full"}
-            </p>
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            <div className="p-6 border rounded-lg bg-card">
-              {/* Date & Time */}
-              <div className="mb-4">
-                <p className="font-medium">Date & Time</p>
-                <div className="flex items-center gap-2 mt-1 text-sm">
-                  <CalendarClock className="w-4 h-4" />
-                  <span>
-                    {format(new Date(event.start_date), "MMM d, yyyy h:mm a")} – {format(new Date(event.end_date), "h:mm a")}
-                  </span>
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="mb-4">
-                <p className="font-medium">Location</p>
-                <div className="flex items-center gap-2 mt-1 text-sm">
-                  <MapPin className="w-4 h-4" />
-                  <span>{event.location}</span>
-                </div>
-              </div>
-
-              {/* Organizer */}
-              <div className="mb-4">
-                <p className="font-medium">Organizer</p>
-                <div className="flex items-center gap-2 mt-1 text-sm">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={organizer.avatar_url} />
-                    <AvatarFallback>{organizer.full_name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span>{organizer.full_name}</span>
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <div>
-                {isAttending ? (
-                  <Button className="w-full">You’re attending</Button>
-                ) : isInterested ? (
-                  <Button variant="outline" className="w-full">
-                    Interested
-                  </Button>
-                ) : (
-                  <Button className="w-full">Attend Event</Button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full pb-3"> */}
+        <EventPage/>
     </div>
   );
 }
