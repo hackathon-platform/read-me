@@ -159,11 +159,7 @@ const EventPage = () => {
       placeEn: "Excellence Award",
       amount: "¥300,000",
       icon: <Award className="w-8 h-8" />,
-      perks: [
-        "現金賞金 ¥300,000",
-        "メンターシップ 3ヶ月",
-        "企業訪問の機会",
-      ],
+      perks: ["現金賞金 ¥300,000", "メンターシップ 3ヶ月", "企業訪問の機会"],
       gradient: "from-gray-300 to-gray-500",
     },
     {
@@ -251,19 +247,23 @@ const EventPage = () => {
   const faqs = [
     {
       question: "参加資格はありますか？",
-      answer: "中学生から大学院生まで、プログラミングに興味がある方なら誰でも参加できます。初心者も大歓迎です！",
+      answer:
+        "中学生から大学院生まで、プログラミングに興味がある方なら誰でも参加できます。初心者も大歓迎です！",
     },
     {
       question: "チームは何人まで？",
-      answer: "1チーム2〜5名まで。個人参加の方は、当日チームマッチングも可能です。",
+      answer:
+        "1チーム2〜5名まで。個人参加の方は、当日チームマッチングも可能です。",
     },
     {
       question: "使用言語・フレームワークに制限は？",
-      answer: "特に制限はありません。お好きな技術スタックでプロジェクトを作成してください。",
+      answer:
+        "特に制限はありません。お好きな技術スタックでプロジェクトを作成してください。",
     },
     {
       question: "オンライン参加は可能？",
-      answer: "はい、完全オンラインでの参加が可能です。バーチャル会場で他の参加者と交流できます。",
+      answer:
+        "はい、完全オンラインでの参加が可能です。バーチャル会場で他の参加者と交流できます。",
     },
   ];
 
@@ -430,13 +430,20 @@ const EventPage = () => {
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {tracks.map((track, index) => (
-                  <Card key={index} className="group hover:shadow-lg transition-all duration-300">
+                  <Card
+                    key={index}
+                    className="group hover:shadow-lg transition-all duration-300"
+                  >
                     <CardHeader>
-                      <div className={`${track.color} mb-4 group-hover:scale-110 transition-transform`}>
+                      <div
+                        className={`${track.color} mb-4 group-hover:scale-110 transition-transform`}
+                      >
                         {track.icon}
                       </div>
                       <CardTitle className="text-lg">{track.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground">{track.titleEn}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {track.titleEn}
+                      </p>
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm">{track.description}</p>
@@ -456,7 +463,10 @@ const EventPage = () => {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 {perks.map((perk, index) => (
-                  <Card key={index} className="text-center p-4 hover:shadow-md transition-shadow">
+                  <Card
+                    key={index}
+                    className="text-center p-4 hover:shadow-md transition-shadow"
+                  >
                     <div className="text-primary mb-2">{perk.icon}</div>
                     <p className="text-sm">{perk.text}</p>
                   </Card>
@@ -480,8 +490,12 @@ const EventPage = () => {
                       <AvatarFallback>{judge.name[0]}</AvatarFallback>
                     </Avatar>
                     <h4 className="font-semibold">{judge.name}</h4>
-                    <p className="text-sm text-muted-foreground">{judge.nameEn}</p>
-                    <p className="text-xs text-muted-foreground">{judge.role}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {judge.nameEn}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {judge.role}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -492,16 +506,18 @@ const EventPage = () => {
           <TabsContent value="schedule" className="space-y-8">
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold mb-4">イベントスケジュール</h2>
+                <h2 className="text-3xl font-bold mb-4">
+                  イベントスケジュール
+                </h2>
                 <p className="text-muted-foreground text-lg">
                   3日間の熱いチャレンジ
                 </p>
               </div>
-              
+
               <div className="relative">
                 {/* Timeline line */}
                 <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border" />
-                
+
                 <div className="space-y-8">
                   {scheduleItems.map((item, index) => (
                     <div key={index} className="relative flex gap-6">
@@ -509,14 +525,18 @@ const EventPage = () => {
                       <div className="relative z-10 flex items-center justify-center w-16 h-16 rounded-full bg-background border-4 border-primary">
                         <div className="text-primary">{item.icon}</div>
                       </div>
-                      
+
                       {/* Content */}
                       <Card className="flex-1 hover:shadow-md transition-shadow">
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">
                             <div>
-                              <CardTitle className="text-lg">{item.title}</CardTitle>
-                              <p className="text-sm text-muted-foreground">{item.titleEn}</p>
+                              <CardTitle className="text-lg">
+                                {item.title}
+                              </CardTitle>
+                              <p className="text-sm text-muted-foreground">
+                                {item.titleEn}
+                              </p>
                             </div>
                             <Badge variant="outline">
                               <Calendar className="w-3 h-3 mr-1" />
@@ -553,17 +573,25 @@ const EventPage = () => {
                 <Card
                   key={index}
                   className={`relative overflow-hidden cursor-pointer transition-all duration-300 ${
-                    selectedPrize === index ? 'ring-2 ring-primary shadow-lg scale-105' : 'hover:shadow-md'
+                    selectedPrize === index
+                      ? "ring-2 ring-primary shadow-lg scale-105"
+                      : "hover:shadow-md"
                   }`}
                   onClick={() => setSelectedPrize(index)}
                 >
-                  <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${prize.gradient}`} />
+                  <div
+                    className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${prize.gradient}`}
+                  />
                   <CardHeader className="text-center pt-8">
-                    <div className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br ${prize.gradient} flex items-center justify-center mb-4 text-white`}>
+                    <div
+                      className={`w-20 h-20 mx-auto rounded-full bg-gradient-to-br ${prize.gradient} flex items-center justify-center mb-4 text-white`}
+                    >
                       {prize.icon}
                     </div>
                     <CardTitle className="text-2xl">{prize.place}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{prize.placeEn}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {prize.placeEn}
+                    </p>
                   </CardHeader>
                   <CardContent className="text-center space-y-4">
                     <div className="text-3xl font-bold">{prize.amount}</div>
@@ -587,14 +615,20 @@ const EventPage = () => {
               <div className="flex flex-wrap justify-center items-center gap-8">
                 {sponsors.map((sponsor, index) => (
                   <div key={index} className="text-center">
-                    <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${
-                      sponsor.tier === 'platinum' ? 'from-purple-400 to-purple-600' :
-                      sponsor.tier === 'gold' ? 'from-yellow-400 to-yellow-600' :
-                      'from-gray-400 to-gray-600'
-                    } flex items-center justify-center text-white font-bold text-xl mb-2`}>
+                    <div
+                      className={`w-16 h-16 rounded-lg bg-gradient-to-br ${
+                        sponsor.tier === "platinum"
+                          ? "from-purple-400 to-purple-600"
+                          : sponsor.tier === "gold"
+                            ? "from-yellow-400 to-yellow-600"
+                            : "from-gray-400 to-gray-600"
+                      } flex items-center justify-center text-white font-bold text-xl mb-2`}
+                    >
                       {sponsor.logo}
                     </div>
-                    <p className="text-xs text-muted-foreground">{sponsor.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {sponsor.name}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -613,8 +647,12 @@ const EventPage = () => {
                       <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <p className="font-semibold">バーチャル鳴門市役所</p>
-                        <p className="text-sm text-muted-foreground">Virtual Naruto City Hall</p>
-                        <p className="text-sm text-muted-foreground mt-1">中国・四国地域</p>
+                        <p className="text-sm text-muted-foreground">
+                          Virtual Naruto City Hall
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          中国・四国地域
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -624,7 +662,9 @@ const EventPage = () => {
                       <Users className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <p className="font-semibold">参加対象</p>
-                        <p className="text-sm text-muted-foreground">中学生〜大学院生</p>
+                        <p className="text-sm text-muted-foreground">
+                          中学生〜大学院生
+                        </p>
                         <p className="text-sm text-muted-foreground mt-1">
                           プログラミング経験不問・初心者歓迎
                         </p>
@@ -637,7 +677,9 @@ const EventPage = () => {
                       <Laptop className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <div className="flex-1">
                         <p className="font-semibold">参加形式</p>
-                        <p className="text-sm text-muted-foreground">完全オンライン</p>
+                        <p className="text-sm text-muted-foreground">
+                          完全オンライン
+                        </p>
                         <p className="text-sm text-muted-foreground mt-1">
                           バーチャル会場での交流も可能
                         </p>
@@ -654,7 +696,6 @@ const EventPage = () => {
                     <AccordionItem key={index} value={`item-${index}`}>
                       <AccordionTrigger className="flex items-center justify-between">
                         <span>{faq.question}</span>
-                        <Info className="w-4 h-4 text-muted-foreground" />
                       </AccordionTrigger>
                       <AccordionContent>
                         <p className="text-sm">{faq.answer}</p>
@@ -669,5 +710,5 @@ const EventPage = () => {
       </div>
     </div>
   );
-}
+};
 export default EventPage;

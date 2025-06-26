@@ -119,83 +119,90 @@ export default function EventCard({ event }: { event: Event }) {
   const daysInfo = getDaysInfo();
 
   return (
-    <Card className="p-0 rounded-none group relative overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <Card
+      className="p-0 rounded-none group relative overflow-hidden
+        hover:shadow-xl transition-shadow duration-300 h-full flex flex-col"
+    >
       {/* Days Badge - 常に表示 */}
       <div className="absolute top-3 left-3 z-20">
-        <div className={`${daysInfo.color} text-white px-3 py-1 rounded-full shadow-lg`}>
+        <div
+          className={`${daysInfo.color} text-white px-3 py-1 rounded-full shadow-lg`}
+        >
           <div className="flex items-center gap-1">
             {daysInfo.icon}
-            <span className="font-bold text-xs">
-              {daysInfo.text}
-            </span>
+            <span className="font-bold text-xs">{daysInfo.text}</span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col">
-        <div className="relative w-full h-44 overflow-hidden">
-          <Image
-            src={event.image}
-            alt={event.titleJa}
-            fill
-            style={{ objectFit: "cover" }}
-          />
-          
-          {/* Bookmark button */}
-          <Button
-            onClick={handleBookmark}
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-colors duration-200"
-            aria-label={isBookmarked ? "ブックマークを解除" : "ブックマークに追加"}
-          >
-            {isBookmarked ? (
-              <BookmarkCheck className="w-5 h-5 text-yellow-600 fill-yellow-600" />
-            ) : (
-              <Bookmark className="w-5 h-5 text-gray-700 hover:text-yellow-600 transition-colors" />
-            )}
-          </Button>
+      {/* Image section */}
+      <div className="relative w-full h-44 overflow-hidden">
+        <Image
+          src={event.image}
+          alt={event.titleJa}
+          fill
+          style={{ objectFit: "cover" }}
+        />
+
+        {/* Bookmark button */}
+        <Button
+          onClick={handleBookmark}
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm hover:bg-white/90 transition-colors duration-200"
+          aria-label={
+            isBookmarked ? "ブックマークを解除" : "ブックマークに追加"
+          }
+        >
+          {isBookmarked ? (
+            <BookmarkCheck className="w-5 h-5 text-yellow-600 fill-yellow-600" />
+          ) : (
+            <Bookmark className="w-5 h-5 text-gray-700 hover:text-yellow-600 transition-colors" />
+          )}
+        </Button>
+      </div>
+
+      {/* Content - This now takes remaining space */}
+      <div className="p-4 flex flex-col flex-grow">
+        {/* Status & Date */}
+        <div className="flex justify-between items-center mb-2">
+          <Badge className={`${getStatusColor(event.status)}`}>
+            {getStatusText(event.status)}
+          </Badge>
+          <div className="text-sm text-muted-foreground flex items-center gap-1">
+            <Calendar size={14} />
+            {formatDate(event.startDate)}
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="p-4 flex flex-col flex-grow">
-          {/* Status & Date */}
-          <div className="flex justify-between items-center mb-2">
-            <Badge className={`${getStatusColor(event.status)}`}>
-              {getStatusText(event.status)}
+        {/* Title */}
+        <h3 className="text-sm font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+          {event.titleJa}
+        </h3>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {event.tags.slice(0, 3).map((tag) => (
+            <Badge key={tag} variant="secondary" className="text-xs">
+              {tag}
             </Badge>
-            <div className="text-sm text-muted-foreground flex items-center gap-1">
-              <Calendar size={14} />
-              {formatDate(event.startDate)}
-            </div>
-          </div>
+          ))}
+        </div>
 
-          {/* Title */}
-          <h3 className="text-sm font-bold mb-2 group-hover:text-primary transition-colors line-clamp-2">
-            {event.titleJa}
-          </h3>
+        {/* Spacer to push footer to bottom */}
+        <div className="flex-grow"></div>
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-4">
-            {event.tags.slice(0, 3).map((tag) => (
-              <Badge 
-                key={tag} 
-                variant="secondary"
-                className="text-xs"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Organizer & Footer */}
-          <div className="flex justify-between items-center mt-auto pt-4 border-t">
+        {/* Organizer & Footer - This will now stick to bottom */}
+        <div className="mt-auto">
+          <div className="flex justify-between items-center pt-4 border-t mb-2">
             <span className="text-sm font-medium">{event.organizerJa}</span>
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1 group-hover:text-primary transition-colors">
               <Users size={16} />
-              <span>{event.participants.current}/{event.participants.max}</span>
+              <span>
+                {event.participants.current}/{event.participants.max}
+              </span>
             </div>
             <div className="flex items-center gap-1 group-hover:text-primary transition-colors">
               {getLocationIcon(event.location)}

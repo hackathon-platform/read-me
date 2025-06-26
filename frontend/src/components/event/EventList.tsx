@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Filter, SortAsc, X, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Search,
+  Filter,
+  SortAsc,
+  X,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +39,7 @@ const EventList = () => {
       event.theme.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.themeJa.includes(searchTerm) ||
       event.tags.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
+        tag.toLowerCase().includes(searchTerm.toLowerCase()),
       );
 
     const matchesStatus =
@@ -47,7 +54,9 @@ const EventList = () => {
   const sortedEvents = [...filteredEvents].sort((a, b) => {
     switch (sortBy) {
       case "date":
-        return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        return (
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        );
       case "title":
         return a.titleJa.localeCompare(b.titleJa);
       case "participants":
@@ -60,16 +69,17 @@ const EventList = () => {
   const getStatusCounts = () => {
     const counts = {
       all: mockEvents.length,
-      upcoming: mockEvents.filter(e => e.status === "upcoming").length,
-      open: mockEvents.filter(e => e.status === "open").length,
-      ended: mockEvents.filter(e => e.status === "ended").length,
+      upcoming: mockEvents.filter((e) => e.status === "upcoming").length,
+      open: mockEvents.filter((e) => e.status === "open").length,
+      ended: mockEvents.filter((e) => e.status === "ended").length,
     };
     return counts;
   };
 
   const statusCounts = getStatusCounts();
 
-  const hasActiveFilters = searchTerm || statusFilter !== "all" || locationFilter !== "all";
+  const hasActiveFilters =
+    searchTerm || statusFilter !== "all" || locationFilter !== "all";
 
   const clearAllFilters = () => {
     setSearchTerm("");
@@ -82,23 +92,17 @@ const EventList = () => {
     <div className="space-y-4">
       {/* Status Filter with Counts */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">
-          ステータス
-        </label>
+        <label className="text-sm font-medium">ステータス</label>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="ステータス" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">
-              すべて ({statusCounts.all})
-            </SelectItem>
+            <SelectItem value="all">すべて ({statusCounts.all})</SelectItem>
             <SelectItem value="upcoming">
               開催予定 ({statusCounts.upcoming})
             </SelectItem>
-            <SelectItem value="open">
-              募集中 ({statusCounts.open})
-            </SelectItem>
+            <SelectItem value="open">募集中 ({statusCounts.open})</SelectItem>
             <SelectItem value="ended">
               受付終了 ({statusCounts.ended})
             </SelectItem>
@@ -108,9 +112,7 @@ const EventList = () => {
 
       {/* Location Filter */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">
-          開催形式
-        </label>
+        <label className="text-sm font-medium">開催形式</label>
         <Select value={locationFilter} onValueChange={setLocationFilter}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="開催形式" />
@@ -125,9 +127,7 @@ const EventList = () => {
 
       {/* Sort Options */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">
-          並び順
-        </label>
+        <label className="text-sm font-medium">並び順</label>
         <Select value={sortBy} onValueChange={setSortBy}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="並び順" />
@@ -142,11 +142,7 @@ const EventList = () => {
 
       {/* Clear Filters */}
       {hasActiveFilters && (
-        <Button
-          variant="outline"
-          onClick={clearAllFilters}
-          className="w-full"
-        >
+        <Button variant="outline" onClick={clearAllFilters} className="w-full">
           フィルターをクリア
         </Button>
       )}
@@ -158,9 +154,7 @@ const EventList = () => {
       <div className="py-4">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            イベント一覧
-          </h1>
+          <h1 className="text-3xl font-bold mb-2">イベント一覧</h1>
           <p className="text-muted-foreground">
             技術イベントやハッカソンを探して参加しよう
           </p>
@@ -202,8 +196,8 @@ const EventList = () => {
                 </div>
 
                 {/* Mobile Filter Toggle Button */}
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="flex items-center gap-2"
                 >
@@ -211,7 +205,13 @@ const EventList = () => {
                   フィルター
                   {hasActiveFilters && (
                     <Badge variant="secondary" className="ml-1">
-                      {[statusFilter !== "all", locationFilter !== "all", searchTerm].filter(Boolean).length}
+                      {
+                        [
+                          statusFilter !== "all",
+                          locationFilter !== "all",
+                          searchTerm,
+                        ].filter(Boolean).length
+                      }
                     </Badge>
                   )}
                   {isFilterOpen ? (
@@ -251,8 +251,8 @@ const EventList = () => {
                 <p className="text-muted-foreground">
                   <span className="font-semibold text-foreground">
                     {sortedEvents.length}
-                  </span>
-                  {' '}件のイベントが見つかりました
+                  </span>{" "}
+                  件のイベントが見つかりました
                 </p>
                 {searchTerm && (
                   <Badge variant="secondary" className="text-xs">
@@ -269,7 +269,7 @@ const EventList = () => {
                   <Link
                     href={`/events/${event.id}`}
                     key={event.id}
-                    className="group block"
+                    className="group block h-full"
                   >
                     <EventCard event={event} />
                   </Link>
@@ -289,10 +289,7 @@ const EventList = () => {
                     <p className="text-muted-foreground mb-6 max-w-md">
                       検索条件やフィルターを調整してみてください。新しいイベントは随時追加されています。
                     </p>
-                    <Button
-                      variant="outline"
-                      onClick={clearAllFilters}
-                    >
+                    <Button variant="outline" onClick={clearAllFilters}>
                       すべてのフィルターをクリア
                     </Button>
                   </div>
