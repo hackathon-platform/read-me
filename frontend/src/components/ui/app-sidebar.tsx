@@ -1,7 +1,10 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 import {
+  AudioWaveform,
+  Command,
+  GalleryVerticalEnd,
   User,
   CalendarCheck,
   Megaphone,
@@ -9,11 +12,21 @@ import {
   LifeBuoy,
   MessageSquare,
   Briefcase,
-} from "lucide-react";
+} from "lucide-react"
 
-import { NavMain } from "@/components/ui/nav-main";
+import { NavMain } from "@/components/ui/nav-main"
 import { NavSecondary } from "@/components/ui/nav-secondary";
-import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
+import { NavUser } from "@/components/ui/nav-user"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+} from "@/components/ui/sidebar"
 
 const data = {
   navMain: [
@@ -78,20 +91,37 @@ const data = {
       icon: MessageSquare,
     },
   ],
-};
+}
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // const { user, signOut, loading } = useSupabase();
+  
+  
   return (
-    <Sidebar
-      variant="inset"
-      {...props}
-      collapsible="icon"
-      className="h-[calc(100vh-4rem)] top-10"
-    >
-      <SidebarContent className="py-2">
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+      <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
+              <a href="#">
+                <Command className="!size-5" />
+                <span className="text-base font-semibold">Event Navi.</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
         <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
-  );
+  )
 }

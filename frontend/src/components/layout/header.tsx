@@ -15,8 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarDays, Menu, Plus, Search, User, LogOut } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { CalendarDays, Plus, Search, User, LogOut } from "lucide-react";
 
 export default function Header() {
   const { user, signOut, loading } = useSupabase();
@@ -59,6 +58,7 @@ export default function Header() {
   const avatarUrl = user?.image_url ?? "";
   console.log("user", user);
   return (
+    <div className="md:hidden">
     <header className={headerClasses}>
       <div className="w-full flex h-12 items-center justify-between px-4 bg-sidebar">
         {/* Logo / Brand */}
@@ -139,5 +139,6 @@ export default function Header() {
         </div>
       </div>
     </header>
+    </div>
   );
 }
