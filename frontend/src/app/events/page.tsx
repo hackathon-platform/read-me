@@ -12,7 +12,7 @@ export default function EventsPage() {
         ]}
       />
       <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full pb-3">
-      <EventList />
+        <EventList />
       </div>
     </div>
   );

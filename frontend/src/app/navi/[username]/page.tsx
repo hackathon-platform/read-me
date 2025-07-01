@@ -45,8 +45,14 @@ export default async function ProfilePage({
   ]);
 
   // (Optional) log any fetch errors
-  [socialError, educationError, experienceError, projectError, qualificationError, expSkillError]
-    .forEach((err, i) => err && console.error(`Fetch error #${i}:`, err));
+  [
+    socialError,
+    educationError,
+    experienceError,
+    projectError,
+    qualificationError,
+    expSkillError,
+  ].forEach((err, i) => err && console.error(`Fetch error #${i}:`, err));
 
   // Group skills by experience_id
   const skillsByExp: Record<string, Skill[]> = {};
@@ -134,16 +140,16 @@ export default async function ProfilePage({
   return (
     <div>
       <PageHeader
-          breadcrumbs={[
-            { label: "プロファイル", href: "/navi" },
-            { label: username, current: true },
-          ]}
-        />
+        breadcrumbs={[
+          { label: "プロファイル", href: "/navi" },
+          { label: username, current: true },
+        ]}
+      />
       <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full pb-3">
         {/* Mobile */}
         <div className="lg:hidden">
           <ProfileSection profile={profile} />
-            <ProfileTabs />
+          <ProfileTabs />
         </div>
         {/* Desktop */}
         <div className="hidden lg:flex gap-8">

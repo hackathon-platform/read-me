@@ -26,7 +26,7 @@ export default function PageHeader({
   className = "",
 }: PageHeaderProps) {
   return (
-    <header className={`flex shrink-0 items-center gap-2 ${className}`}>
+    <header className={`flex shrink-0 items-center gap-2 border-b pb-2.5 ${className}`}>
       <div className="flex items-center gap-2 px-1">
         <SidebarTrigger className="-ml-1" />
         <Separator
@@ -59,6 +59,7 @@ export default function PageHeader({
             ))}
           </BreadcrumbList>
         </Breadcrumb>
+        
       </div>
     </header>
   );
