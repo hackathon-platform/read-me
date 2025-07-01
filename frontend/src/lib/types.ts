@@ -76,25 +76,44 @@ export interface ProjectMedia {
   url: string;
 }
 
-
 export interface Event {
   id: string;
   title: string;
+  titleJa: string;
   description: string;
-  startDate: string; // Date & Time in ISO format
-  endDate?: string; // Date & Time in ISO format
-  location?: string;
+  theme: string;
+  themeJa: string;
+  startDate: string;
+  endDate: string;
+  location: "online" | "in-person";
+  locationDetails?: string;
   url?: string;
-  imageUrl?: string;
-  organizerId: string;
+  image: string;
+  status: "upcoming" | "open" | "ended";
+  participants: {
+    current: number;
+    max: number;
+  };
+  tags: string[];
+  organizationId: string;
+  organizerJa: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Organization {
   id: string;
   name: string;
+  nameJa: string;
   description: string;
-  createdAt: string; // Date & Time in ISO format
+  descriptionJa: string;
+  imageUrl: string;
+  website?: string;
+  email?: string;
+  createdAt: string;
   ownerId: string;
+  memberCount: number;
+  eventCount: number;
 }
 
 export interface Organizer {
@@ -102,5 +121,15 @@ export interface Organizer {
   userId: string;
   organizationId: string;
   role: "owner" | "admin" | "member";
-  joinedAt: string; // Date & Time in ISO format
+  joinedAt: string;
+  permissions: string[];
+}
+
+export interface User {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl: string;
 }
