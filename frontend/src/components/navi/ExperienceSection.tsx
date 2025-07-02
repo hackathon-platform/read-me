@@ -27,7 +27,7 @@ export function ExperienceSection({ profileId, experiences }: Props) {
         <>
           <ExperienceDisplay experiences={experiences} />
           <button
-            className="absolute top-2 right-2"
+            className="absolute top-0.5 right-2"
             onClick={() => setEditing(true)}
           >
             <EditIcon size={16} />

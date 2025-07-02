@@ -10,10 +10,10 @@ export interface TimelineDisplayProps<T> {
   heading: string;
   icon: React.ReactNode;
   getTitle: (item: T) => string;
-  getSubtitle?: (item: T) => string;
+  getSubtitle?: (item: T) => string | undefined;
   getStart: (item: T) => string;
   getEnd: (item: T) => string | undefined;
-  getDescription?: (item: T) => string | null;
+  getDescription?: (item: T) => string | null | undefined;
 }
 
 export function TimelineDisplay<T>({
@@ -26,10 +26,10 @@ export function TimelineDisplay<T>({
   getEnd,
   getDescription,
 }: TimelineDisplayProps<T>) {
-  // Parses bullet-style text into array, else returns null
+  // Parse bullet-style text into array, else return null
   const parseDescription = (description: string) => {
     const lines = description
-      .split(/[,\n\r]+|(?=•)|(?=\*)|(?=-)/)
+      .split(/[\n\r]+|(?=•)|(?=\*)|(?=-)/)
       .filter(line => line.trim());
     const isBulletList = lines.some(line => /^[•\-*]/.test(line.trim()));
     if (isBulletList) {
@@ -41,13 +41,13 @@ export function TimelineDisplay<T>({
   };
 
   return (
-    <div className="space-y-4">
+    <div>
       {/* Heading */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-blue-900 dark:text-blue-500">
         {icon}
-        <h3 className="text-lg font-semibold">{heading}</h3>
+        <h3 className="font-semibold">{heading}</h3>
       </div>
-      <Separator className="my-2" />
+      <Separator className="mt-1 mb-3" />
 
       {items.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
@@ -59,15 +59,17 @@ export function TimelineDisplay<T>({
       ) : (
         <div className="space-y-6">
           {items.map((item, idx) => {
-            const rawDesc = getDescription?.(item);
+            const rawDesc = getDescription?.(item) ?? null;
             const bulletPoints = rawDesc ? parseDescription(rawDesc) : null;
+            const subtitle = getSubtitle?.(item);
+
             return (
               <div key={idx} className="relative flex gap-6">
                 <div className="flex-1">
                   <div className="space-y-1">
                     {/* Title and dates */}
-                    <div className="flex items-start justify-between gap-4">
-                      <h4 className="font-semibold text-lg leading-tight">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="font-semibold leading-tight">
                         {getTitle(item)}
                       </h4>
                       <div className="flex items-center gap-1.5 text-sm whitespace-nowrap">
@@ -79,14 +81,14 @@ export function TimelineDisplay<T>({
                     </div>
 
                     {/* Subtitle if any */}
-                    {getSubtitle && (
-                      <p className="text-sm italic">{getSubtitle(item)}</p>
+                    {subtitle && (
+                      <p className="text-sm italic">{subtitle}</p>
                     )}
 
                     {/* Description */}
                     {rawDesc &&
                       (bulletPoints ? (
-                        <ul className="text-sm pt-0.5 list-disc list-inside">
+                        <ul className="text-sm text-muted-foreground pt-0.5 list-disc list-inside">
                           {bulletPoints.map((pt, i) => (
                             <li key={i} className="leading-relaxed">
                               {pt}

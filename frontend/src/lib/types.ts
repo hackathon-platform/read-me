@@ -26,17 +26,16 @@ export interface Social {
 export interface Education {
   id: string;
   institution: string;
-  degree?: string;
   fieldOfStudy?: string;
   startMonth: string; // YYYY-MM
   endMonth?: string; // YYYY-MM
-  description?: string;
+  description?: string; // make this like a list of string
 }
 
 export interface Experience {
   id: string;
-  company: string;
-  position: string;
+  title: string;
+  organization: string;
   startMonth: string; // YYYY-MM
   endMonth: string; // YYYY-MM
   description: string;
@@ -49,8 +48,6 @@ export interface Qualification {
   profileId: string;
   name: string;
   acquisitionDate: string; // YYYY-MM
-  description?: string;
-  score?: string;
 }
 
 export interface Skill {

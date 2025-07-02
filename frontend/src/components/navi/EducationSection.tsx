@@ -27,7 +27,7 @@ export function EducationSection({ profileId, educations }: Props) {
         <>
           <EducationDisplay educations={educations} />
           <button
-            className="absolute top-2 right-2"
+            className="absolute top-0.5 right-2"
             onClick={() => setEditingProfile(true)}
           >
             <EditIcon size={16} />

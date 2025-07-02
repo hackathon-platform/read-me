@@ -77,7 +77,7 @@ export default function ProfileDisplay({ profile }: ProfileSectionProps) {
 
       {/* Desktop Layout */}
       <div className="hidden lg:block max-w-sm">
-        <div className="flex flex-col bg-transparent p-3 text-center items-center space-y-2">
+        <div className="flex flex-col p-3 text-center items-center space-y-2">
           <Avatar className="h-44 w-44 border-2 border-accent">
             <AvatarImage
               src={profile.imageUrl}

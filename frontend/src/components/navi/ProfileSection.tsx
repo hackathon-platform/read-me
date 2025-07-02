@@ -14,7 +14,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
   const [isEditingProfile, setEditingProfile] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="lg:sticky lg:top-4 relative">
       {isEditingProfile ? (
         <ProfileEdit
           initialData={profile}
