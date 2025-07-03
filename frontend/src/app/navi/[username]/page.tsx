@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileSection } from "@/components/navi/ProfileSection";
 import { EducationSection } from "@/components/navi/EducationSection";
 import { ExperienceSection } from "@/components/navi/ExperienceSection";
-import { QualificationsSection } from "@/components/navi/QualificationsSection";
+import { QualificationSection } from "@/components/navi/QualificationSection";
 import { ResumeSection } from "@/components/navi/ResumeSection";
 import { ProjectsSection } from "@/components/navi/ProjectsSection";
 import type { Profile, Skill } from "@/lib/types";
@@ -76,19 +76,18 @@ export default async function ProfilePage({
     description: profileData.description,
     resumeUrl: profileData.resume_url ?? "",
     socials: socialData ?? [],
-    education: (educationData ?? []).map((e: any) => ({
-      id: e.id,
-      institution: e.institution,
-      degree: e.degree,
-      fieldOfStudy: e.field_of_study,
-      startMonth: e.start_month.slice(0, 7),
-      endMonth: e.end_month?.slice(0, 7),
-      description: e.description,
+    education: (educationData ?? []).map((edu: any) => ({
+      id: edu.id,
+      institution: edu.institution,
+      fieldOfStudy: edu.field_of_study,
+      startMonth: edu.start_month.slice(0, 7),
+      endMonth: edu.end_month?.slice(0, 7),
+      description: edu.description,
     })),
     experiences: (experienceData ?? []).map((exp: any) => ({
       id: exp.id,
-      company: exp.company,
-      position: exp.position,
+      title: exp.title,
+      organization: exp.organization,
       startMonth: exp.start_month.slice(0, 7),
       endMonth: exp.end_month?.slice(0, 7) ?? "現在",
       description: exp.description,
@@ -96,7 +95,11 @@ export default async function ProfilePage({
       url: exp.url,
       skills: skillsByExp[exp.id] ?? [],
     })),
-    qualifications: qualificationData ?? [],
+    qualifications: (qualificationData ?? []).map((q: any) => ({
+      id: q.id,
+      name: q.name,
+      acquisitionDate: q.acquisition_date.slice(0, 7),
+    })),
     projects: projectData ?? [],
   };
 
@@ -107,20 +110,21 @@ export default async function ProfilePage({
         <TabsTrigger value="projects">プロジェクト</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="profile" className="mt-6">
-        <Card>
-          <CardContent>
+      <TabsContent value="profile" className="my-6">
+        <Card className="pt-4 pb-8">
+          <CardContent className="space-y-4">
             <ExperienceSection
               profileId={profile.id}
               experiences={profile.experiences}
             />
-            <Separator className="my-6" />
             <EducationSection
               profileId={profile.id}
               educations={profile.education}
             />
-            <Separator className="my-6" />
-            <QualificationsSection qualifications={profile.qualifications} />
+            <QualificationSection
+              profileId={profile.id}
+              qualifications={profile.qualifications}
+            />
             {profile.resumeUrl && (
               <>
                 <Separator className="my-6" />

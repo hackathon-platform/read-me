@@ -45,7 +45,7 @@ export interface Experience {
 }
 
 export interface Qualification {
-  profileId: string;
+  id: string;
   name: string;
   acquisitionDate: string; // YYYY-MM
 }
