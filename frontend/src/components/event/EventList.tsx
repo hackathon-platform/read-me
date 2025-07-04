@@ -26,10 +26,26 @@ import { mockEvents } from "@/lib/mockData";
 
 const EventList = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [statusFilters, setStatusFilters] = useState<string[]>(["upcoming", "open", "ended"]);
+  const [locationFilters, setLocationFilters] = useState<string[]>(["online", "in-person"]);
   const [sortBy, setSortBy] = useState<string>("date");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const toggleStatusFilter = (status: string) => {
+    setStatusFilters(prev => 
+      prev.includes(status) 
+        ? prev.filter(s => s !== status)
+        : [...prev, status]
+    );
+  };
+
+  const toggleLocationFilter = (location: string) => {
+    setLocationFilters(prev => 
+      prev.includes(location) 
+        ? prev.filter(l => l !== location)
+        : [...prev, location]
+    );
+  };
 
   const filteredEvents = mockEvents.filter((event) => {
     const matchesSearch =
@@ -42,10 +58,8 @@ const EventList = () => {
         tag.toLowerCase().includes(searchTerm.toLowerCase()),
       );
 
-    const matchesStatus =
-      statusFilter === "all" || event.status === statusFilter;
-    const matchesLocation =
-      locationFilter === "all" || event.location === locationFilter;
+    const matchesStatus = statusFilters.includes(event.status);
+    const matchesLocation = locationFilters.includes(event.location);
 
     return matchesSearch && matchesStatus && matchesLocation;
   });
@@ -68,7 +82,6 @@ const EventList = () => {
 
   const getStatusCounts = () => {
     const counts = {
-      all: mockEvents.length,
       upcoming: mockEvents.filter((e) => e.status === "upcoming").length,
       open: mockEvents.filter((e) => e.status === "open").length,
       ended: mockEvents.filter((e) => e.status === "ended").length,
@@ -76,57 +89,93 @@ const EventList = () => {
     return counts;
   };
 
+  const getLocationCounts = () => {
+    const counts = {
+      online: mockEvents.filter((e) => e.location === "online").length,
+      "in-person": mockEvents.filter((e) => e.location === "in-person").length,
+    };
+    return counts;
+  };
+
   const statusCounts = getStatusCounts();
+  const locationCounts = getLocationCounts();
 
   const hasActiveFilters =
-    searchTerm || statusFilter !== "all" || locationFilter !== "all";
+    searchTerm || 
+    statusFilters.length < 3 || 
+    locationFilters.length < 2;
 
   const clearAllFilters = () => {
     setSearchTerm("");
-    setStatusFilter("all");
-    setLocationFilter("all");
+    setStatusFilters(["upcoming", "open", "ended"]);
+    setLocationFilters(["online", "in-person"]);
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "upcoming":
+        return "開催予定";
+      case "open":
+        return "募集中";
+      case "ended":
+        return "受付終了";
+      default:
+        return status;
+    }
+  };
+
+  const getLocationText = (location: string) => {
+    return location === "online" ? "オンライン" : "会場開催";
   };
 
   // Filter content component (reused in both desktop and mobile)
   const FilterContent = () => (
     <div className="space-y-4">
-      {/* Status Filter with Counts */}
-      <div className="space-y-2">
+      {/* Status Filter with Buttons */}
+      <div>
         <label className="text-sm font-medium">ステータス</label>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="ステータス" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">すべて ({statusCounts.all})</SelectItem>
-            <SelectItem value="upcoming">
-              開催予定 ({statusCounts.upcoming})
-            </SelectItem>
-            <SelectItem value="open">募集中 ({statusCounts.open})</SelectItem>
-            <SelectItem value="ended">
-              受付終了 ({statusCounts.ended})
-            </SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { key: "upcoming", label: "開催予定", count: statusCounts.upcoming },
+            { key: "open", label: "募集中", count: statusCounts.open },
+            { key: "ended", label: "受付終了", count: statusCounts.ended },
+          ].map((status) => (
+            <Button
+              key={status.key}
+              variant={statusFilters.includes(status.key) ? "default" : "outline"}
+              size="sm"
+              onClick={() => toggleStatusFilter(status.key)}
+              className="text-xs"
+            >
+              {status.label} ({status.count})
+            </Button>
+          ))}
+        </div>
       </div>
 
-      {/* Location Filter */}
-      <div className="space-y-2">
+      {/* Location Filter with Buttons */}
+      <div>
         <label className="text-sm font-medium">開催形式</label>
-        <Select value={locationFilter} onValueChange={setLocationFilter}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="開催形式" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">すべて</SelectItem>
-            <SelectItem value="online">オンライン</SelectItem>
-            <SelectItem value="in-person">会場開催</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { key: "online", label: "オンライン", count: locationCounts.online },
+            { key: "in-person", label: "会場開催", count: locationCounts["in-person"] },
+          ].map((location) => (
+            <Button
+              key={location.key}
+              variant={locationFilters.includes(location.key) ? "default" : "outline"}
+              size="sm"
+              onClick={() => toggleLocationFilter(location.key)}
+              className="text-xs"
+            >
+              {location.label} ({location.count})
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Sort Options */}
-      <div className="space-y-2">
+      <div>
         <label className="text-sm font-medium">並び順</label>
         <Select value={sortBy} onValueChange={setSortBy}>
           <SelectTrigger className="w-full">
@@ -163,7 +212,7 @@ const EventList = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Desktop Sidebar Filters - Hidden on mobile */}
           <aside className="hidden lg:block">
-            <Card className="sticky top-4 shadow-lg">
+            <Card className="sticky top-4 shadow-lg gap-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-md">
                   <Filter className="w-4 h-4" />
@@ -207,8 +256,8 @@ const EventList = () => {
                     <Badge variant="secondary" className="ml-1">
                       {
                         [
-                          statusFilter !== "all",
-                          locationFilter !== "all",
+                          statusFilters.length < 3,
+                          locationFilters.length < 2,
                           searchTerm,
                         ].filter(Boolean).length
                       }
@@ -225,7 +274,7 @@ const EventList = () => {
               {/* Collapsible Filter Content */}
               {isFilterOpen && (
                 <Card className="mb-6">
-                  <CardContent>
+                  <CardContent className="pt-6">
                     <FilterContent />
                   </CardContent>
                 </Card>
@@ -262,14 +311,14 @@ const EventList = () => {
               </div>
             </div>
 
-            {/* Event Grid */}
+            {/* Event List - 2 columns on md screens and larger */}
             {sortedEvents.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {sortedEvents.map((event) => (
                   <Link
                     href={`/events/${event.id}`}
                     key={event.id}
-                    className="group block h-full"
+                    className="group block"
                   >
                     <EventCard event={event} />
                   </Link>
