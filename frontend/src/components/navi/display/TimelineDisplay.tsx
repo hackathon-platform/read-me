@@ -1,5 +1,6 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
 
 /**
@@ -40,68 +41,80 @@ export function TimelineDisplay<T>({
     return null;
   };
 
+  // Format date for display (convert YYYY-MM to readable format)
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return "";
+    const [year, month] = dateStr.split('-');
+    const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+    return `${year}年${monthNames[parseInt(month) - 1]}`;
+  };
+
   return (
-    <div>
+    <div className="space-y-4">
       {/* Heading */}
-      <div className="flex items-center gap-2 text-blue-900 dark:text-blue-500">
+      <div className="flex items-center gap-2 mb-1">
         {icon}
-        <h3 className="font-semibold">{heading}</h3>
+        <h3 className="font-semibold text-base">{heading}</h3>
       </div>
-      <Separator className="mt-1 mb-3" />
+      <Separator className="mb-3" />
 
       {items.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-8 text-center">
-          {icon}
-          <p className="text-sm text-muted-foreground mt-3">
+        <div className="rounded-lg border border-dashed p-6 text-center text-muted-foreground">
+          <div className="opacity-30 mb-2">{icon}</div>
+          <p className="text-sm">
             {heading}が登録されていません。
           </p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-1.5">
           {items.map((item, idx) => {
             const rawDesc = getDescription?.(item) ?? null;
             const bulletPoints = rawDesc ? parseDescription(rawDesc) : null;
             const subtitle = getSubtitle?.(item);
 
             return (
-              <div key={idx} className="relative flex gap-6">
-                <div className="flex-1">
-                  <div className="space-y-1">
-                    {/* Title and dates */}
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-semibold leading-tight">
-                        {getTitle(item)}
-                      </h4>
-                      <div className="flex items-center gap-1.5 text-sm whitespace-nowrap">
-                        <Calendar className="h-3 w-3" />
-                        <span>
-                          {getStart(item)} – {getEnd(item) ?? "現在"}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Subtitle if any */}
-                    {subtitle && (
-                      <p className="text-sm italic">{subtitle}</p>
-                    )}
-
-                    {/* Description */}
-                    {rawDesc &&
-                      (bulletPoints ? (
-                        <ul className="text-sm text-muted-foreground pt-0.5 list-disc list-inside">
-                          {bulletPoints.map((pt, i) => (
-                            <li key={i} className="leading-relaxed">
-                              {pt}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-sm pt-0.5 leading-relaxed">
-                          {rawDesc}
-                        </p>
-                      ))}
+              <div className="py-2.5 border px-3 bg-card text-card-foreground rounded-none">
+              <div key={idx} className="group">
+                {/* Header: Institution and Date */}
+                <div className="flex items-start justify-between gap-4">
+                  <h4 className="font-bold text-sm text-foreground leading-tight">
+                    {getTitle(item)}
+                  </h4>
+                  <div className="text-xs text-muted-foreground whitespace-nowrap flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {formatDate(getStart(item))} – {getEnd(item) ? formatDate(getEnd(item)!) : "現在"}
                   </div>
                 </div>
+
+                {/* Subtitle (field of study/position) */}
+                {subtitle && (
+                  <div className="mb-1">
+                    <span className="text-sm text-muted-foreground font-medium italic">
+                      {subtitle}
+                    </span>
+                  </div>
+                )}
+
+                {/* Description with better visual separation */}
+                {rawDesc && (
+                  <div className="ml-3 border-l-2 border-border/30 pl-3">
+                    {bulletPoints ? (
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        {bulletPoints.map((pt, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="mt-0.5 font-bold">•</span>
+                            <span className="leading-relaxed">{pt}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {rawDesc}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
               </div>
             );
           })}

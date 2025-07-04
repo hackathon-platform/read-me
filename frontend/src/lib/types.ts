@@ -37,8 +37,8 @@ export interface Experience {
   title: string;
   organization: string;
   startMonth: string; // YYYY-MM
-  endMonth: string; // YYYY-MM
-  description: string;
+  endMonth?: string; // YYYY-MM
+  description?: string;
   iconUrl?: string;
   url?: string;
   skills: Skill[];

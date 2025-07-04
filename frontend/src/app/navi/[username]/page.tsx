@@ -110,33 +110,33 @@ export default async function ProfilePage({
         <TabsTrigger value="projects">プロジェクト</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="profile" className="my-6">
-        <Card className="pt-4 pb-8">
-          <CardContent className="space-y-4">
-            <ExperienceSection
-              profileId={profile.id}
-              experiences={profile.experiences}
-            />
-            <EducationSection
-              profileId={profile.id}
-              educations={profile.education}
-            />
-            <QualificationSection
-              profileId={profile.id}
-              qualifications={profile.qualifications}
-            />
-            {profile.resumeUrl && (
-              <>
-                <Separator className="my-6" />
-                <ResumeSection resumeUrl={profile.resumeUrl} />
-              </>
-            )}
-          </CardContent>
-        </Card>
+      <TabsContent value="profile" className="my-3">
+        <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
+          <ExperienceSection
+            profileId={profile.id}
+            experiences={profile.experiences}
+          />
+          <EducationSection
+            profileId={profile.id}
+            educations={profile.education}
+          />
+          <QualificationSection
+            profileId={profile.id}
+            qualifications={profile.qualifications}
+          />
+          {profile.resumeUrl && (
+            <>
+              <Separator className="my-6" />
+              <ResumeSection resumeUrl={profile.resumeUrl} />
+            </>
+          )}
+        </div>
       </TabsContent>
 
-      <TabsContent value="projects" className="mt-6">
-        <ProjectsSection projects={profile.projects} />
+      <TabsContent value="projects" className="mt-3">
+        <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
+          <ProjectsSection projects={profile.projects} />
+        </div>
       </TabsContent>
     </Tabs>
   );

@@ -23,7 +23,7 @@ export function QualificationDisplay(
   return (
     <div>
       {/* Heading */}
-      <div className="flex items-center gap-2 text-blue-900 dark:text-blue-500">
+      <div className="flex items-center gap-2">
         <Award className="h-5 w-5" />
         <h3 className="font-semibold">資格・免許</h3>
       </div>

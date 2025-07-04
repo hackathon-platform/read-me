@@ -28,13 +28,9 @@ interface ProjectsSectionProps {
 export function ProjectsSection({ projects }: ProjectsSectionProps) {
   if (!projects?.length) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-muted-foreground text-sm">
-            プロジェクトが設定されていません。
-          </p>
-        </CardContent>
-      </Card>
+      <p className="text-muted-foreground text-sm">
+        プロジェクトが設定されていません。
+      </p>
     );
   }
   return (

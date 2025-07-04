@@ -27,7 +27,7 @@ export function QualificationSection({ profileId, qualifications }: Props) {
         <>
           <QualificationDisplay qualifications={qualifications} />
           <button
-            className="absolute top-2 right-2"
+            className="absolute top-1 right-2"
             onClick={() => setEditingProfile(true)}
           >
             <EditIcon size={16} />
