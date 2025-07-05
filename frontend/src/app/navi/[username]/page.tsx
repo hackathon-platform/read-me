@@ -35,11 +35,18 @@ export default async function ProfilePage({
     { data: projectData, error: projectError },
     { data: qualificationData, error: qualificationError },
     { data: expSkillData = [], error: expSkillError },
+    
   ] = await Promise.all([
     supabase.from("social").select().eq("profile_id", profileData.id),
     supabase.from("education").select().eq("profile_id", profileData.id),
     supabase.from("experience").select().eq("profile_id", profileData.id),
-    supabase.from("project").select().eq("profile_id", profileData.id),
+    supabase.from("project").select(`
+      *,
+      project_media(*),
+      project_skill(*)
+    `)
+    .eq("profile_id", profileData.id)
+    .order('created_at', { ascending: false }),
     supabase.from("qualification").select().eq("profile_id", profileData.id),
     supabase.from("experience_skill").select().eq("profile_id", profileData.id),
   ]);
@@ -100,7 +107,17 @@ export default async function ProfilePage({
       name: q.name,
       acquisitionDate: q.acquisition_date.slice(0, 7),
     })),
-    projects: projectData ?? [],
+    projects: (projectData ?? []).map((proj: any) => ({
+      id: proj.id,
+      profileId: proj.profile_id,
+      title: proj.title,
+      description: proj.description,
+      url: proj.url,
+      media: proj.project_media || [],
+      skills: proj.project_skill || [],
+      createdAt: proj.created_at,
+      updatedAt: proj.updated_at,
+    })),
   };
 
   const ProfileTabs = () => (
@@ -135,7 +152,10 @@ export default async function ProfilePage({
 
       <TabsContent value="projects" className="mt-3">
         <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
-          <ProjectsSection projects={profile.projects} />
+          <ProjectsSection
+            profileId={profile.id}
+            projects={profile.projects}
+          />
         </div>
       </TabsContent>
     </Tabs>

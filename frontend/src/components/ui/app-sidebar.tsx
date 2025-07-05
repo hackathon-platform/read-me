@@ -2,9 +2,7 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  Command,
-  GalleryVerticalEnd,
+  Code2,
   User,
   CalendarCheck,
   Megaphone,
@@ -107,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="/">
-                <Command className="!size-5" />
+                <Code2 className="!size-5" />
                 <span className="text-base font-semibold">Event Navi.</span>
               </a>
             </SidebarMenuButton>

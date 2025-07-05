@@ -73,8 +73,8 @@ export function TimelineDisplay<T>({
             const subtitle = getSubtitle?.(item);
 
             return (
-              <div className="py-2.5 border px-3 bg-card text-card-foreground rounded-none">
-              <div key={idx} className="group">
+              <div key={idx} className="py-2.5 border px-3 bg-card text-card-foreground rounded-none">
+              <div className="group">
                 {/* Header: Institution and Date */}
                 <div className="flex items-start justify-between gap-4">
                   <h4 className="font-bold text-sm text-foreground leading-tight">

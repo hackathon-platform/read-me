@@ -55,23 +55,27 @@ export interface Skill {
   type: "language" | "framework" | "tool" | "other";
 }
 
+export interface ProjectMedia {
+  id?: string;
+  type: "image" | "video";
+  url: string;
+  caption?: string;
+  thumbnailUrl?: string;
+}
+
 export interface Project {
   id: string;
   profileId: string;
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string; // Deprecated - use media instead
   url?: string;
   media: ProjectMedia[];
-  skills: Skill[];
+  skills?: Skill[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface ProjectMedia {
-  id: string;
-  projectId: string;
-  type: "image" | "video";
-  url: string;
-}
 
 export interface Event {
   id: string;
