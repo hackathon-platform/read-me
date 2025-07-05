@@ -3,12 +3,13 @@
 import {
   BadgeCheck,
   Bell,
+  CalendarDays,
   ChevronsUpDown,
   LogOut,
   User,
-  CalendarDays,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState, useRef } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -28,7 +29,6 @@ import {
 } from "@/components/ui/sidebar";
 import { useSupabase } from "@/components/supabase-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { useEffect, useState, useRef } from "react";
 
 interface User {
   id: string;
@@ -52,98 +52,66 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, signOut: originalSignOut, loading } = useSupabase();
 
-  // Initialize state from localStorage
   const [userData, setUserData] = useState<UserData>(() => {
     if (typeof window !== "undefined") {
-      const cached = localStorage.getItem(USER_DATA_KEY);
-      if (cached) {
-        try {
-          return JSON.parse(cached);
-        } catch (e) {
-          console.error("Failed to parse cached user data:", e);
-        }
+      try {
+        const cached = localStorage.getItem(USER_DATA_KEY);
+        return cached ? JSON.parse(cached) : defaultUserData();
+      } catch {
+        return defaultUserData();
       }
     }
-    return {
-      firstName: "",
-      lastName: "",
-      fullName: "",
-      email: "",
-      imageUrl: "",
-    };
+    return defaultUserData();
   });
 
-  // Track if we have cached data
-  const hasCachedData = userData.email !== "";
-
-  // Store previous user to compare
   const prevUserRef = useRef<User | null>(null);
 
-  // last_name のイニシャルを取得する（フォールバック）
-  const getInitial = (lastName: string | undefined) => {
-    if (!lastName) return "U";
-    return lastName.charAt(0).toUpperCase();
-  };
+  const defaultUserData = (): UserData => ({
+    firstName: "",
+    lastName: "",
+    fullName: "",
+    email: "",
+    imageUrl: "",
+  });
 
-  // Wrap signOut to clear cached data
+  const getInitial = (lastName?: string) =>
+    lastName?.charAt(0).toUpperCase() || "U";
+
+  const hasCachedData = userData.email !== "";
+
   const signOut = async () => {
-    // Clear cached data
     localStorage.removeItem(USER_DATA_KEY);
-    // Clear state
-    setUserData({
-      firstName: "",
-      lastName: "",
-      fullName: "",
-      email: "",
-      imageUrl: "",
-    });
-    // Call original signOut
+    setUserData(defaultUserData());
     await originalSignOut();
   };
 
   useEffect(() => {
-    // Clear cached data if user is null (signed out)
     if (!user && !loading) {
       localStorage.removeItem(USER_DATA_KEY);
-      setUserData({
-        firstName: "",
-        lastName: "",
-        fullName: "",
-        email: "",
-        imageUrl: "",
-      });
+      setUserData(defaultUserData());
       prevUserRef.current = null;
       return;
     }
 
-    // Only update if the user object has actually changed
     if (user && JSON.stringify(prevUserRef.current) !== JSON.stringify(user)) {
-      console.log("NavUser → user updated:", user);
-      
       const newFirstName = user.first_name || "";
       const newLastName = user.last_name || "";
-      const newFullName = newFirstName && newLastName 
-        ? `${newLastName} ${newFirstName}`.trim() 
-        : "";
-      
-      const newUserData = {
+      const fullName = `${newLastName} ${newFirstName}`.trim();
+
+      const newUserData: UserData = {
         firstName: newFirstName,
         lastName: newLastName,
-        fullName: newFullName,
+        fullName,
         email: user.email || "",
         imageUrl: user.image_url || "",
       };
 
       setUserData(newUserData);
-      
-      // Cache the data
       localStorage.setItem(USER_DATA_KEY, JSON.stringify(newUserData));
-      
       prevUserRef.current = user;
     }
   }, [user, loading]);
 
-  // Show loading only if we don't have cached data AND we're actually loading
   if (loading && !hasCachedData) {
     return (
       <SidebarMenu>
@@ -161,7 +129,6 @@ export function NavUser() {
     );
   }
 
-  // Show guest state if no user and no cached data
   if (!user && !hasCachedData) {
     return (
       <SidebarMenu>
@@ -184,7 +151,6 @@ export function NavUser() {
     );
   }
 
-  // Show user menu (with cached data or real data)
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -212,6 +178,7 @@ export function NavUser() {
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
@@ -237,6 +204,7 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <Link href="/navi">
@@ -252,17 +220,17 @@ export function NavUser() {
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="flex items-center justify-between"
-                onSelect={(e) => {
-                  e.preventDefault(); // Prevent dropdown from closing
-                }}
+                onSelect={(e) => e.preventDefault()}
               >
                 <ThemeToggle />
               </DropdownMenuItem>
             </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" />

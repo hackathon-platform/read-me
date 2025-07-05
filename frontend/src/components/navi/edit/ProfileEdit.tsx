@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -37,33 +36,19 @@ import {
   Trash2,
 } from "lucide-react";
 
-// Zod schema for validation
-const platformEnum = [
-  "github",
-  "linkedin",
-  "instagram",
-  "facebook",
-  "other",
-] as const;
+const platformEnum = ["github", "linkedin", "instagram", "facebook", "other"] as const;
 
 const schema = z.object({
-  username: z
-    .string()
-    .min(3, "3文字以上で入力してください")
-    .regex(/^[a-zA-Z0-9_]+$/, "英数字とアンダースコアのみ可"),
+  username: z.string().min(3, "3文字以上で入力してください").regex(/^[a-zA-Z0-9_]+$/, "英数字とアンダースコアのみ可"),
   firstName: z.string().min(1, "名を入力してください"),
   lastName: z.string().min(1, "姓を入力してください"),
   firstNameKana: z.string().min(1, "名（フリガナ）を入力してください"),
   lastNameKana: z.string().min(1, "姓（フリガナ）を入力してください"),
   description: z.string().max(100, "１００文字以内で入力して下さい").optional(),
-  social: z
-    .array(
-      z.object({
-        platform: z.enum(platformEnum),
-        url: z.string().url("URL形式で入力してください"),
-      }),
-    )
-    .optional(),
+  social: z.array(z.object({
+    platform: z.enum(platformEnum),
+    url: z.string().url("URL形式で入力してください"),
+  })).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -88,6 +73,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialData.imageUrl);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
@@ -101,10 +87,8 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
       description: initialData.description ?? "",
       social:
         initialData.social?.map((social) => ({
-          platform: platformEnum.includes(
-            social.platform as (typeof platformEnum)[number],
-          )
-            ? (social.platform as (typeof platformEnum)[number])
+          platform: platformEnum.includes(social.platform as any)
+            ? (social.platform as typeof platformEnum[number])
             : "other",
           url: social.url,
         })) || [],
@@ -114,15 +98,36 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
   const descriptionValue = form.watch("description") || "";
   const remaining = 100 - descriptionValue.length;
 
-  // Handle image preview
+  const uploadImageToSupabase = async (file: File, userId: string) => {
+    const fileExt = file.name.split(".").pop();
+    const filePath = `${userId}/avatar.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatar")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) throw new Error(uploadError.message);
+
+    const { data } = supabase.storage.from("avatar").getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
   const handleFile = (file: File, cb: (url: string) => void) => {
     const reader = new FileReader();
     reader.onload = (e) => e.target?.result && cb(e.target.result as string);
     reader.readAsDataURL(file);
   };
+
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) handleFile(file, setImageUrl);
+    if (file) {
+      if (file.size / 1024 / 1024 > 5) {
+        toast.error("画像は5MB以下にしてください。");
+        return;
+      }
+      handleFile(file, setImageUrl);
+      setSelectedFile(file);
+    }
   };
 
   const { fields, append, remove } = useFieldArray({
@@ -130,40 +135,21 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
     name: "social",
   });
 
-  const getIcon = (platform: string) => {
-    switch (platform) {
-      case "github":
-        return <Github className="h-4 w-4" />;
-      case "linkedin":
-        return <Linkedin className="h-4 w-4" />;
-      case "instagram":
-        return <Instagram className="h-4 w-4" />;
-      case "facebook":
-        return <Facebook className="h-4 w-4" />;
-      default:
-        return <LinkIcon className="h-4 w-4" />;
-    }
-  };
-
-  const getPlatformName = (platform: string) => {
-    switch (platform) {
-      case "github":
-        return "GitHub";
-      case "linkedin":
-        return "LinkedIn";
-      case "instagram":
-        return "Instagram";
-      case "facebook":
-        return "Facebook";
-      case "other":
-        return "その他";
-      default:
-        return platform;
-    }
-  };
-
   const onSubmit = async (values: FormValues) => {
     setIsSaving(true);
+
+    let uploadedImageUrl = imageUrl;
+
+    if (selectedFile) {
+      try {
+        uploadedImageUrl = await uploadImageToSupabase(selectedFile, initialData.id);
+      } catch (err: any) {
+        toast.error(`画像アップロードに失敗しました: ${err.message}`);
+        setIsSaving(false);
+        return;
+      }
+    }
+
     const { error: profileError } = await supabase
       .from("profile")
       .update({
@@ -172,7 +158,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
         last_name: values.lastName,
         first_name_kana: values.firstNameKana,
         last_name_kana: values.lastNameKana,
-        image_url: imageUrl || null,
+        image_url: uploadedImageUrl || null,
         description: values.description,
       })
       .eq("id", initialData.id);
@@ -184,15 +170,14 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
     }
 
     await supabase.from("social").delete().eq("profile_id", initialData.id);
+
     if (values.social && values.social.length) {
       const payload = values.social.map((s) => ({
         profile_id: initialData.id,
         platform: s.platform,
         url: s.url,
       }));
-      const { error: socialsError } = await supabase
-        .from("social")
-        .insert(payload);
+      const { error: socialsError } = await supabase.from("social").insert(payload);
       if (socialsError) {
         toast.error(socialsError.message);
         setIsSaving(false);
@@ -231,6 +216,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
             disabled={isSaving}
           />
           <Button
+            type="button"
             variant="outline"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
@@ -257,78 +243,40 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
 
         {/* Name Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <Label className="pl-0.5">性</Label>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <Label className="pl-0.5">名</Label>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="lastNameKana"
-            render={({ field }) => (
-              <FormItem>
-                <Label className="pl-0.5">セイ</Label>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="firstNameKana"
-            render={({ field }) => (
-              <FormItem>
-                <Label className="pl-0.5">メイ</Label>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {(["lastName", "firstName", "lastNameKana", "firstNameKana"] as const).map((name) => (
+            <FormField
+              key={name}
+              control={form.control}
+              name={name}
+              render={({ field }) => (
+                <FormItem>
+                  <Label className="pl-0.5">{{
+                    lastName: "姓",
+                    firstName: "名",
+                    lastNameKana: "セイ",
+                    firstNameKana: "メイ",
+                  }[name]}</Label>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
         </div>
 
-        {/* Description Field with Counter */}
+        {/* Description */}
         <FormField
           control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
-              <Label
-                className={`pl-0.5 ${remaining <= 0 ? "text-red-500" : ""}`}
-              >
+              <Label className={`pl-0.5 ${remaining <= 0 ? "text-red-500" : ""}`}>
                 自己紹介（残り{remaining}文字）
               </Label>
               <FormControl>
-                <Textarea
-                  {...field}
-                  rows={5}
-                  maxLength={300}
-                  className="resize-none"
-                />
+                <Textarea {...field} rows={5} maxLength={100} className="resize-none" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -336,7 +284,6 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
         />
 
         {/* Social Links */}
-        {/* Social Links Section */}
         <div>
           <Label className="pl-0.5 mb-2 block">SNSリンク</Label>
           {fields.map((item, idx) => (
@@ -346,20 +293,16 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
                 name={`social.${idx}.platform`}
                 render={({ field }) => (
                   <FormItem className="w-32">
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={isSaving}
-                    >
+                    <Select value={field.value} onValueChange={field.onChange} disabled={isSaving}>
                       <SelectTrigger>
                         <SelectValue placeholder="選択" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="github">GitHub</SelectItem>
-                        <SelectItem value="linkedin">LinkedIn</SelectItem>
-                        <SelectItem value="instagram">Instagram</SelectItem>
-                        <SelectItem value="facebook">Facebook</SelectItem>
-                        <SelectItem value="other">その他</SelectItem>
+                        {platformEnum.map((platform) => (
+                          <SelectItem key={platform} value={platform}>
+                            {platform}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -371,12 +314,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormControl>
-                      <Input
-                        {...field}
-                        type="url"
-                        placeholder="URLを入力"
-                        disabled={isSaving}
-                      />
+                      <Input {...field} type="url" placeholder="URLを入力" disabled={isSaving} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -406,7 +344,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
           </Button>
         </div>
 
-        {/* Form Actions */}
+        {/* Buttons */}
         <div className="flex justify-end gap-3 pt-6 border-t">
           <Button variant="ghost" onClick={onCancel} disabled={isSaving}>
             キャンセル

@@ -20,12 +20,12 @@ export function ProfileSetupForm() {
   const [lastName, setLastName] = useState("");
   const [firstNameKana, setFirstNameKana] = useState("");
   const [lastNameKana, setLastNameKana] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(""); // for preview
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // for upload
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Redirect unauthorized users
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace("/auth/login");
@@ -36,7 +36,22 @@ export function ProfileSetupForm() {
     return <div className="text-center py-20">読み込み中…</div>;
   }
 
-  // Base64 image preview
+  const uploadImageToSupabase = async (file: File, userId: string) => {
+    const fileExt = file.name.split(".").pop();
+    const filePath = `${userId}/avatar.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatar")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      throw new Error(uploadError.message);
+    }
+
+    const { data } = supabase.storage.from("avatar").getPublicUrl(filePath);
+    return data.publicUrl;
+  };
+
   const handleFile = (file: File, cb: (url: string) => void) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -44,15 +59,16 @@ export function ProfileSetupForm() {
     };
     reader.readAsDataURL(file);
   };
+
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // limit to 1MB
       if (file.size / 1024 / 1024 > 1) {
         toast.error("画像は1MB以下にしてください。");
         return;
       }
       handleFile(file, setImageUrl);
+      setSelectedFile(file);
     }
   };
 
@@ -60,7 +76,6 @@ export function ProfileSetupForm() {
     e.preventDefault();
     setError("");
 
-    // validate
     if (
       !username.trim() ||
       !firstName.trim() ||
@@ -78,7 +93,17 @@ export function ProfileSetupForm() {
 
     setIsSaving(true);
 
-    // upsert profile row
+    let uploadedImageUrl = null;
+    if (selectedFile) {
+      try {
+        uploadedImageUrl = await uploadImageToSupabase(selectedFile, user.id);
+      } catch (err: any) {
+        setError(`画像のアップロードに失敗しました: ${err.message}`);
+        setIsSaving(false);
+        return;
+      }
+    }
+
     const { error: upsertError } = await supabase.from("profile").upsert({
       id: user.id,
       auth_id: user.id,
@@ -87,7 +112,7 @@ export function ProfileSetupForm() {
       last_name: lastName.trim(),
       first_name_kana: firstNameKana.trim(),
       last_name_kana: lastNameKana.trim(),
-      image_url: imageUrl || null,
+      image_url: uploadedImageUrl ?? null,
     });
 
     if (upsertError) {
@@ -109,7 +134,6 @@ export function ProfileSetupForm() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {error && <p className="text-red-500 text-center">{error}</p>}
 
-            {/* Avatar Preview & Upload */}
             <div className="flex flex-col items-center">
               <Avatar
                 className="h-24 w-24 mb-2 cursor-pointer"
@@ -127,6 +151,7 @@ export function ProfileSetupForm() {
                 disabled={isSaving}
               />
               <Button
+                type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => fileInputRef.current?.click()}
@@ -136,7 +161,6 @@ export function ProfileSetupForm() {
               </Button>
             </div>
 
-            {/* Username */}
             <div className="grid gap-2">
               <Label htmlFor="username">ユーザーID（Username）</Label>
               <Input
@@ -149,12 +173,10 @@ export function ProfileSetupForm() {
                 disabled={isSaving}
               />
               <p className="text-xs text-muted-foreground">
-                3文字以上、英数字とアンダースコア(_)のみ可。他の人がこのIDで
-                あなたのページを見られます。
+                3文字以上、英数字とアンダースコア(_)のみ可。
               </p>
             </div>
 
-            {/* Names */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="lastName">姓</Label>
@@ -180,7 +202,6 @@ export function ProfileSetupForm() {
               </div>
             </div>
 
-            {/* Kana */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="lastNameKana">姓（フリガナ）</Label>
@@ -206,7 +227,6 @@ export function ProfileSetupForm() {
               </div>
             </div>
 
-            {/* Submit Button */}
             <Button type="submit" className="w-full mt-4" disabled={isSaving}>
               {isSaving ? "保存中…" : "プロフィールを登録"}
             </Button>
