@@ -20,14 +20,14 @@ import {
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Plus, 
-  Briefcase, 
+import {
+  Plus,
+  Briefcase,
   Calendar,
   Building2,
   User,
   FileText,
-  X
+  X,
 } from "lucide-react";
 import { Experience } from "@/lib/types";
 import { toast } from "sonner";
@@ -36,8 +36,16 @@ const expSchema = z.object({
   title: z.string().min(1, "役割を入力してください"),
   organization: z.string().min(1, "会社名を入力してください"),
   startMonth: z.string().regex(/^\d{4}-\d{2}$/, "開始月を入力して下さい"),
-  endMonth: z.string().nullable().optional().transform(val => val || ""),
-  description: z.string().nullable().optional().transform(val => val || ""),
+  endMonth: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((val) => val || ""),
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .transform((val) => val || ""),
 });
 
 const schema = z.object({
@@ -140,7 +148,10 @@ export function ExperienceEdit({
           ) : (
             <div className="space-y-4">
               {fields.map((field, idx) => (
-                <Card key={field.id} className="group rounded-none relative border border-border/40 hover:border-border/80 transition-all duration-200">
+                <Card
+                  key={field.id}
+                  className="group rounded-none relative border border-border/40 hover:border-border/80 transition-all duration-200"
+                >
                   <Button
                     type="button"
                     variant="ghost"
@@ -164,8 +175,8 @@ export function ExperienceEdit({
                               会社・組織名
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                {...field} 
+                              <Input
+                                {...field}
                                 placeholder="例：株式会社ABC"
                                 className="h-9"
                               />
@@ -185,8 +196,8 @@ export function ExperienceEdit({
                               役職・役割
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                {...field} 
+                              <Input
+                                {...field}
                                 placeholder="例：ソフトウェアエンジニア"
                                 className="h-9"
                               />
@@ -224,10 +235,10 @@ export function ExperienceEdit({
                               終了日
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                {...field} 
-                                value={field.value ?? ""} 
-                                type="month" 
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                type="month"
                                 placeholder="現職の場合は空欄"
                                 className="h-9"
                               />
@@ -253,7 +264,7 @@ export function ExperienceEdit({
                           <FormControl>
                             <Textarea
                               {...field}
-                              value={field.value ?? ""} 
+                              value={field.value ?? ""}
                               rows={3}
                               placeholder="例：&#10;• Reactを使用したWebアプリケーション開発&#10;• チームリーダーとして5名のメンバーをマネジメント&#10;• 売上20%向上に貢献"
                               className="text-sm resize-none"
@@ -266,7 +277,7 @@ export function ExperienceEdit({
                   </CardContent>
                 </Card>
               ))}
-              
+
               <Button
                 type="button"
                 variant="outline"
@@ -292,19 +303,15 @@ export function ExperienceEdit({
           <Separator />
 
           <div className="flex justify-end gap-3">
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
-              onClick={onCancel} 
+              variant="outline"
+              onClick={onCancel}
               disabled={isSaving}
             >
               キャンセル
             </Button>
-            <Button 
-              type="submit" 
-              disabled={isSaving}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={isSaving} className="gap-2">
               {isSaving ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />

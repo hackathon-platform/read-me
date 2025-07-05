@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Code2,
   User,
@@ -10,11 +10,11 @@ import {
   LifeBuoy,
   MessageSquare,
   Briefcase,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/ui/nav-main"
+import { NavMain } from "@/components/ui/nav-main";
 import { NavSecondary } from "@/components/ui/nav-secondary";
-import { NavUser } from "@/components/ui/nav-user"
+import { NavUser } from "@/components/ui/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   navMain: [
@@ -89,16 +89,15 @@ const data = {
       icon: MessageSquare,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // const { user, signOut, loading } = useSupabase();
-  
-  
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-      <SidebarMenu>
+        <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
@@ -121,5 +120,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

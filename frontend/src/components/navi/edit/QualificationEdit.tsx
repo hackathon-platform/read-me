@@ -18,19 +18,16 @@ import {
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Plus, 
-  Award, 
-  Calendar,
-  X
-} from "lucide-react";
+import { Plus, Award, Calendar, X } from "lucide-react";
 import { Qualification } from "@/lib/types";
 import { toast } from "sonner";
 
 // Zod schema for each qualification entry
 const qualificationSchema = z.object({
   name: z.string().min(1, "資格名を入力してください"),
-  acquisitionDate: z.string().regex(/^\d{4}-\d{2}$/, "取得日を入力してください"),
+  acquisitionDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}$/, "取得日を入力してください"),
 });
 
 const schema = z.object({
@@ -127,7 +124,10 @@ export function QualificationEdit({
           ) : (
             <div className="space-y-4">
               {fields.map((field, idx) => (
-                <Card key={field.id} className="group rounded-none relative border border-border/40 hover:border-border/80 transition-all duration-200">
+                <Card
+                  key={field.id}
+                  className="group rounded-none relative border border-border/40 hover:border-border/80 transition-all duration-200"
+                >
                   <Button
                     type="button"
                     variant="ghost"
@@ -150,8 +150,8 @@ export function QualificationEdit({
                             資格・免許名
                           </FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
+                            <Input
+                              {...field}
                               placeholder="例：基本情報技術者試験"
                               className="h-9"
                             />
@@ -171,8 +171,8 @@ export function QualificationEdit({
                             取得日
                           </FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
+                            <Input
+                              {...field}
                               type="month"
                               placeholder="取得年月を選択してください"
                               className="h-9"
@@ -185,7 +185,7 @@ export function QualificationEdit({
                   </CardContent>
                 </Card>
               ))}
-              
+
               <Button
                 type="button"
                 variant="outline"
@@ -208,19 +208,15 @@ export function QualificationEdit({
           <Separator />
 
           <div className="flex justify-end gap-3">
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
-              onClick={onCancel} 
+              variant="outline"
+              onClick={onCancel}
               disabled={isSaving}
             >
               キャンセル
             </Button>
-            <Button 
-              type="submit" 
-              disabled={isSaving}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={isSaving} className="gap-2">
               {isSaving ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />

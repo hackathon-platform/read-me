@@ -76,7 +76,6 @@ export interface Project {
   updatedAt?: string;
 }
 
-
 export interface Event {
   id: string;
   title: string;

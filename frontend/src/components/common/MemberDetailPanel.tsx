@@ -15,7 +15,7 @@ import {
   UserCheck,
   UserX,
   Settings,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import {
   Card,
@@ -38,12 +38,12 @@ interface MemberDetailPanelProps {
   context?: "organization" | "event"; // Different contexts may show different actions
 }
 
-export default function MemberDetailPanel({ 
-  member, 
-  isOpen, 
-  onClose, 
+export default function MemberDetailPanel({
+  member,
+  isOpen,
+  onClose,
   currentUserRole = "member",
-  context = "organization" 
+  context = "organization",
 }: MemberDetailPanelProps) {
   if (!member) return null;
 
@@ -121,7 +121,7 @@ export default function MemberDetailPanel({
     <>
       {/* Backdrop */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 transition-opacity"
           onClick={onClose}
         />
@@ -165,7 +165,9 @@ export default function MemberDetailPanel({
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                       {getRoleIcon(member.role)}
-                      <span className="text-sm font-medium">{getRoleText(member.role)}</span>
+                      <span className="text-sm font-medium">
+                        {getRoleText(member.role)}
+                      </span>
                     </div>
                     {getStatusBadge(member.status)}
                   </div>
@@ -187,7 +189,9 @@ export default function MemberDetailPanel({
                   <>
                     <Separator />
                     <div>
-                      <p className="text-sm text-muted-foreground mb-2">自己紹介</p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        自己紹介
+                      </p>
                       <p className="text-sm">{member.description}</p>
                     </div>
                   </>
@@ -206,7 +210,9 @@ export default function MemberDetailPanel({
                     <Calendar className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm">参加日</span>
                   </div>
-                  <span className="text-sm font-medium">{formatDate(member.joinedAt)}</span>
+                  <span className="text-sm font-medium">
+                    {formatDate(member.joinedAt)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -214,7 +220,9 @@ export default function MemberDetailPanel({
                     <span className="text-sm">最終アクティブ</span>
                   </div>
                   <span className="text-sm font-medium">
-                    {member.lastActive ? formatDateTime(member.lastActive) : "未記録"}
+                    {member.lastActive
+                      ? formatDateTime(member.lastActive)
+                      : "未記録"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -222,7 +230,9 @@ export default function MemberDetailPanel({
                     <Activity className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm">イベント作成数</span>
                   </div>
-                  <span className="text-sm font-medium">{member.eventsCreated || 0}</span>
+                  <span className="text-sm font-medium">
+                    {member.eventsCreated || 0}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -236,7 +246,11 @@ export default function MemberDetailPanel({
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {member.permissions.map((permission) => (
-                      <Badge key={permission} variant="outline" className="text-xs">
+                      <Badge
+                        key={permission}
+                        variant="outline"
+                        className="text-xs"
+                      >
                         {permission.replace("_", " ")}
                       </Badge>
                     ))}
@@ -277,7 +291,9 @@ export default function MemberDetailPanel({
                   </Button>
                   <Button className="w-full" variant="destructive">
                     <UserX className="w-4 h-4 mr-2" />
-                    {context === "organization" ? "組織から削除" : "イベントから削除"}
+                    {context === "organization"
+                      ? "組織から削除"
+                      : "イベントから削除"}
                   </Button>
                 </div>
               </>
@@ -297,11 +313,11 @@ interface ParticipantDetailPanelProps {
   currentUserRole?: "owner" | "admin" | "member";
 }
 
-export function ParticipantDetailPanel({ 
-  participant, 
-  isOpen, 
-  onClose, 
-  currentUserRole = "member" 
+export function ParticipantDetailPanel({
+  participant,
+  isOpen,
+  onClose,
+  currentUserRole = "member",
 }: ParticipantDetailPanelProps) {
   if (!participant) return null;
 
@@ -327,7 +343,7 @@ export function ParticipantDetailPanel({
     <>
       {/* Backdrop */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 transition-opacity"
           onClick={onClose}
         />
@@ -356,7 +372,10 @@ export function ParticipantDetailPanel({
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="relative w-20 h-20 rounded-full overflow-hidden">
                     <Image
-                      src={participant.imageUrl || "https://via.placeholder.com/150x150/6366F1/FFFFFF?text=User"}
+                      src={
+                        participant.imageUrl ||
+                        "https://via.placeholder.com/150x150/6366F1/FFFFFF?text=User"
+                      }
                       alt={`${participant.firstName || ""} ${participant.lastName || ""}`}
                       fill
                       style={{ objectFit: "cover" }}
@@ -366,7 +385,9 @@ export function ParticipantDetailPanel({
                     <h3 className="text-xl font-semibold">
                       {participant.firstName} {participant.lastName}
                     </h3>
-                    <p className="text-muted-foreground">@{participant.username}</p>
+                    <p className="text-muted-foreground">
+                      @{participant.username}
+                    </p>
                   </div>
                   <Badge className="bg-blue-500 text-white">参加者</Badge>
                 </div>
@@ -382,12 +403,16 @@ export function ParticipantDetailPanel({
                 <div className="flex items-center justify-between">
                   <span className="text-sm">参加登録日</span>
                   <span className="text-sm font-medium">
-                    {participant.registeredAt ? formatDate(participant.registeredAt) : "未記録"}
+                    {participant.registeredAt
+                      ? formatDate(participant.registeredAt)
+                      : "未記録"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">参加ステータス</span>
-                  <Badge variant="outline">{participant.status || "参加予定"}</Badge>
+                  <Badge variant="outline">
+                    {participant.status || "参加予定"}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>

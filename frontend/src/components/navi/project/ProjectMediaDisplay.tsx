@@ -11,19 +11,23 @@ interface ProjectMediaProps {
   isRemoving?: boolean;
 }
 
-export function ProjectMediaDisplay({ media, onRemove, isRemoving }: ProjectMediaProps) {
+export function ProjectMediaDisplay({
+  media,
+  onRemove,
+  isRemoving,
+}: ProjectMediaProps) {
   const [imageError, setImageError] = useState(false);
 
   return (
     <div className="relative aspect-square bg-muted rounded-md overflow-hidden group">
-      {media.type === 'image' && !imageError ? (
+      {media.type === "image" && !imageError ? (
         <img
           src={media.url}
           alt={media.caption || "Media"}
           className="w-full h-full object-cover"
           onError={() => setImageError(true)}
         />
-      ) : media.type === 'video' ? (
+      ) : media.type === "video" ? (
         <div className="relative w-full h-full">
           <video
             src={media.url}
@@ -42,14 +46,16 @@ export function ProjectMediaDisplay({ media, onRemove, isRemoving }: ProjectMedi
           {imageError ? (
             <div className="text-center p-2">
               <X className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-xs text-muted-foreground">画像を読み込めません</p>
+              <p className="text-xs text-muted-foreground">
+                画像を読み込めません
+              </p>
             </div>
           ) : (
             <Video className="h-8 w-8 text-muted-foreground" />
           )}
         </div>
       )}
-      
+
       <Button
         size="icon"
         variant="destructive"

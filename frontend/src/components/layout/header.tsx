@@ -59,86 +59,86 @@ export default function Header() {
   console.log("user", user);
   return (
     <div className="md:hidden">
-    <header className={headerClasses}>
-      <div className="w-full flex h-12 items-center justify-between px-4 bg-sidebar">
-        {/* Logo / Brand */}
-        <div className="flex">
-          <Link href="/" className="flex text-2xl font-bold items-center">
-            <CalendarDays className="h-6 w-6 mr-2" />
-            <span>EventNavi</span>
-          </Link>
-        </div>
+      <header className={headerClasses}>
+        <div className="w-full flex h-12 items-center justify-between px-4 bg-sidebar">
+          {/* Logo / Brand */}
+          <div className="flex">
+            <Link href="/" className="flex text-2xl font-bold items-center">
+              <CalendarDays className="h-6 w-6 mr-2" />
+              <span>EventNavi</span>
+            </Link>
+          </div>
 
-        {/* Right side: Theme toggle + user menu / auth links */}
-        <div className="flex items-center space-x-2">
-          <ThemeToggle />
+          {/* Right side: Theme toggle + user menu / auth links */}
+          <div className="flex items-center space-x-2">
+            <ThemeToggle />
 
-          {!loading && (
-            <>
-              {user ? (
-                // ─── ログイン済みユーザー向けメニュー ───
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-10 w-10 rounded-full p-0"
-                    >
-                      <Avatar>
-                        {avatarUrl ? (
-                          <AvatarImage src={avatarUrl} alt={fullName} />
-                        ) : (
-                          <AvatarFallback>
-                            {getInitial(lastName)}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
+            {!loading && (
+              <>
+                {user ? (
+                  // ─── ログイン済みユーザー向けメニュー ───
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="relative h-10 w-10 rounded-full p-0"
+                      >
+                        <Avatar>
+                          {avatarUrl ? (
+                            <AvatarImage src={avatarUrl} alt={fullName} />
+                          ) : (
+                            <AvatarFallback>
+                              {getInitial(lastName)}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
 
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel className="font-medium">
-                      {fullName || "ユーザー"}
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel className="font-medium">
+                        {fullName || "ユーザー"}
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
 
-                    <Link href="/profile">
-                      <DropdownMenuItem>
-                        <User className="h-4 w-4 mr-2" />
-                        <span>プロフィール</span>
+                      <Link href="/profile">
+                        <DropdownMenuItem>
+                          <User className="h-4 w-4 mr-2" />
+                          <span>プロフィール</span>
+                        </DropdownMenuItem>
+                      </Link>
+
+                      <Link href="/events/registered">
+                        <DropdownMenuItem>
+                          <CalendarDays className="h-4 w-4 mr-2" />
+                          <span>登録済みイベント</span>
+                        </DropdownMenuItem>
+                      </Link>
+
+                      <DropdownMenuSeparator />
+
+                      <DropdownMenuItem onClick={() => signOut()}>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        <span>ログアウト</span>
                       </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  // ─── 非ログイン時は常にログイン/新規登録を表示 ───
+                  <div className="flex space-x-2">
+                    <Link href="/auth/login">
+                      <Button variant="ghost">ログイン</Button>
                     </Link>
-
-                    <Link href="/events/registered">
-                      <DropdownMenuItem>
-                        <CalendarDays className="h-4 w-4 mr-2" />
-                        <span>登録済みイベント</span>
-                      </DropdownMenuItem>
+                    <Link href="/auth/signin">
+                      <Button>新規登録</Button>
                     </Link>
-
-                    <DropdownMenuSeparator />
-
-                    <DropdownMenuItem onClick={() => signOut()}>
-                      <LogOut className="h-4 w-4 mr-2" />
-                      <span>ログアウト</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                // ─── 非ログイン時は常にログイン/新規登録を表示 ───
-                <div className="flex space-x-2">
-                  <Link href="/auth/login">
-                    <Button variant="ghost">ログイン</Button>
-                  </Link>
-                  <Link href="/auth/signin">
-                    <Button>新規登録</Button>
-                  </Link>
-                </div>
-              )}
-            </>
-          )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
     </div>
   );
 }

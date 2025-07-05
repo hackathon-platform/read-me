@@ -11,15 +11,17 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Qualification } from "@/lib/types";
 
-
 function formatDate(date: string) {
-    if (!date) return "";
+  if (!date) return "";
   const [year, month] = date.split("-");
   return `${year}年${month}月`;
 }
 
-export function QualificationDisplay(
-    { qualifications }: { qualifications: Qualification[] }) {
+export function QualificationDisplay({
+  qualifications,
+}: {
+  qualifications: Qualification[];
+}) {
   return (
     <div>
       {/* Heading */}

@@ -94,12 +94,18 @@ export default function ProjectFormModal({
       }
       return true;
     });
-    setFormData((f) => ({ ...f, mediaFiles: [...f.mediaFiles, ...validFiles] }));
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    setFormData((f) => ({
+      ...f,
+      mediaFiles: [...f.mediaFiles, ...validFiles],
+    }));
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const removeMediaFile = (index: number) => {
-    setFormData((f) => ({ ...f, mediaFiles: f.mediaFiles.filter((_, i) => i !== index) }));
+    setFormData((f) => ({
+      ...f,
+      mediaFiles: f.mediaFiles.filter((_, i) => i !== index),
+    }));
   };
 
   const removeExistingMedia = (mediaId: string) => {
@@ -111,49 +117,52 @@ export default function ProjectFormModal({
   };
 
   const handleAddSkill = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && skillInput.trim()) {
+    if (e.key === "Enter" && skillInput.trim()) {
       e.preventDefault();
       const trimmed = skillInput.trim();
       if (!formData.skills.includes(trimmed)) {
         setFormData((f) => ({ ...f, skills: [...f.skills, trimmed] }));
       }
-      setSkillInput('');
+      setSkillInput("");
     }
   };
 
   const removeSkill = (index: number) => {
-    setFormData((f) => ({ ...f, skills: f.skills.filter((_, i) => i !== index) }));
+    setFormData((f) => ({
+      ...f,
+      skills: f.skills.filter((_, i) => i !== index),
+    }));
   };
 
   // Upload to Supabase Storage & return array of media metadata
   const uploadMedia = async (
     projectId: string,
-    files: File[]
+    files: File[],
   ): Promise<Array<ProjectMedia & { path: string }>> => {
     const uploaded: Array<ProjectMedia & { path: string }> = [];
     for (const file of files) {
       try {
-        const ext = file.name.split('.').pop()?.toLowerCase();
+        const ext = file.name.split(".").pop()?.toLowerCase();
         const timestamp = Date.now();
         const randomId = Math.random().toString(36).substring(2, 15);
         const path = `projects/${projectId}/${timestamp}_${randomId}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from(BUCKET)
-          .upload(path, file, { cacheControl: '3600', upsert: false });
+          .upload(path, file, { cacheControl: "3600", upsert: false });
         if (uploadError) {
-          console.error('Upload error:', uploadError);
+          console.error("Upload error:", uploadError);
           toast.error(`${file.name} のアップロードに失敗しました`);
           continue;
         }
         const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
         uploaded.push({
-          type: file.type.startsWith('video/') ? 'video' : 'image',
+          type: file.type.startsWith("video/") ? "video" : "image",
           url: data.publicUrl,
-          caption: '',
+          caption: "",
           path,
         });
       } catch (err) {
-        console.error('Error uploading file:', err);
+        console.error("Error uploading file:", err);
         toast.error(`${file.name} のアップロードに失敗しました`);
       }
     }
@@ -165,11 +174,11 @@ export default function ProjectFormModal({
     if (!mediaIds.length) return;
     // Fetch paths for deletion
     const { data: toDelete, error: fetchErr } = await supabase
-      .from('project_media')
-      .select('id, path')
-      .in('id', mediaIds);
+      .from("project_media")
+      .select("id, path")
+      .in("id", mediaIds);
     if (fetchErr) {
-      console.error('Error fetching media to delete:', fetchErr);
+      console.error("Error fetching media to delete:", fetchErr);
       return;
     }
     // Remove from Storage
@@ -177,19 +186,19 @@ export default function ProjectFormModal({
       const { error: storageErr } = await supabase.storage
         .from(BUCKET)
         .remove([m.path]);
-      if (storageErr) console.error('Storage deletion error:', storageErr);
+      if (storageErr) console.error("Storage deletion error:", storageErr);
     }
     // Remove from DB
     const { error: dbErr } = await supabase
-      .from('project_media')
+      .from("project_media")
       .delete()
-      .in('id', mediaIds);
-    if (dbErr) console.error('Database deletion error:', dbErr);
+      .in("id", mediaIds);
+    if (dbErr) console.error("Database deletion error:", dbErr);
   };
 
   const handleCreate = async () => {
     const { data: newProj, error: insertErr } = await supabase
-      .from('project')
+      .from("project")
       .insert({
         profile_id: profileId,
         title: formData.title,
@@ -203,39 +212,35 @@ export default function ProjectFormModal({
     // Upload files and insert media records
     const mediaData = await uploadMedia(newProj.id, formData.mediaFiles);
     if (mediaData.length) {
-      const { error: mediaErr } = await supabase
-        .from('project_media')
-        .insert(
-          mediaData.map((m) => ({
-            project_id: newProj.id,
-            type: m.type,
-            url: m.url,
-            path: m.path,
-            caption: m.caption,
-          }))
-        );
+      const { error: mediaErr } = await supabase.from("project_media").insert(
+        mediaData.map((m) => ({
+          project_id: newProj.id,
+          type: m.type,
+          url: m.url,
+          path: m.path,
+          caption: m.caption,
+        })),
+      );
       if (mediaErr) throw mediaErr;
     }
 
     // Insert skills
     if (formData.skills.length) {
-      const { error: skillErr } = await supabase
-        .from('project_skill')
-        .insert(
-          formData.skills.map((name) => ({
-            project_id: newProj.id,
-            name,
-            type: 'other',
-          }))
-        );
+      const { error: skillErr } = await supabase.from("project_skill").insert(
+        formData.skills.map((name) => ({
+          project_id: newProj.id,
+          name,
+          type: "other",
+        })),
+      );
       if (skillErr) throw skillErr;
     }
 
     // Fetch full project with proper data transformation
     const { data: fullProj, error: fetchErr } = await supabase
-      .from('project')
+      .from("project")
       .select(`*, project_media(*), project_skill(*)`)
-      .eq('id', newProj.id)
+      .eq("id", newProj.id)
       .single();
     if (fetchErr) throw fetchErr;
 
@@ -260,27 +265,25 @@ export default function ProjectFormModal({
     const id = editingProject.id;
     // Update project
     const { error: updErr } = await supabase
-      .from('project')
+      .from("project")
       .update({
         title: formData.title,
         description: formData.description,
         url: formData.url || null,
       })
-      .eq('id', id);
+      .eq("id", id);
     if (updErr) throw updErr;
 
     // Reset skills
-    await supabase.from('project_skill').delete().eq('project_id', id);
+    await supabase.from("project_skill").delete().eq("project_id", id);
     if (formData.skills.length) {
-      const { error: skillErr } = await supabase
-        .from('project_skill')
-        .insert(
-          formData.skills.map((name) => ({
-            project_id: id,
-            name,
-            type: 'other',
-          }))
-        );
+      const { error: skillErr } = await supabase.from("project_skill").insert(
+        formData.skills.map((name) => ({
+          project_id: id,
+          name,
+          type: "other",
+        })),
+      );
       if (skillErr) throw skillErr;
     }
 
@@ -293,26 +296,24 @@ export default function ProjectFormModal({
     if (formData.mediaFiles.length) {
       const newMedia = await uploadMedia(id, formData.mediaFiles);
       if (newMedia.length) {
-        const { error: mediaErr } = await supabase
-          .from('project_media')
-          .insert(
-            newMedia.map((m) => ({
-              project_id: id,
-              type: m.type,
-              url: m.url,
-              path: m.path,
-              caption: m.caption,
-            }))
-          );
+        const { error: mediaErr } = await supabase.from("project_media").insert(
+          newMedia.map((m) => ({
+            project_id: id,
+            type: m.type,
+            url: m.url,
+            path: m.path,
+            caption: m.caption,
+          })),
+        );
         if (mediaErr) throw mediaErr;
       }
     }
 
     // Fetch updated project with proper data transformation
     const { data: updated, error: fetchErr } = await supabase
-      .from('project')
+      .from("project")
       .select(`*, project_media(*), project_skill(*)`)
-      .eq('id', id)
+      .eq("id", id)
       .single();
     if (fetchErr) throw fetchErr;
 
@@ -347,7 +348,8 @@ export default function ProjectFormModal({
       toast.error("プロジェクトの説明を入力してください");
       return;
     }
-    const totalCount = formData.existingMedia.length + formData.mediaFiles.length;
+    const totalCount =
+      formData.existingMedia.length + formData.mediaFiles.length;
     if (!totalCount) {
       toast.error("プロジェクト画像または動画を1つ以上追加してください");
       return;
@@ -356,34 +358,39 @@ export default function ProjectFormModal({
     try {
       if (editingProject) await handleUpdate();
       else await handleCreate();
-      
+
       // Reset form immediately
       resetForm();
       setIsSaving(false);
-      
+
       // Close modal immediately without delay
       onClose();
-      
-      toast.success(editingProject ? 'プロジェクトを更新しました' : 'プロジェクトを作成しました');
+
+      toast.success(
+        editingProject
+          ? "プロジェクトを更新しました"
+          : "プロジェクトを作成しました",
+      );
     } catch (err: any) {
-      console.error('Submit error:', err);
-      toast.error(err.message || 'エラーが発生しました');
+      console.error("Submit error:", err);
+      toast.error(err.message || "エラーが発生しました");
       setIsSaving(false);
     }
   };
 
-  const totalMediaCount = formData.existingMedia.length + formData.mediaFiles.length;
+  const totalMediaCount =
+    formData.existingMedia.length + formData.mediaFiles.length;
 
   return (
-    <Dialog 
-      open={isOpen} 
+    <Dialog
+      open={isOpen}
       onOpenChange={(open) => {
         if (!open && !isSaving) {
           handleClose();
         }
       }}
     >
-      <DialogContent 
+      <DialogContent
         className="max-w-2xl max-h-[90vh] overflow-y-auto"
         onInteractOutside={(e) => {
           if (isSaving) {
@@ -400,8 +407,8 @@ export default function ProjectFormModal({
           // Prevent auto-focus issues that can cause scroll lock
           e.preventDefault();
           // Restore body scroll
-          document.body.style.overflow = 'unset';
-          document.body.style.pointerEvents = 'unset';
+          document.body.style.overflow = "unset";
+          document.body.style.pointerEvents = "unset";
         }}
       >
         <DialogHeader>
@@ -415,7 +422,9 @@ export default function ProjectFormModal({
           <Input
             placeholder="プロジェクトタイトル"
             value={formData.title}
-            onChange={(e) => setFormData((f) => ({ ...f, title: e.target.value }))}
+            onChange={(e) =>
+              setFormData((f) => ({ ...f, title: e.target.value }))
+            }
             className="font-semibold"
           />
 
@@ -423,7 +432,9 @@ export default function ProjectFormModal({
           <Textarea
             placeholder="プロジェクトについて説明してください..."
             value={formData.description}
-            onChange={(e) => setFormData((f) => ({ ...f, description: e.target.value }))}
+            onChange={(e) =>
+              setFormData((f) => ({ ...f, description: e.target.value }))
+            }
             rows={3}
             className="resize-none"
           />
@@ -431,10 +442,12 @@ export default function ProjectFormModal({
           {/* Media Upload */}
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <label className="text-sm font-medium">メディア ({totalMediaCount})</label>
+              <label className="text-sm font-medium">
+                メディア ({totalMediaCount})
+              </label>
               <span className="text-xs text-muted-foreground">最大10MB</span>
             </div>
-            
+
             <input
               ref={fileInputRef}
               type="file"
@@ -455,15 +468,18 @@ export default function ProjectFormModal({
                     onRemove={() => removeExistingMedia(media.id!)}
                   />
                 ))}
-                
+
                 {/* New Media Preview */}
                 {formData.mediaFiles.map((file, idx) => (
-                  <div key={idx} className="relative aspect-square bg-muted rounded-md overflow-hidden">
+                  <div
+                    key={idx}
+                    className="relative aspect-square bg-muted rounded-md overflow-hidden"
+                  >
                     {file.type.startsWith("image/") ? (
-                      <img 
-                        src={URL.createObjectURL(file)} 
-                        alt="preview" 
-                        className="w-full h-full object-cover" 
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt="preview"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="relative w-full h-full">
@@ -480,10 +496,10 @@ export default function ProjectFormModal({
                         </div>
                       </div>
                     )}
-                    <Button 
-                      size="icon" 
-                      variant="destructive" 
-                      className="absolute top-1 right-1 h-6 w-6" 
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-1 right-1 h-6 w-6"
                       onClick={() => removeMediaFile(idx)}
                     >
                       <X className="h-3 w-3" />
@@ -494,10 +510,10 @@ export default function ProjectFormModal({
             )}
 
             {/* Add Media Button */}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full" 
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload className="h-4 w-4 mr-2" />
@@ -520,8 +536,8 @@ export default function ProjectFormModal({
                   <Badge key={i} variant="secondary" className="gap-1">
                     <Hash className="h-3 w-3" />
                     {skill}
-                    <button 
-                      onClick={() => removeSkill(i)} 
+                    <button
+                      onClick={() => removeSkill(i)}
                       className="ml-1 hover:text-destructive"
                     >
                       <X className="h-3 w-3" />
@@ -538,7 +554,9 @@ export default function ProjectFormModal({
             <Input
               placeholder="プロジェクトURL (オプション)"
               value={formData.url}
-              onChange={(e) => setFormData((f) => ({ ...f, url: e.target.value }))}
+              onChange={(e) =>
+                setFormData((f) => ({ ...f, url: e.target.value }))
+              }
               className="text-sm"
             />
           </div>
@@ -548,12 +566,12 @@ export default function ProjectFormModal({
             <Button variant="outline" onClick={handleClose} disabled={isSaving}>
               キャンセル
             </Button>
-            <Button 
+            <Button
               onClick={handleSubmit}
               disabled={
-                !formData.title.trim() || 
-                !formData.description.trim() || 
-                totalMediaCount === 0 || 
+                !formData.title.trim() ||
+                !formData.description.trim() ||
+                totalMediaCount === 0 ||
                 isSaving
               }
             >

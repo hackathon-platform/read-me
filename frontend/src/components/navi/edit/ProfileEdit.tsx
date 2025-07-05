@@ -36,19 +36,32 @@ import {
   Trash2,
 } from "lucide-react";
 
-const platformEnum = ["github", "linkedin", "instagram", "facebook", "other"] as const;
+const platformEnum = [
+  "github",
+  "linkedin",
+  "instagram",
+  "facebook",
+  "other",
+] as const;
 
 const schema = z.object({
-  username: z.string().min(3, "3文字以上で入力してください").regex(/^[a-zA-Z0-9_]+$/, "英数字とアンダースコアのみ可"),
+  username: z
+    .string()
+    .min(3, "3文字以上で入力してください")
+    .regex(/^[a-zA-Z0-9_]+$/, "英数字とアンダースコアのみ可"),
   firstName: z.string().min(1, "名を入力してください"),
   lastName: z.string().min(1, "姓を入力してください"),
   firstNameKana: z.string().min(1, "名（フリガナ）を入力してください"),
   lastNameKana: z.string().min(1, "姓（フリガナ）を入力してください"),
   description: z.string().max(100, "１００文字以内で入力して下さい").optional(),
-  social: z.array(z.object({
-    platform: z.enum(platformEnum),
-    url: z.string().url("URL形式で入力してください"),
-  })).optional(),
+  social: z
+    .array(
+      z.object({
+        platform: z.enum(platformEnum),
+        url: z.string().url("URL形式で入力してください"),
+      }),
+    )
+    .optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -88,7 +101,7 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
       social:
         initialData.social?.map((social) => ({
           platform: platformEnum.includes(social.platform as any)
-            ? (social.platform as typeof platformEnum[number])
+            ? (social.platform as (typeof platformEnum)[number])
             : "other",
           url: social.url,
         })) || [],
@@ -142,7 +155,10 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
 
     if (selectedFile) {
       try {
-        uploadedImageUrl = await uploadImageToSupabase(selectedFile, initialData.id);
+        uploadedImageUrl = await uploadImageToSupabase(
+          selectedFile,
+          initialData.id,
+        );
       } catch (err: any) {
         toast.error(`画像アップロードに失敗しました: ${err.message}`);
         setIsSaving(false);
@@ -177,7 +193,9 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
         platform: s.platform,
         url: s.url,
       }));
-      const { error: socialsError } = await supabase.from("social").insert(payload);
+      const { error: socialsError } = await supabase
+        .from("social")
+        .insert(payload);
       if (socialsError) {
         toast.error(socialsError.message);
         setIsSaving(false);
@@ -243,19 +261,25 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
 
         {/* Name Fields */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {(["lastName", "firstName", "lastNameKana", "firstNameKana"] as const).map((name) => (
+          {(
+            ["lastName", "firstName", "lastNameKana", "firstNameKana"] as const
+          ).map((name) => (
             <FormField
               key={name}
               control={form.control}
               name={name}
               render={({ field }) => (
                 <FormItem>
-                  <Label className="pl-0.5">{{
-                    lastName: "姓",
-                    firstName: "名",
-                    lastNameKana: "セイ",
-                    firstNameKana: "メイ",
-                  }[name]}</Label>
+                  <Label className="pl-0.5">
+                    {
+                      {
+                        lastName: "姓",
+                        firstName: "名",
+                        lastNameKana: "セイ",
+                        firstNameKana: "メイ",
+                      }[name]
+                    }
+                  </Label>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -272,11 +296,18 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <Label className={`pl-0.5 ${remaining <= 0 ? "text-red-500" : ""}`}>
+              <Label
+                className={`pl-0.5 ${remaining <= 0 ? "text-red-500" : ""}`}
+              >
                 自己紹介（残り{remaining}文字）
               </Label>
               <FormControl>
-                <Textarea {...field} rows={5} maxLength={100} className="resize-none" />
+                <Textarea
+                  {...field}
+                  rows={5}
+                  maxLength={100}
+                  className="resize-none"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -293,7 +324,11 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
                 name={`social.${idx}.platform`}
                 render={({ field }) => (
                   <FormItem className="w-32">
-                    <Select value={field.value} onValueChange={field.onChange} disabled={isSaving}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isSaving}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="選択" />
                       </SelectTrigger>
@@ -314,7 +349,12 @@ export function ProfileEdit({ initialData, onCancel, onSave }: Props) {
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormControl>
-                      <Input {...field} type="url" placeholder="URLを入力" disabled={isSaving} />
+                      <Input
+                        {...field}
+                        type="url"
+                        placeholder="URLを入力"
+                        disabled={isSaving}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

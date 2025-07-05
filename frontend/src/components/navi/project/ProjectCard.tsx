@@ -1,11 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,15 +9,15 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { 
-  MoreHorizontal, 
-  Edit2, 
-  Trash2, 
-  Globe, 
+import {
+  MoreHorizontal,
+  Edit2,
+  Trash2,
+  Globe,
   Video,
   ChevronLeft,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import type { Project } from "@/lib/types";
 
@@ -32,7 +28,12 @@ interface Props {
   onDelete: () => void;
 }
 
-export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Props) {
+export default function ProjectCard({
+  project,
+  isOwner,
+  onEdit,
+  onDelete,
+}: Props) {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [imageError, setImageError] = useState<Record<string, boolean>>({});
 
@@ -43,7 +44,7 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
   }, [project.id, project.media]);
 
   const handleImageError = (url: string) => {
-    setImageError(prev => ({ ...prev, [url]: true }));
+    setImageError((prev) => ({ ...prev, [url]: true }));
   };
 
   const nextMedia = () => {
@@ -54,7 +55,9 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
 
   const prevMedia = () => {
     if (project.media && project.media.length > 1) {
-      setCurrentMediaIndex((prev) => (prev - 1 + project.media.length) % project.media.length);
+      setCurrentMediaIndex(
+        (prev) => (prev - 1 + project.media.length) % project.media.length,
+      );
     }
   };
 
@@ -67,21 +70,21 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
       {/* Media Section - Top of card */}
       {hasMedia && currentMedia && (
         <div className="relative aspect-video bg-muted overflow-hidden">
-          {currentMedia.type === 'image' && !imageError[currentMedia.url] ? (
+          {currentMedia.type === "image" && !imageError[currentMedia.url] ? (
             <img
               src={currentMedia.url}
               alt={currentMedia.caption || `${project.title} media`}
               className="w-full h-full object-cover"
               onError={() => handleImageError(currentMedia.url)}
             />
-          ) : currentMedia.type === 'video' ? (
+          ) : currentMedia.type === "video" ? (
             <div className="relative w-full h-full">
               <video
                 src={currentMedia.url}
                 className="w-full h-full object-cover"
                 controls
                 preload="metadata"
-                poster={currentMedia.url + '#t=0.1'}
+                poster={currentMedia.url + "#t=0.1"}
               />
               <div className="absolute top-2 left-2 bg-black/50 rounded px-2 py-1">
                 <Video className="h-4 w-4 text-white" />
@@ -91,11 +94,13 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
             <div className="flex items-center justify-center h-full bg-muted">
               <div className="text-center">
                 <Video className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">メディアを読み込めません</p>
+                <p className="text-xs text-muted-foreground">
+                  メディアを読み込めません
+                </p>
               </div>
             </div>
           )}
-          
+
           {/* Navigation arrows for multiple media */}
           {hasMultipleMedia && (
             <>
@@ -115,14 +120,14 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              
+
               {/* Media indicators */}
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                 {project.media.map((_, index) => (
                   <button
                     key={index}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentMediaIndex ? 'bg-white' : 'bg-white/50'
+                      index === currentMediaIndex ? "bg-white" : "bg-white/50"
                     }`}
                     onClick={() => setCurrentMediaIndex(index)}
                   />
@@ -142,7 +147,11 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
           {isOwner && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 flex-shrink-0"
+                >
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -151,7 +160,10 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
                   <Edit2 className="h-4 w-4 mr-2" />
                   編集
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={onDelete} className="text-destructive">
+                <DropdownMenuItem
+                  onClick={onDelete}
+                  className="text-destructive"
+                >
                   <Trash2 className="h-4 w-4 mr-2" />
                   削除
                 </DropdownMenuItem>
@@ -160,7 +172,7 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
           )}
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4 pt-0">
         {/* Description */}
         <p className="text-xs text-muted-foreground whitespace-pre-wrap line-clamp-3">
@@ -188,7 +200,7 @@ export default function ProjectCard({ project, isOwner, onEdit, onDelete }: Prop
           {/* Updated date */}
           {project.updatedAt && (
             <span className="text-xs text-muted-foreground">
-              更新日: {new Date(project.updatedAt).toLocaleDateString('ja-JP')}
+              更新日: {new Date(project.updatedAt).toLocaleDateString("ja-JP")}
             </span>
           )}
         </div>

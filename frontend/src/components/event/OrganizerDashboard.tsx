@@ -18,7 +18,7 @@ import {
   Clock,
   ExternalLink,
   Mail,
-  Globe
+  Globe,
 } from "lucide-react";
 import {
   Card,
@@ -39,11 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  type Event,
-  type Organization,
-  type Organizer
-} from "@/lib/types";
+import { type Event, type Organization, type Organizer } from "@/lib/types";
 
 import {
   mockOrganizations,
@@ -55,14 +51,16 @@ import {
 export default function OrganizerDashboard() {
   // Filter data for current user
   const userOrganizations = mockOrganizers
-    .filter(org => org.userId === mockCurrentUser.id)
-    .map(orgMember => {
-      const org = mockOrganizations.find(o => o.id === orgMember.organizationId);
+    .filter((org) => org.userId === mockCurrentUser.id)
+    .map((orgMember) => {
+      const org = mockOrganizations.find(
+        (o) => o.id === orgMember.organizationId,
+      );
       return { ...org!, ...orgMember };
     });
 
-  const userEvents = mockOrgEvents.filter(event =>
-    userOrganizations.some(org => org.id === event.organizationId)
+  const userEvents = mockOrgEvents.filter((event) =>
+    userOrganizations.some((org) => org.id === event.organizationId),
   );
 
   const getStatusColor = (status: string) => {
@@ -139,7 +137,10 @@ export default function OrganizerDashboard() {
 
   // Recent events (last 5)
   const recentEvents = userEvents
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    )
     .slice(0, 5);
 
   return (
@@ -206,7 +207,9 @@ export default function OrganizerDashboard() {
                             <h3 className="font-semibold text-sm line-clamp-1">
                               {event.titleJa}
                             </h3>
-                            <Badge className={`${getStatusColor(event.status)} text-xs`}>
+                            <Badge
+                              className={`${getStatusColor(event.status)} text-xs`}
+                            >
                               {getStatusText(event.status)}
                             </Badge>
                           </div>
@@ -221,7 +224,8 @@ export default function OrganizerDashboard() {
                             </div>
                             <div className="flex items-center gap-1">
                               <Users className="w-4 h-4" />
-                              {event.participants.current}/{event.participants.max}
+                              {event.participants.current}/
+                              {event.participants.max}
                             </div>
                           </div>
                         </div>
@@ -286,7 +290,9 @@ export default function OrganizerDashboard() {
                               />
                             </div>
                             <div>
-                              <CardTitle className="text-base">{org.nameJa}</CardTitle>
+                              <CardTitle className="text-base">
+                                {org.nameJa}
+                              </CardTitle>
                               <div className="flex items-center gap-2 mt-1">
                                 {getRoleIcon(org.role)}
                                 <span className="text-sm text-muted-foreground">
@@ -345,7 +351,11 @@ export default function OrganizerDashboard() {
                           <div className="flex gap-2">
                             {org.website && (
                               <Button variant="ghost" size="sm" asChild>
-                                <a href={org.website} target="_blank" rel="noopener noreferrer">
+                                <a
+                                  href={org.website}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
                                   <Globe className="w-4 h-4" />
                                 </a>
                               </Button>

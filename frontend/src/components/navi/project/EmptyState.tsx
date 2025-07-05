@@ -13,9 +13,15 @@ export default function EmptyState({ isOwner, onStart }: Props) {
     <Card className="text-center py-12">
       <CardContent>
         <Code2 className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-        <p className="text-sm text-muted-foreground mb-4">まだプロジェクトがありません</p>
-        {isOwner && <Button variant="outline" onClick={onStart}>最初のプロジェクトを投稿</Button>}
+        <p className="text-sm text-muted-foreground mb-4">
+          まだプロジェクトがありません
+        </p>
+        {isOwner && (
+          <Button variant="outline" onClick={onStart}>
+            最初のプロジェクトを投稿
+          </Button>
+        )}
       </CardContent>
     </Card>
-);
+  );
 }

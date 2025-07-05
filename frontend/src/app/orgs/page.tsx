@@ -9,16 +9,18 @@ interface OrganizationPageProps {
   };
 }
 
-export default async function OrganizationPage({ params }: OrganizationPageProps) {
+export default async function OrganizationPage({
+  params,
+}: OrganizationPageProps) {
   const { id } = await params;
 
   return (
     <div>
-      <PageHeader 
+      <PageHeader
         breadcrumbs={[
           { label: "運営", href: "/orgs" },
           { label: "組織管理", current: true },
-        ]} 
+        ]}
       />
       <div className="animate-in fade-in duration-500 lg:mt-4 mt-2  mx-auto w-full">
         <MemberPanel />

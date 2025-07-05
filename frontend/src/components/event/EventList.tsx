@@ -26,24 +26,31 @@ import { mockEvents } from "@/lib/mockData";
 
 const EventList = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilters, setStatusFilters] = useState<string[]>(["upcoming", "open", "ended"]);
-  const [locationFilters, setLocationFilters] = useState<string[]>(["online", "in-person"]);
+  const [statusFilters, setStatusFilters] = useState<string[]>([
+    "upcoming",
+    "open",
+    "ended",
+  ]);
+  const [locationFilters, setLocationFilters] = useState<string[]>([
+    "online",
+    "in-person",
+  ]);
   const [sortBy, setSortBy] = useState<string>("date");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const toggleStatusFilter = (status: string) => {
-    setStatusFilters(prev => 
-      prev.includes(status) 
-        ? prev.filter(s => s !== status)
-        : [...prev, status]
+    setStatusFilters((prev) =>
+      prev.includes(status)
+        ? prev.filter((s) => s !== status)
+        : [...prev, status],
     );
   };
 
   const toggleLocationFilter = (location: string) => {
-    setLocationFilters(prev => 
-      prev.includes(location) 
-        ? prev.filter(l => l !== location)
-        : [...prev, location]
+    setLocationFilters((prev) =>
+      prev.includes(location)
+        ? prev.filter((l) => l !== location)
+        : [...prev, location],
     );
   };
 
@@ -101,9 +108,7 @@ const EventList = () => {
   const locationCounts = getLocationCounts();
 
   const hasActiveFilters =
-    searchTerm || 
-    statusFilters.length < 3 || 
-    locationFilters.length < 2;
+    searchTerm || statusFilters.length < 3 || locationFilters.length < 2;
 
   const clearAllFilters = () => {
     setSearchTerm("");
@@ -136,13 +141,19 @@ const EventList = () => {
         <label className="text-sm font-medium">ステータス</label>
         <div className="flex flex-wrap gap-2">
           {[
-            { key: "upcoming", label: "開催予定", count: statusCounts.upcoming },
+            {
+              key: "upcoming",
+              label: "開催予定",
+              count: statusCounts.upcoming,
+            },
             { key: "open", label: "募集中", count: statusCounts.open },
             { key: "ended", label: "受付終了", count: statusCounts.ended },
           ].map((status) => (
             <Button
               key={status.key}
-              variant={statusFilters.includes(status.key) ? "default" : "outline"}
+              variant={
+                statusFilters.includes(status.key) ? "default" : "outline"
+              }
               size="sm"
               onClick={() => toggleStatusFilter(status.key)}
               className="text-xs"
@@ -158,12 +169,22 @@ const EventList = () => {
         <label className="text-sm font-medium">開催形式</label>
         <div className="flex flex-wrap gap-2">
           {[
-            { key: "online", label: "オンライン", count: locationCounts.online },
-            { key: "in-person", label: "会場開催", count: locationCounts["in-person"] },
+            {
+              key: "online",
+              label: "オンライン",
+              count: locationCounts.online,
+            },
+            {
+              key: "in-person",
+              label: "会場開催",
+              count: locationCounts["in-person"],
+            },
           ].map((location) => (
             <Button
               key={location.key}
-              variant={locationFilters.includes(location.key) ? "default" : "outline"}
+              variant={
+                locationFilters.includes(location.key) ? "default" : "outline"
+              }
               size="sm"
               onClick={() => toggleLocationFilter(location.key)}
               className="text-xs"

@@ -19,7 +19,7 @@ export function useUserData() {
 
   useEffect(() => {
     // Only update if specific fields have changed
-    const hasUserChanged = 
+    const hasUserChanged =
       prevUserRef.current?.id !== supabaseUser?.id ||
       prevUserRef.current?.email !== supabaseUser?.email ||
       prevUserRef.current?.first_name !== supabaseUser?.first_name ||

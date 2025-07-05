@@ -20,14 +20,14 @@ import {
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {  
-  Plus, 
-  GraduationCap, 
+import {
+  Plus,
+  GraduationCap,
   Calendar,
   Building2,
   BookOpen,
   FileText,
-  X
+  X,
 } from "lucide-react";
 import { Education } from "@/lib/types";
 import { toast } from "sonner";
@@ -141,7 +141,10 @@ export function EducationEdit({
           ) : (
             <div className="space-y-4">
               {fields.map((field, idx) => (
-                <Card key={field.id} className="group rounded-none relative border border-border/20 hover:border-border transition-all duration-200">
+                <Card
+                  key={field.id}
+                  className="group rounded-none relative border border-border/20 hover:border-border transition-all duration-200"
+                >
                   <Button
                     type="button"
                     variant="ghost"
@@ -165,8 +168,8 @@ export function EducationEdit({
                               学校名
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                {...field} 
+                              <Input
+                                {...field}
                                 placeholder="例：東京大学"
                                 className="h-9"
                               />
@@ -186,9 +189,9 @@ export function EducationEdit({
                               専攻・学位
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                {...field} 
-                                value={field.value ?? ""} 
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
                                 placeholder="例：コンピューターサイエンス学士"
                                 className="h-9"
                               />
@@ -226,10 +229,10 @@ export function EducationEdit({
                               終了日
                             </FormLabel>
                             <FormControl>
-                              <Input 
-                                {...field} 
-                                value={field.value ?? ""} 
-                                type="month" 
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                type="month"
                                 placeholder="在学中の場合は空欄"
                                 className="h-9"
                               />
@@ -255,7 +258,7 @@ export function EducationEdit({
                           <FormControl>
                             <Textarea
                               {...field}
-                              value={field.value ?? ""} 
+                              value={field.value ?? ""}
                               rows={3}
                               placeholder="例：&#10;• データ構造とアルゴリズム（C言語）の専門知識を習得&#10;• 優秀な成績により3,000ドルの入学奨学金を授与"
                               className="text-sm resize-none"
@@ -268,7 +271,7 @@ export function EducationEdit({
                   </CardContent>
                 </Card>
               ))}
-              
+
               <Button
                 type="button"
                 variant="outline"
@@ -294,19 +297,15 @@ export function EducationEdit({
           <Separator />
 
           <div className="flex justify-end gap-3">
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
-              onClick={onCancel} 
+              variant="outline"
+              onClick={onCancel}
               disabled={isSaving}
             >
               キャンセル
             </Button>
-            <Button 
-              type="submit" 
-              disabled={isSaving}
-              className="gap-2"
-            >
+            <Button type="submit" disabled={isSaving} className="gap-2">
               {isSaving ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />

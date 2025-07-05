@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -20,17 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import {
-  Badge,
-} from "@/components/ui/badge";
-import {
-  Button,
-} from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -43,17 +35,17 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { 
-  ChevronDown, 
-  ChevronRight, 
-  Mail, 
-  Calendar, 
-  Award, 
+import {
+  ChevronDown,
+  ChevronRight,
+  Mail,
+  Calendar,
+  Award,
   Clock,
   X,
   UserCheck,
   UserX,
-  Settings
+  Settings,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -61,14 +53,14 @@ import {
   mockOrgMembers,
   getMembersByOrganization,
   getOrgMemberStats,
-  type OrgMember
+  type OrgMember,
 } from "@/lib/mockData";
 import React from "react";
 
 export default function MemberPanel() {
   const [selectedMember, setSelectedMember] = useState<OrgMember | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-  
+
   // Get members for organization (using org-1 as example)
   const members = getMembersByOrganization("org-1");
   const stats = getOrgMemberStats("org-1");
@@ -88,55 +80,72 @@ export default function MemberPanel() {
     console.log(`Updating member ${memberId} status to ${newStatus}`);
   };
 
-  const getRoleBadgeVariant = (role: string): "default" | "secondary" | "destructive" | "outline" => {
+  const getRoleBadgeVariant = (
+    role: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
     switch (role) {
-      case "owner": return "destructive";
-      case "admin": return "default";
-      case "member": return "secondary";
-      default: return "outline";
+      case "owner":
+        return "destructive";
+      case "admin":
+        return "default";
+      case "member":
+        return "secondary";
+      default:
+        return "outline";
     }
   };
 
-  const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+  const getStatusBadgeVariant = (
+    status: string,
+  ): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
-      case "active": return "default";
-      case "pending": return "secondary";
-      case "inactive": return "outline";
-      default: return "outline";
+      case "active":
+        return "default";
+      case "pending":
+        return "secondary";
+      case "inactive":
+        return "outline";
+      default:
+        return "outline";
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   const getRoleDisplay = (role: string) => {
     switch (role) {
-      case "owner": return "オーナー";
-      case "admin": return "管理者";
-      case "member": return "メンバー";
-      default: return role;
+      case "owner":
+        return "オーナー";
+      case "admin":
+        return "管理者";
+      case "member":
+        return "メンバー";
+      default:
+        return role;
     }
   };
 
   const getStatusDisplay = (status: string) => {
     switch (status) {
-      case "active": return "アクティブ";
-      case "pending": return "承認待ち";
-      case "inactive": return "非アクティブ";
-      default: return status;
+      case "active":
+        return "アクティブ";
+      case "pending":
+        return "承認待ち";
+      case "inactive":
+        return "非アクティブ";
+      default:
+        return status;
     }
   };
 
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="rounded-lg border"
-    >
+    <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
       <ResizablePanel defaultSize={selectedMember ? 65 : 100} minSize={50}>
         <Card className="rounded-none border-0 shadow-none h-full gap-0 py-5">
           <CardHeader>
@@ -148,16 +157,10 @@ export default function MemberPanel() {
                 </CardDescription>
               </div>
               <div className="flex gap-2 text-sm">
-                <Badge variant="outline">
-                  合計: {stats.total}名
-                </Badge>
-                <Badge variant="default">
-                  アクティブ: {stats.active}名
-                </Badge>
+                <Badge variant="outline">合計: {stats.total}名</Badge>
+                <Badge variant="default">アクティブ: {stats.active}名</Badge>
                 {stats.pending > 0 && (
-                  <Badge variant="secondary">
-                    承認待ち: {stats.pending}名
-                  </Badge>
+                  <Badge variant="secondary">承認待ち: {stats.pending}名</Badge>
                 )}
               </div>
             </div>
@@ -179,7 +182,7 @@ export default function MemberPanel() {
                 <TableBody>
                   {members.map((member) => (
                     <React.Fragment key={member.id}>
-                      <TableRow 
+                      <TableRow
                         className="cursor-pointer"
                         onClick={() => setSelectedMember(member)}
                       >
@@ -203,9 +206,13 @@ export default function MemberPanel() {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <Avatar>
-                              <AvatarImage src={member.imageUrl} alt={member.username} />
+                              <AvatarImage
+                                src={member.imageUrl}
+                                alt={member.username}
+                              />
                               <AvatarFallback>
-                                {member.firstName[0]}{member.lastName[0]}
+                                {member.firstName[0]}
+                                {member.lastName[0]}
                               </AvatarFallback>
                             </Avatar>
                             <div>
@@ -254,20 +261,33 @@ export default function MemberPanel() {
                               <div className="flex items-center justify-between">
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-4 text-sm">
-                                    <span className="text-muted-foreground">メールアドレス:</span>
+                                    <span className="text-muted-foreground">
+                                      メールアドレス:
+                                    </span>
                                     <span>{member.email}</span>
                                   </div>
                                   <div className="flex items-center gap-4 text-sm">
-                                    <span className="text-muted-foreground">最終アクティブ:</span>
-                                    <span>{member.lastActive ? formatDate(member.lastActive) : "不明"}</span>
+                                    <span className="text-muted-foreground">
+                                      最終アクティブ:
+                                    </span>
+                                    <span>
+                                      {member.lastActive
+                                        ? formatDate(member.lastActive)
+                                        : "不明"}
+                                    </span>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Select
                                     defaultValue={member.status}
-                                    onValueChange={(value) => handleStatusChange(member.id, value)}
+                                    onValueChange={(value) =>
+                                      handleStatusChange(member.id, value)
+                                    }
                                   >
-                                    <SelectTrigger className="w-[140px]" onClick={(e) => e.stopPropagation()}>
+                                    <SelectTrigger
+                                      className="w-[140px]"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -291,8 +311,8 @@ export default function MemberPanel() {
                                       </SelectItem>
                                     </SelectContent>
                                   </Select>
-                                  <Button 
-                                    variant="outline" 
+                                  <Button
+                                    variant="outline"
                                     size="sm"
                                     onClick={(e) => e.stopPropagation()}
                                   >
@@ -313,7 +333,7 @@ export default function MemberPanel() {
           </CardContent>
         </Card>
       </ResizablePanel>
-      
+
       {selectedMember && (
         <>
           <ResizableHandle withHandle />
@@ -336,22 +356,32 @@ export default function MemberPanel() {
                     {/* Profile Section */}
                     <div className="flex flex-col items-center text-center space-y-3">
                       <Avatar className="h-24 w-24">
-                        <AvatarImage src={selectedMember.imageUrl} alt={selectedMember.username} />
+                        <AvatarImage
+                          src={selectedMember.imageUrl}
+                          alt={selectedMember.username}
+                        />
                         <AvatarFallback className="text-2xl">
-                          {selectedMember.firstName[0]}{selectedMember.lastName[0]}
+                          {selectedMember.firstName[0]}
+                          {selectedMember.lastName[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <h3 className="font-semibold text-lg">
                           {selectedMember.lastName} {selectedMember.firstName}
                         </h3>
-                        <p className="text-sm text-muted-foreground">@{selectedMember.username}</p>
+                        <p className="text-sm text-muted-foreground">
+                          @{selectedMember.username}
+                        </p>
                       </div>
                       <div className="flex gap-2">
-                        <Badge variant={getRoleBadgeVariant(selectedMember.role)}>
+                        <Badge
+                          variant={getRoleBadgeVariant(selectedMember.role)}
+                        >
                           {getRoleDisplay(selectedMember.role)}
                         </Badge>
-                        <Badge variant={getStatusBadgeVariant(selectedMember.status)}>
+                        <Badge
+                          variant={getStatusBadgeVariant(selectedMember.status)}
+                        >
                           {getStatusDisplay(selectedMember.status)}
                         </Badge>
                       </div>
@@ -382,15 +412,24 @@ export default function MemberPanel() {
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span>参加日: {formatDate(selectedMember.joinedAt)}</span>
+                          <span>
+                            参加日: {formatDate(selectedMember.joinedAt)}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Clock className="h-4 w-4 text-muted-foreground" />
-                          <span>最終活動: {selectedMember.lastActive ? formatDate(selectedMember.lastActive) : "不明"}</span>
+                          <span>
+                            最終活動:{" "}
+                            {selectedMember.lastActive
+                              ? formatDate(selectedMember.lastActive)
+                              : "不明"}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Award className="h-4 w-4 text-muted-foreground" />
-                          <span>作成イベント数: {selectedMember.eventsCreated || 0}</span>
+                          <span>
+                            作成イベント数: {selectedMember.eventsCreated || 0}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -408,7 +447,9 @@ export default function MemberPanel() {
                             </Badge>
                           ))
                         ) : (
-                          <p className="text-sm text-muted-foreground">権限が設定されていません</p>
+                          <p className="text-sm text-muted-foreground">
+                            権限が設定されていません
+                          </p>
                         )}
                       </div>
                     </div>
@@ -417,16 +458,25 @@ export default function MemberPanel() {
 
                     {/* Actions */}
                     <div className="space-y-2">
-                      <Button variant="outline" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
                         <Settings className="h-4 w-4 mr-2" />
                         権限を編集
                       </Button>
-                      <Button variant="outline" className="w-full justify-start">
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
                         <Mail className="h-4 w-4 mr-2" />
                         メッセージを送信
                       </Button>
                       {selectedMember.role !== "owner" && (
-                        <Button variant="outline" className="w-full justify-start text-destructive hover:text-destructive">
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-destructive hover:text-destructive"
+                        >
                           <UserX className="h-4 w-4 mr-2" />
                           メンバーから削除
                         </Button>

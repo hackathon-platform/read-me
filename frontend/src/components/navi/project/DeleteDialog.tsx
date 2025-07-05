@@ -17,7 +17,11 @@ interface Props {
   onCancel: () => void;
 }
 
-export default function DeleteDialog({ projectId, onConfirm, onCancel }: Props) {
+export default function DeleteDialog({
+  projectId,
+  onConfirm,
+  onCancel,
+}: Props) {
   return (
     <AlertDialog open={!!projectId} onOpenChange={onCancel}>
       <AlertDialogContent>
@@ -38,5 +42,5 @@ export default function DeleteDialog({ projectId, onConfirm, onCancel }: Props) 
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-);
+  );
 }

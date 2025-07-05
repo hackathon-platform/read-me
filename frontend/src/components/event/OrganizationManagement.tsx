@@ -22,7 +22,7 @@ import {
   Activity,
   Clock,
   X,
-  GripVertical
+  GripVertical,
 } from "lucide-react";
 import {
   Card,
@@ -68,16 +68,19 @@ const mockOrganizations: Organization[] = [
     id: "org-1",
     name: "Tokyo Tech Innovators",
     nameJa: "東京テックイノベーターズ",
-    description: "Promoting innovation through technology events and hackathons in Tokyo.",
-    descriptionJa: "東京でテクノロジーイベントやハッカソンを通じてイノベーションを推進する組織です。",
-    imageUrl: "https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg?auto=compress&cs=tinysrgb&w=800",
+    description:
+      "Promoting innovation through technology events and hackathons in Tokyo.",
+    descriptionJa:
+      "東京でテクノロジーイベントやハッカソンを通じてイノベーションを推進する組織です。",
+    imageUrl:
+      "https://images.pexels.com/photos/3861972/pexels-photo-3861972.jpeg?auto=compress&cs=tinysrgb&w=800",
     website: "https://tokyotechinnovators.com",
     email: "contact@tokyotechinnovators.com",
     createdAt: "2023-01-15T09:00:00Z",
     ownerId: "user-1",
     memberCount: 6,
-    eventCount: 8
-  }
+    eventCount: 8,
+  },
 ];
 
 // Resizable Detail Panel Component
@@ -87,7 +90,11 @@ interface MemberDetailPanelProps {
   currentUserRole?: "owner" | "admin" | "member";
 }
 
-function MemberDetailPanel({ member, onClose, currentUserRole = "member" }: MemberDetailPanelProps) {
+function MemberDetailPanel({
+  member,
+  onClose,
+  currentUserRole = "member",
+}: MemberDetailPanelProps) {
   if (!member) return null;
 
   const getRoleIcon = (role: string) => {
@@ -187,7 +194,9 @@ function MemberDetailPanel({ member, onClose, currentUserRole = "member" }: Memb
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   {getRoleIcon(member.role)}
-                  <span className="text-sm font-medium">{getRoleText(member.role)}</span>
+                  <span className="text-sm font-medium">
+                    {getRoleText(member.role)}
+                  </span>
                 </div>
                 {getStatusBadge(member.status)}
               </div>
@@ -228,7 +237,9 @@ function MemberDetailPanel({ member, onClose, currentUserRole = "member" }: Memb
                 <Calendar className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm">参加日</span>
               </div>
-              <span className="text-sm font-medium">{formatDate(member.joinedAt)}</span>
+              <span className="text-sm font-medium">
+                {formatDate(member.joinedAt)}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -236,7 +247,9 @@ function MemberDetailPanel({ member, onClose, currentUserRole = "member" }: Memb
                 <span className="text-sm">最終アクティブ</span>
               </div>
               <span className="text-sm font-medium">
-                {member.lastActive ? formatDateTime(member.lastActive) : "未記録"}
+                {member.lastActive
+                  ? formatDateTime(member.lastActive)
+                  : "未記録"}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -244,7 +257,9 @@ function MemberDetailPanel({ member, onClose, currentUserRole = "member" }: Memb
                 <Activity className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm">イベント作成数</span>
               </div>
-              <span className="text-sm font-medium">{member.eventsCreated || 0}</span>
+              <span className="text-sm font-medium">
+                {member.eventsCreated || 0}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -311,33 +326,40 @@ interface OrganizationManagementProps {
   organizationId: string;
 }
 
-export default function OrganizationManagement({ organizationId = "org-1" }: OrganizationManagementProps) {
+export default function OrganizationManagement({
+  organizationId = "org-1",
+}: OrganizationManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  
+
   // State for the detail panel
   const [selectedMember, setSelectedMember] = useState<OrgMember | null>(null);
   const [rightPanelWidth, setRightPanelWidth] = useState(400); // Default width
   const [isResizing, setIsResizing] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Get organization data
-  const organization = mockOrganizations.find(org => org.id === organizationId);
-  const members = mockOrgMembers.filter(member => member.organizationId === organizationId);
+  const organization = mockOrganizations.find(
+    (org) => org.id === organizationId,
+  );
+  const members = mockOrgMembers.filter(
+    (member) => member.organizationId === organizationId,
+  );
 
   // Filter members
-  const filteredMembers = members.filter(member => {
-    const matchesSearch = 
+  const filteredMembers = members.filter((member) => {
+    const matchesSearch =
       member.firstName.includes(searchTerm) ||
       member.lastName.includes(searchTerm) ||
       member.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesRole = roleFilter === "all" || member.role === roleFilter;
-    const matchesStatus = statusFilter === "all" || member.status === statusFilter;
-    
+    const matchesStatus =
+      statusFilter === "all" || member.status === statusFilter;
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -357,16 +379,19 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
     e.preventDefault();
   }, []);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing || !containerRef.current) return;
-    
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const newWidth = containerRect.right - e.clientX;
-    const minWidth = 300;
-    const maxWidth = containerRect.width * 0.6;
-    
-    setRightPanelWidth(Math.min(Math.max(newWidth, minWidth), maxWidth));
-  }, [isResizing]);
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing || !containerRef.current) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newWidth = containerRect.right - e.clientX;
+      const minWidth = 300;
+      const maxWidth = containerRect.width * 0.6;
+
+      setRightPanelWidth(Math.min(Math.max(newWidth, minWidth), maxWidth));
+    },
+    [isResizing],
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
@@ -447,12 +472,12 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
   // Get member stats
   const stats = {
     total: members.length,
-    owners: members.filter(m => m.role === "owner").length,
-    admins: members.filter(m => m.role === "admin").length,
-    members: members.filter(m => m.role === "member").length,
-    active: members.filter(m => m.status === "active").length,
-    pending: members.filter(m => m.status === "pending").length,
-    inactive: members.filter(m => m.status === "inactive").length
+    owners: members.filter((m) => m.role === "owner").length,
+    admins: members.filter((m) => m.role === "admin").length,
+    members: members.filter((m) => m.role === "member").length,
+    active: members.filter((m) => m.status === "active").length,
+    pending: members.filter((m) => m.status === "pending").length,
+    inactive: members.filter((m) => m.status === "inactive").length,
   };
 
   if (!organization) {
@@ -462,11 +487,11 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
   return (
     <div ref={containerRef} className="flex relative">
       {/* Left Panel - Main Content */}
-      <div 
+      <div
         className="flex-1 space-y-6"
-        style={{ 
+        style={{
           marginRight: selectedMember ? rightPanelWidth + 16 : 0,
-          transition: isResizing ? 'none' : 'margin-right 0.3s ease'
+          transition: isResizing ? "none" : "margin-right 0.3s ease",
         }}
       >
         {/* Organization Header */}
@@ -484,7 +509,9 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
                     />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl">{organization.nameJa}</CardTitle>
+                    <CardTitle className="text-2xl">
+                      {organization.nameJa}
+                    </CardTitle>
                     <CardDescription className="mt-2">
                       {organization.descriptionJa}
                     </CardDescription>
@@ -524,7 +551,12 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
                 {organization.website && (
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4" />
-                    <a href={organization.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    <a
+                      href={organization.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
                       ウェブサイト
                     </a>
                   </div>
@@ -532,7 +564,10 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
                 {organization.email && (
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
-                    <a href={`mailto:${organization.email}`} className="hover:underline">
+                    <a
+                      href={`mailto:${organization.email}`}
+                      className="hover:underline"
+                    >
                       {organization.email}
                     </a>
                   </div>
@@ -616,10 +651,10 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
                 </TableHeader>
                 <TableBody>
                   {filteredMembers.map((member) => (
-                    <TableRow 
+                    <TableRow
                       key={member.id}
                       className={`cursor-pointer hover:bg-muted/50 ${
-                        selectedMember?.id === member.id ? 'bg-muted' : ''
+                        selectedMember?.id === member.id ? "bg-muted" : ""
                       }`}
                       onClick={() => handleMemberClick(member)}
                     >
@@ -649,12 +684,12 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {getRoleIcon(member.role)}
-                          <span className="text-sm">{getRoleText(member.role)}</span>
+                          <span className="text-sm">
+                            {getRoleText(member.role)}
+                          </span>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        {getStatusBadge(member.status)}
-                      </TableCell>
+                      <TableCell>{getStatusBadge(member.status)}</TableCell>
                       <TableCell>
                         <div className="text-sm">
                           {formatDate(member.joinedAt)}
@@ -663,7 +698,9 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Clock className="w-3 h-3" />
-                          {member.lastActive ? formatDate(member.lastActive) : "未記録"}
+                          {member.lastActive
+                            ? formatDate(member.lastActive)
+                            : "未記録"}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -673,38 +710,49 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <DropdownMenuTrigger
+                            asChild
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <Button variant="ghost" size="sm">
                               <MoreHorizontal className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={(e) => {
-                              e.stopPropagation();
-                              handleMemberClick(member);
-                            }}>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMemberClick(member);
+                              }}
+                            >
                               <Eye className="w-4 h-4 mr-2" />
                               詳細を表示
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               <Mail className="w-4 h-4 mr-2" />
                               メッセージを送信
                             </DropdownMenuItem>
                             {member.role !== "owner" && (
                               <>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                                <DropdownMenuItem
+                                  onClick={(e) => e.stopPropagation()}
+                                >
                                   <Edit className="w-4 h-4 mr-2" />
                                   役割を変更
                                 </DropdownMenuItem>
                                 {member.status === "pending" && (
-                                  <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                                  <DropdownMenuItem
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
                                     <Users className="w-4 h-4 mr-2" />
                                     承認する
                                   </DropdownMenuItem>
                                 )}
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   className="text-red-600"
                                   onClick={(e) => e.stopPropagation()}
                                 >
@@ -753,7 +801,7 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
           style={{
             right: rightPanelWidth,
             top: 0,
-            height: '100%'
+            height: "100%",
           }}
         >
           <GripVertical className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
@@ -766,8 +814,8 @@ export default function OrganizationManagement({ organizationId = "org-1" }: Org
           className="absolute top-0 right-0 bg-background border-l shadow-lg overflow-hidden z-10"
           style={{
             width: rightPanelWidth,
-            height: '100%',
-            transition: isResizing ? 'none' : 'width 0.3s ease'
+            height: "100%",
+            transition: isResizing ? "none" : "width 0.3s ease",
           }}
         >
           <MemberDetailPanel
