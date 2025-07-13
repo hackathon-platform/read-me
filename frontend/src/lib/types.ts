@@ -104,32 +104,20 @@ export interface Event {
 export interface Organization {
   id: string;
   name: string;
-  nameJa: string;
+  slug: string;
   description: string;
-  descriptionJa: string;
-  imageUrl: string;
+  bannerUrl?: string;
+  iconUrl?: string;
   website?: string;
   email?: string;
   createdAt: string;
-  ownerId: string;
-  memberCount: number;
-  eventCount: number;
+  createdBy: string;
 }
 
 export interface Organizer {
   id: string;
-  userId: string;
+  profileId: string;
   organizationId: string;
-  role: "owner" | "admin" | "member";
+  role: "owner" | "admin" | "member" | "guest";
   joinedAt: string;
-  permissions: string[];
-}
-
-export interface User {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  imageUrl: string;
 }
