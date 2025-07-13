@@ -46,7 +46,7 @@ export async function createOrganization({
   description,
   website,
   email,
-  image_url,
+  banner_url,
   icon_url,
   created_by,
 }: {
@@ -55,7 +55,7 @@ export async function createOrganization({
   description?: string;
   website?: string;
   email?: string;
-  image_url?: string;
+  banner_url?: string;
   icon_url?: string;
   created_by: string;
 }) {
@@ -68,7 +68,7 @@ export async function createOrganization({
       description,
       website,
       email,
-      image_url,
+      banner_url,
       icon_url,
       created_by,
     })

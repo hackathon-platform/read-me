@@ -37,48 +37,51 @@ export default function OrganizationsPage() {
       <PageHeader
         breadcrumbs={[{ label: "運営", href: "/orgs", current: true }]}
       />
+      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full md:px-4 py-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">参加中の組織</h1>
+        </div>
+        {loading ? (
+          <div>読み込み中...</div>
+        ) : (
+          <section className="space-y-6">
 
-      {loading ? (
-        <div>読み込み中...</div>
-      ) : (
-        <section className="space-y-6">
-          <h2 className="text-xl font-semibold mb-2">参加中の組織</h2>
+            {orgs.length === 0 ? (
+              <p className="text-muted-foreground">参加中の組織はありません。</p>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-4">
+                {orgs.map((org) => (
+                  <Card key={org.id} className="hover:shadow-md transition">
+                    <Link href={`/orgs/${org.org_name}`} className="block">
+                      <CardHeader className="flex items-center space-x-3 pb-3">
+                        {org.icon_url ? (
+                          <img
+                            src={org.icon_url}
+                            alt={org.name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                        ) : (
+                          <ImageOff className="w-8 h-8 text-muted-foreground" />
+                        )}
+                        <CardTitle className="text-lg">{org.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-sm text-muted-foreground">
+                        {org.description || "説明がありません。"}
+                      </CardContent>
+                    </Link>
+                  </Card>
+                ))}
+              </div>
+            )}
 
-          {orgs.length === 0 ? (
-            <p className="text-muted-foreground">参加中の組織はありません。</p>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-4">
-              {orgs.map((org) => (
-                <Card key={org.id} className="hover:shadow-md transition">
-                  <Link href={`/orgs/${org.org_name}`} className="block">
-                    <CardHeader className="flex items-center space-x-3">
-                      {org.icon_url ? (
-                        <img
-                          src={org.icon_url}
-                          alt={org.name}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <ImageOff className="w-8 h-8 text-muted-foreground" />
-                      )}
-                      <CardTitle className="text-lg">{org.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-sm text-muted-foreground">
-                      {org.description || "説明がありません。"}
-                    </CardContent>
-                  </Link>
-                </Card>
-              ))}
+            <div className="mt-4">
+              <Button asChild>
+                <Link href="/orgs/create">+ 新しい組織</Link>
+              </Button>
             </div>
-          )}
-
-          <div className="mt-4">
-            <Button asChild>
-              <Link href="/orgs/create">+ 新しい組織</Link>
-            </Button>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }

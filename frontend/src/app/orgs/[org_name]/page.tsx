@@ -29,7 +29,25 @@ export default async function OrganizationPage({
 
       <div className="mt-6">
         {/* <MemberPanel organizationId={organization.id} /> */}
-        member panel here
+        {organization.banner_url && (
+          <img
+            src={organization.banner_url}
+            alt="Banner"
+            className="w-full h-[200px] object-cover rounded-md"
+          />
+        )}
+
+        <div className="flex items-center space-x-3 mt-4">
+          {organization.icon_url && (
+            <img
+              src={organization.icon_url}
+              alt="Icon"
+              className="w-16 h-16 rounded-full object-cover"
+            />
+          )}
+          <h1 className="text-2xl font-semibold">{organization.name}</h1>
+        </div>
+
       </div>
     </div>
   );
