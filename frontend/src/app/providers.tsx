@@ -17,6 +17,7 @@ export default function Providers({ children }: ProvidersProps) {
     <SupabaseProvider>
       <AuthProvider>
         <ThemeProvider attribute="class" defaultTheme="system">
+          <Header />
           <Toaster />
           <PageLayout>{children}</PageLayout>
           <Toaster richColors closeButton />

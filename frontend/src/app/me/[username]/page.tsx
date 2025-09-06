@@ -133,9 +133,15 @@ export default async function ProfilePage({
   const ProfileTabs = () => (
     <Tabs defaultValue="profile" className="w-full">
       <TabsList className="grid grid-cols-2 w-full">
-        <TabsTrigger value="profile">プロフィール</TabsTrigger>
         <TabsTrigger value="projects">プロジェクト</TabsTrigger>
+        <TabsTrigger value="profile">プロフィール</TabsTrigger>
       </TabsList>
+
+      <TabsContent value="projects" className="mt-3">
+        <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
+          <ProjectsSection profileId={profile.id} projects={profile.projects} />
+        </div>
+      </TabsContent>
 
       <TabsContent value="profile" className="my-3">
         <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
@@ -157,12 +163,6 @@ export default async function ProfilePage({
               <ResumeSection resumeUrl={profile.resumeUrl} />
             </>
           )}
-        </div>
-      </TabsContent>
-
-      <TabsContent value="projects" className="mt-3">
-        <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
-          <ProjectsSection profileId={profile.id} projects={profile.projects} />
         </div>
       </TabsContent>
     </Tabs>

@@ -9,13 +9,15 @@ import { useSupabase } from "@/components/supabase-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarDays, Plus, Search, User, LogOut } from "lucide-react";
+import { CalendarDays, Plus, Search, User, LogOut, Code2, ChevronDown } from "lucide-react";
+import { NavUser } from "@/components/ui/nav-user";
 
 export default function Header() {
   const { user, signOut, loading } = useSupabase();
@@ -43,7 +45,7 @@ export default function Header() {
   }
 
   const headerClasses = `
-    sticky top-0 z-50 w-full transition-all duration-300 bg-transparent
+    sticky top-0 z-50 w-full transition-all duration-300 bg-transparent border-b
   `;
 
   // last_name のイニシャルを取得する（フォールバック）
@@ -58,21 +60,19 @@ export default function Header() {
   const avatarUrl = user?.image_url ?? "";
   console.log("user", user);
   return (
-    <div className="md:hidden">
+    <div>
       <header className={headerClasses}>
-        <div className="w-full flex h-12 items-center justify-between px-4 bg-sidebar">
+        <div className="w-full flex h-[3.5rem] items-center justify-between px-4 bg-sidebar">
           {/* Logo / Brand */}
           <div className="flex">
-            <Link href="/" className="flex text-2xl font-bold items-center">
-              <CalendarDays className="h-6 w-6 mr-2" />
-              <span>EventNavi</span>
+            <Link href="/" className="flex text-xl font-bold items-center">
+              <Code2 className="h-6 w-6 mr-2" />
+              <span>ReadME</span>
             </Link>
           </div>
 
           {/* Right side: Theme toggle + user menu / auth links */}
-          <div className="flex items-center space-x-2">
-            <ThemeToggle />
-
+          <div>
             {!loading && (
               <>
                 {user ? (
@@ -80,18 +80,28 @@ export default function Header() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
-                        variant="ghost"
-                        className="relative h-10 w-10 rounded-full p-0"
+                        variant="link"
+                        className="relative h-10 p-0"
                       >
-                        <Avatar>
+                        <Avatar className="h-8 w-8 rounded-md">
                           {avatarUrl ? (
-                            <AvatarImage src={avatarUrl} alt={fullName} />
+                            <AvatarImage
+                              src={avatarUrl}
+                              alt={fullName}
+                            />
                           ) : (
-                            <AvatarFallback>
+                            <AvatarFallback className="rounded-lg">
                               {getInitial(lastName)}
                             </AvatarFallback>
                           )}
                         </Avatar>
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-semibold">
+                            {fullName || "ユーザー"}
+                          </span>
+                          <span className="truncate text-xs">{user.email}</span>
+                        </div>
+                        <ChevronDown className="ml-auto size-4" />
                       </Button>
                     </DropdownMenuTrigger>
 
@@ -101,7 +111,7 @@ export default function Header() {
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
 
-                      <Link href="/profile">
+                      <Link href="/me">
                         <DropdownMenuItem>
                           <User className="h-4 w-4 mr-2" />
                           <span>プロフィール</span>
@@ -116,6 +126,15 @@ export default function Header() {
                       </Link>
 
                       <DropdownMenuSeparator />
+
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem
+                          className="flex items-center justify-between"
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ThemeToggle />
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
 
                       <DropdownMenuItem onClick={() => signOut()}>
                         <LogOut className="h-4 w-4 mr-2" />

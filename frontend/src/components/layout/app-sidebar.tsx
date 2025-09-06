@@ -57,17 +57,17 @@ const data = {
     //   icon: Briefcase,
     //   items: [],
     // },
-    {
-      title: "ドキュメント",
-      url: "/#",
-      icon: BookOpen,
-      items: [
-        { title: "ようこそ！", url: "/#" },
-        { title: "はじめに", url: "/#" },
-        { title: "イベント参加方法", url: "/#" },
-        { title: "イベント開催方法", url: "/#" },
-      ],
-    },
+    // {
+    //   title: "ドキュメント",
+    //   url: "/#",
+    //   icon: BookOpen,
+    //   items: [
+    //     { title: "ようこそ！", url: "/#" },
+    //     { title: "はじめに", url: "/#" },
+    //     { title: "イベント参加方法", url: "/#" },
+    //     { title: "イベント開催方法", url: "/#" },
+    //   ],
+    // },
   ],
   navSecondary: [
     {
@@ -88,28 +88,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <a href="/">
-                <Code2 className="!size-5" />
-                <span className="text-base font-semibold">Read ME</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser />
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

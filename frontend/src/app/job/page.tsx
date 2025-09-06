@@ -153,6 +153,103 @@ const JOBS: Job[] = [
     description:
       "インタラクティブな AI プロダクトの決済・メータリング基盤を担当します。Go + PostgreSQL によるマイクロサービス、Stripe 連携、従量課金（usage-based billing）の設計・運用に関心のある方を歓迎します。セキュアでスケーラブルな決済体験づくりをお任せします。",
   },
+  {
+    id: "6",
+    title:
+      "Associate Gameplay Software Engineer (Unreal Engine 5) - (7-month contract)",
+    company: "Blackbird Interactive",
+    location: "バンクーバー, BC",
+    isRemote: true,
+    employmentType: "Contract",
+    salaryMin: 70000,
+    salaryMax: 95000,
+    currency: "CAD",
+    postedAgo: "2週間前",
+    applicants: 100,
+    schoolConnections: 1,
+    skills: ["Unreal", "C++", "Gameplay", "Perforce", "AI"],
+    matchCount: 3,
+    matchTotal: 10,
+    description:
+      "Blackbird Interactive は、クリエイティブかつ将来志向の独立系ゲームスタジオです。Unreal Engine 5 を用いたゲームプレイ機能の設計・実装・最適化を担当します。C++ による開発経験は必須で、ゲームAI／アニメーション／ネットワークのいずれかに強みがある方を歓迎します。期間は7か月の契約ポジションです。",
+    contacts: [
+      {
+        name: "Johnwill Keating",
+        title: "Programmer at Blackbird Interactive Inc",
+        relation: "University of Waterloo の同窓生",
+      },
+    ],
+  },
+  {
+    id: "7",
+    title: "Full Stack Developer (UX/UI)",
+    company: "DataAnnotation",
+    location: "バンクーバー, BC",
+    isRemote: true,
+    employmentType: "Contract",
+    salaryMin: 80000,
+    salaryMax: 120000,
+    currency: "CAD",
+    postedAgo: "1週間前",
+    applicants: 60,
+    schoolConnections: 13,
+    skills: ["Next.js", "TypeScript", "Postgres", "Tailwind", "Figma"],
+    matchCount: 6,
+    matchTotal: 10,
+    description:
+      "大規模 LLM データプラットフォームの設計から実装までを担当します。Next.js／TypeScript による UI 実装、API 設計、計測・A/B テストの仕組みづくりまで幅広く関わります。開発速度とユーザー体験の両立を重視できる方を歓迎します。",
+  },
+  {
+    id: "8",
+    title: "Founding Builders Fellowship (Canada)",
+    company: "Prompt.Build",
+    location: "カナダ",
+    isRemote: true,
+    employmentType: "Intern",
+    postedAgo: "3日前",
+    applicants: 25,
+    schoolConnections: 0,
+    skills: ["AI", "Product", "Growth"],
+    matchCount: 4,
+    matchTotal: 8,
+    description:
+      "AI プロダクトの 0→1 を支援するフェローシップ。創業者と並走し、リサーチ、プロトタイピング、ユーザーインタビュー、グロース実験などを高速に回します。自走できるプロダクト志向の学生・若手を歓迎します。",
+  },
+  {
+    id: "9",
+    title: "Embedded Software Engineering Intern (September 2025)",
+    company: "Kepler Communications Inc.",
+    location: "トロント, ON",
+    isRemote: true,
+    employmentType: "Intern",
+    postedAgo: "4日前",
+    applicants: 47,
+    schoolConnections: 7,
+    skills: ["C", "RTOS", "Telemetry", "Python"],
+    matchCount: 2,
+    matchTotal: 10,
+    description:
+      "衛星通信向けの組み込みソフトウェア開発インターン。RTOS 上での C 言語開発、テレメトリ、デバッグ・テスト自動化の経験があると尚可。宇宙規模の通信網を実装レベルから支えるポジションです。",
+  },
+  {
+    id: "10",
+    title: "Associate Software Engineer (Payments)",
+    company: "CraftStadium",
+    location: "東京",
+    isRemote: true,
+    employmentType: "Full-time",
+    salaryMin: 6000000,
+    salaryMax: 9000000,
+    currency: "JPY",
+    postedAgo: "本日",
+    applicants: 12,
+    schoolConnections: 0,
+    skills: ["Go", "PostgreSQL", "GCP", "Stripe"],
+    matchCount: 5,
+    matchTotal: 10,
+    description:
+      "インタラクティブな AI プロダクトの決済・メータリング基盤を担当します。Go + PostgreSQL によるマイクロサービス、Stripe 連携、従量課金（usage-based billing）の設計・運用に関心のある方を歓迎します。セキュアでスケーラブルな決済体験づくりをお任せします。",
+  },
 ];
 
 // ---------- Utilities ----------
@@ -190,9 +287,24 @@ export default function JobsBoardPage() {
 
   return (
     // Fit INSIDE SidebarInset: same height, normal flow (not fixed), no overlay
-    <div className="relative h-[calc(100vh-2rem)] overflow-hidden bg-background">
+    <div className="relative h-[calc(100vh-5.5rem)] overflow-hidden bg-background">
       <ResizablePanelGroup direction="horizontal" className="h-full">
-        {/* Left: Job list */}
+        {/* Left: Details */}
+        <ResizablePanel minSize={40} defaultSize={66} className="overflow-hidden m-3 rounded-lg border">
+          <div className="flex h-full min-h-0 flex-col">
+            {selected ? (
+              <JobDetails job={selected} />
+            ) : (
+              <div className="grid h-full place-items-center text-muted-foreground">
+                <p>求人を選択してください</p>
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        {/* Right: Job list */}
         <ResizablePanel minSize={28} defaultSize={34} className="min-w-[320px] overflow-hidden">
           <div className="flex h-full min-h-0 flex-col">
             <ListHeader
@@ -214,21 +326,7 @@ export default function JobsBoardPage() {
             </div>
           </div>
         </ResizablePanel>
-
-        <ResizableHandle withHandle />
-
-        {/* Right: Details */}
-        <ResizablePanel minSize={40} defaultSize={66} className="overflow-hidden m-3 rounded-lg border">
-          <div className="flex h-full min-h-0 flex-col">
-            {selected ? (
-              <JobDetails job={selected} />
-            ) : (
-              <div className="grid h-full place-items-center text-muted-foreground">
-                <p>求人を選択してください</p>
-              </div>
-            )}
-          </div>
-        </ResizablePanel>
+        
       </ResizablePanelGroup>
     </div>
   );

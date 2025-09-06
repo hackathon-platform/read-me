@@ -95,20 +95,6 @@ export default function MemberPanel() {
     }
   };
 
-  const getStatusBadgeVariant = (
-    status: string,
-  ): "default" | "secondary" | "destructive" | "outline" => {
-    switch (status) {
-      case "active":
-        return "default";
-      case "pending":
-        return "secondary";
-      case "inactive":
-        return "outline";
-      default:
-        return "outline";
-    }
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("ja-JP", {
@@ -173,7 +159,6 @@ export default function MemberPanel() {
                     <TableHead className="w-[40px]"></TableHead>
                     <TableHead>メンバー</TableHead>
                     <TableHead>役割</TableHead>
-                    <TableHead>ステータス</TableHead>
                     <TableHead>参加日</TableHead>
                     <TableHead className="text-center">作成イベント</TableHead>
                     <TableHead className="text-right">操作</TableHead>
@@ -228,11 +213,6 @@ export default function MemberPanel() {
                         <TableCell>
                           <Badge variant={getRoleBadgeVariant(member.role)}>
                             {getRoleDisplay(member.role)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getStatusBadgeVariant(member.status)}>
-                            {getStatusDisplay(member.status)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm">
@@ -378,11 +358,6 @@ export default function MemberPanel() {
                           variant={getRoleBadgeVariant(selectedMember.role)}
                         >
                           {getRoleDisplay(selectedMember.role)}
-                        </Badge>
-                        <Badge
-                          variant={getStatusBadgeVariant(selectedMember.status)}
-                        >
-                          {getStatusDisplay(selectedMember.status)}
                         </Badge>
                       </div>
                     </div>
