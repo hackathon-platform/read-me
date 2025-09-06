@@ -177,20 +177,8 @@ export default async function ProfilePage({
         ]}
       />
       <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full pb-3">
-        {/* Mobile */}
-        <div className="lg:hidden">
-          <ProfileSection profile={profile} />
-          <ProfileTabs />
-        </div>
-        {/* Desktop */}
-        <div className="hidden lg:flex gap-8">
-          <aside className="w-80 flex-shrink-0">
-            <ProfileSection profile={profile} />
-          </aside>
-          <main className="flex-1">
-            <ProfileTabs />
-          </main>
-        </div>
+        <ProfileSection profile={profile} />
+        <ProfileTabs />
       </div>
     </>
   );
