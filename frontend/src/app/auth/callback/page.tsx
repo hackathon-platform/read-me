@@ -22,7 +22,7 @@ export default function AuthCallback() {
       if (upsertError) console.error("profile upsert error:", upsertError);
 
       // Then send them into profile setup
-      router.replace("/profile/setup");
+      router.replace("/me/setup");
     });
   }, [router]);
 
