@@ -121,3 +121,22 @@ export interface Organizer {
   role: "owner" | "admin" | "member" | "guest";
   joinedAt: string;
 }
+
+export interface FeedPost {
+  id: string;
+  profileId: string;
+  type: "project" | "activity";
+  title: string;
+  description: string;
+  media: ProjectMedia[];
+  profile?: {
+    username: string;
+    firstName: string;
+    lastName: string;
+    imageUrl: string;
+  };
+  likes?: number;
+  comments?: number;
+  createdAt: string;
+  updatedAt: string;
+}

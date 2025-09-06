@@ -2,12 +2,12 @@ import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileSection } from "@/components/navi/ProfileSection";
-import { EducationSection } from "@/components/navi/EducationSection";
-import { ExperienceSection } from "@/components/navi/ExperienceSection";
-import { QualificationSection } from "@/components/navi/QualificationSection";
-import { ResumeSection } from "@/components/navi/ResumeSection";
-import { ProjectsSection } from "@/components/navi/ProjectsSection";
+import { ProfileSection } from "@/components/me/ProfileSection";
+import { EducationSection } from "@/components/me/EducationSection";
+import { ExperienceSection } from "@/components/me/ExperienceSection";
+import { QualificationSection } from "@/components/me/QualificationSection";
+import { ResumeSection } from "@/components/me/ResumeSection";
+import { ProjectsSection } from "@/components/me/ProjectsSection";
 import type { Profile, Skill } from "@/lib/types";
 import PageHeader from "@/components/layout/PageHeader";
 
@@ -169,10 +169,10 @@ export default async function ProfilePage({
   );
 
   return (
-    <div>
+    <>
       <PageHeader
         breadcrumbs={[
-          { label: "プロファイル", href: "/navi" },
+          { label: "プロファイル", href: "/me" },
           { label: username, current: true },
         ]}
       />
@@ -192,6 +192,6 @@ export default async function ProfilePage({
           </main>
         </div>
       </div>
-    </div>
+    </>
   );
 }

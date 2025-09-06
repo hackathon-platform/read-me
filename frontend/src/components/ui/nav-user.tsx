@@ -52,6 +52,17 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, signOut: originalSignOut, loading } = useSupabase();
 
+
+  const prevUserRef = useRef<User | null>(null);
+
+  const defaultUserData = (): UserData => ({
+    firstName: "",
+    lastName: "",
+    fullName: "",
+    email: "",
+    imageUrl: "",
+  });
+
   const [userData, setUserData] = useState<UserData>(() => {
     if (typeof window !== "undefined") {
       try {
@@ -64,15 +75,6 @@ export function NavUser() {
     return defaultUserData();
   });
 
-  const prevUserRef = useRef<User | null>(null);
-
-  const defaultUserData = (): UserData => ({
-    firstName: "",
-    lastName: "",
-    fullName: "",
-    email: "",
-    imageUrl: "",
-  });
 
   const getInitial = (lastName?: string) =>
     lastName?.charAt(0).toUpperCase() || "U";
@@ -213,7 +215,7 @@ export function NavUser() {
 
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link href="/navi">
+              <Link href="/me">
                 <DropdownMenuItem>
                   <BadgeCheck className="mr-2 h-4 w-4" />
                   プロフィール

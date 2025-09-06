@@ -4,7 +4,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
-import { ProfileSetupForm } from "@/components/navi/ProfileSetupForm";
+import { ProfileSetupForm } from "@/components/me/ProfileSetupForm";
 
 export default function ProfileSetupPage() {
   const router = useRouter();

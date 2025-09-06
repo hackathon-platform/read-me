@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   MessageSquare,
   Briefcase,
+  Activity,
 } from "lucide-react";
 
 import { NavMain } from "@/components/ui/nav-main";
@@ -30,22 +31,16 @@ const data = {
   navMain: [
     {
       title: "プロファイル",
-      url: "/navi",
+      url: "/me",
       icon: User,
-      items: [
-        { title: "ポートファリオ", url: "/navi" },
-        { title: "質問事項", url: "/navi/edit" },
-      ],
+      items: [],
     },
     {
       title: "参加する",
       url: "/events",
       icon: CalendarCheck,
       isActive: true,
-      items: [
-        { title: "イベント検索", url: "/events" },
-        { title: "登録済みイベント", url: "/#" },
-      ],
+      items: [],
     },
     {
       title: "開催する",
@@ -56,15 +51,12 @@ const data = {
         { title: "運営チーム", url: "/#" },
       ],
     },
-    {
-      title: "応募する",
-      url: "/apply",
-      icon: Briefcase,
-      items: [
-        { title: "インターン受付", url: "/#" },
-        { title: "メール", url: "/#" },
-      ],
-    },
+    // {
+    //   title: "応募する",
+    //   url: "/job",
+    //   icon: Briefcase,
+    //   items: [],
+    // },
     {
       title: "ドキュメント",
       url: "/#",
@@ -105,7 +97,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="/">
                 <Code2 className="!size-5" />
-                <span className="text-base font-semibold">Event Navi.</span>
+                <span className="text-base font-semibold">Read ME</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

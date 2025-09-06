@@ -1,7 +1,7 @@
 "use client";
 import { ReactNode } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/ui/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 
 type Props = {
   children: ReactNode;
