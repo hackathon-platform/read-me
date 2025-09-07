@@ -81,16 +81,16 @@ export default function Header() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="link"
-                        className="relative h-10 p-0"
+                        className="relative h-8 p-0"
                       >
-                        <Avatar className="h-8 w-8 rounded-md">
+                        <Avatar className="h-7 w-7 rounded-full">
                           {avatarUrl ? (
                             <AvatarImage
                               src={avatarUrl}
                               alt={fullName}
                             />
                           ) : (
-                            <AvatarFallback className="rounded-lg">
+                            <AvatarFallback className="rounded-full">
                               {getInitial(lastName)}
                             </AvatarFallback>
                           )}

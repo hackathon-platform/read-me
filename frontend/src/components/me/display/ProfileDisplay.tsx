@@ -47,7 +47,7 @@ export default function ProfileDisplay({ profile }: ProfileSectionProps) {
                 </h2>
               </div>
               <div className="font-semibold text-muted-foreground">
-                {profile.username}
+                @{profile.username}
               </div>
               <div className="flex gap-1">
                 {profile.socials.map((social, index) => (

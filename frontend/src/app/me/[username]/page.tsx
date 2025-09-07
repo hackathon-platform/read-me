@@ -132,7 +132,7 @@ export default async function ProfilePage({
   };
 
   const ProfileTabs = () => (
-    <Tabs defaultValue="profile" className="w-full">
+    <Tabs defaultValue="projects" className="w-full">
       <TabsList className="grid grid-cols-2 w-full">
         <TabsTrigger value="projects">プロジェクト</TabsTrigger>
         <TabsTrigger value="profile">プロフィール</TabsTrigger>
