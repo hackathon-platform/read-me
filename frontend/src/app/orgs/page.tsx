@@ -45,9 +45,10 @@ export default function OrganizationsPage() {
           <div>読み込み中...</div>
         ) : (
           <section className="space-y-6">
-
             {orgs.length === 0 ? (
-              <p className="text-muted-foreground">参加中の組織はありません。</p>
+              <p className="text-muted-foreground">
+                参加中の組織はありません。
+              </p>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
                 {orgs.map((org) => (

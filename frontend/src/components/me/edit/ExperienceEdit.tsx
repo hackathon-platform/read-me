@@ -58,8 +58,8 @@ interface Props {
   profileId: string;
   initialData: Experience[];
   onCancel: () => void; // （今回はフッターから呼ぶ想定だがシグネチャは保持）
-  onSave: () => void;   // 保存成功時にDrawerを閉じる
-  formId?: string;      // 追加：外部フッターからsubmitするためのID
+  onSave: () => void; // 保存成功時にDrawerを閉じる
+  formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
 export function ExperienceEdit({
@@ -67,7 +67,7 @@ export function ExperienceEdit({
   initialData,
   onCancel,
   onSave,
-  formId = "experience-edit-form"
+  formId = "experience-edit-form",
 }: Props) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -112,7 +112,11 @@ export function ExperienceEdit({
 
   return (
     <Form {...form}>
-      <form id={formId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-2">
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 pt-2"
+      >
         {fields.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">

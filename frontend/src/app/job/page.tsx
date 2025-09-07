@@ -255,7 +255,8 @@ const JOBS: Job[] = [
 // ---------- Utilities ----------
 function fmtSalary(min?: number, max?: number, c: Job["currency"] = "USD") {
   if (!min || !max) return undefined;
-  const unit = c === "JPY" ? "¥" : c === "CAD" ? "CA$" : c === "EUR" ? "€" : "$";
+  const unit =
+    c === "JPY" ? "¥" : c === "CAD" ? "CA$" : c === "EUR" ? "€" : "$";
   const format = (n: number) => Math.round(n).toLocaleString();
   return `${unit}${format(min)} /年 - ${unit}${format(max)} /年`;
 }
@@ -269,7 +270,8 @@ export default function JobsBoardPage() {
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     return JOBS.filter((j) => {
-      const hay = `${j.title} ${j.company} ${j.location} ${j.skills?.join(" ")}`.toLowerCase();
+      const hay =
+        `${j.title} ${j.company} ${j.location} ${j.skills?.join(" ")}`.toLowerCase();
       const okQ = q ? hay.includes(q) : true;
       const okRemote = onlyRemote ? !!j.isRemote : true;
       return okQ && okRemote;
@@ -278,7 +280,7 @@ export default function JobsBoardPage() {
 
   const selected = React.useMemo(
     () => filtered.find((j) => j.id === selectedId) ?? filtered[0],
-    [filtered, selectedId]
+    [filtered, selectedId],
   );
 
   React.useEffect(() => {
@@ -290,7 +292,11 @@ export default function JobsBoardPage() {
     <div className="relative h-[calc(100vh-5.5rem)] overflow-hidden bg-background">
       <ResizablePanelGroup direction="horizontal" className="h-full">
         {/* Left: Details */}
-        <ResizablePanel minSize={40} defaultSize={66} className="overflow-hidden m-3 rounded-lg border">
+        <ResizablePanel
+          minSize={40}
+          defaultSize={66}
+          className="overflow-hidden m-3 rounded-lg border"
+        >
           <div className="flex h-full min-h-0 flex-col">
             {selected ? (
               <JobDetails job={selected} />
@@ -305,7 +311,11 @@ export default function JobsBoardPage() {
         <ResizableHandle withHandle />
 
         {/* Right: Job list */}
-        <ResizablePanel minSize={28} defaultSize={34} className="min-w-[320px] overflow-hidden">
+        <ResizablePanel
+          minSize={28}
+          defaultSize={34}
+          className="min-w-[320px] overflow-hidden"
+        >
           <div className="flex h-full min-h-0 flex-col">
             <ListHeader
               count={filtered.length}
@@ -319,14 +329,17 @@ export default function JobsBoardPage() {
               <ul className="divide-y">
                 {filtered.map((job) => (
                   <li key={job.id}>
-                    <JobRow job={job} active={selected?.id === job.id} onClick={() => setSelectedId(job.id)} />
+                    <JobRow
+                      job={job}
+                      active={selected?.id === job.id}
+                      onClick={() => setSelectedId(job.id)}
+                    />
                   </li>
                 ))}
               </ul>
             </div>
           </div>
         </ResizablePanel>
-        
       </ResizablePanelGroup>
     </div>
   );
@@ -345,7 +358,9 @@ function ListHeader(props: {
     <div className="flex flex-col gap-3 p-3">
       <div className="flex items-center justify-between">
         <div className="font-bold text-muted-foreground">求人を検索</div>
-        <Badge variant="secondary" className="rounded-full">{count}</Badge>
+        <Badge variant="secondary" className="rounded-full">
+          {count}
+        </Badge>
       </div>
       <div className="flex items-center gap-2">
         <div className="relative flex-1">
@@ -376,7 +391,15 @@ function ListHeader(props: {
   );
 }
 
-function JobRow({ job, active, onClick }: { job: Job; active?: boolean; onClick?: () => void }) {
+function JobRow({
+  job,
+  active,
+  onClick,
+}: {
+  job: Job;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
     <button
       onClick={onClick}
@@ -384,32 +407,72 @@ function JobRow({ job, active, onClick }: { job: Job; active?: boolean; onClick?
       data-active={active}
     >
       <Avatar className="mt-1 h-10 w-10 rounded-md">
-        {job.logo ? <AvatarImage src={job.logo} alt={job.company} /> : <AvatarFallback className="rounded-md">{job.company[0]}</AvatarFallback>}
+        {job.logo ? (
+          <AvatarImage src={job.logo} alt={job.company} />
+        ) : (
+          <AvatarFallback className="rounded-md">
+            {job.company[0]}
+          </AvatarFallback>
+        )}
       </Avatar>
 
       <div className="min-w-0 flex-1">
         <div className="line-clamp-1 text-[15px] font-medium">{job.title}</div>
         <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{job.company}</span>
-          <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{job.location}</span>
-          {job.isRemote && <span className="inline-flex items-center gap-1"><Globe2 className="h-3.5 w-3.5" />リモート</span>}
+          <span className="inline-flex items-center gap-1">
+            <Building2 className="h-3.5 w-3.5" />
+            {job.company}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <MapPin className="h-3.5 w-3.5" />
+            {job.location}
+          </span>
+          {job.isRemote && (
+            <span className="inline-flex items-center gap-1">
+              <Globe2 className="h-3.5 w-3.5" />
+              リモート
+            </span>
+          )}
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {fmtSalary(job.salaryMin, job.salaryMax, job.currency) && (
-            <Badge variant="outline" className="gap-1"><DollarSign className="h-3.5 w-3.5" />{fmtSalary(job.salaryMin, job.salaryMax, job.currency)}</Badge>
+            <Badge variant="outline" className="gap-1">
+              <DollarSign className="h-3.5 w-3.5" />
+              {fmtSalary(job.salaryMin, job.salaryMax, job.currency)}
+            </Badge>
           )}
-          <Badge variant="secondary" className="gap-1"><ShieldCheck className="h-3.5 w-3.5" />{job.employmentType}</Badge>
+          <Badge variant="secondary" className="gap-1">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {job.employmentType}
+          </Badge>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />{job.postedAgo}</span>
-          {typeof job.applicants === "number" && <span className="inline-flex items-center gap-1"><Users className="h-3.5 w-3.5" />{job.applicants}+ 応募</span>}
-          {typeof job.schoolConnections === "number" && job.schoolConnections > 0 && (
-            <span className="inline-flex items-center gap-1"><UserCircle2 className="h-3.5 w-3.5" />学校の同窓生 {job.schoolConnections}人</span>
+          <span className="inline-flex items-center gap-1">
+            <Clock3 className="h-3.5 w-3.5" />
+            {job.postedAgo}
+          </span>
+          {typeof job.applicants === "number" && (
+            <span className="inline-flex items-center gap-1">
+              <Users className="h-3.5 w-3.5" />
+              {job.applicants}+ 応募
+            </span>
           )}
+          {typeof job.schoolConnections === "number" &&
+            job.schoolConnections > 0 && (
+              <span className="inline-flex items-center gap-1">
+                <UserCircle2 className="h-3.5 w-3.5" />
+                学校の同窓生 {job.schoolConnections}人
+              </span>
+            )}
         </div>
       </div>
 
-      <Button variant="ghost" size="icon" className="opacity-0 transition group-hover:opacity-100" title="保存">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="opacity-0 transition group-hover:opacity-100"
+        title="保存"
+      >
         <Bookmark className="h-4 w-4" />
       </Button>
     </button>
@@ -423,21 +486,39 @@ function JobDetails({ job }: { job: Job }) {
         <div className="min-w-0">
           <h1 className="text-xl font-semibold leading-snug">{job.title}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-1"><Building2 className="h-4 w-4" />{job.company}</span>
-            <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" />{job.location}</span>
-            {job.isRemote && <Badge variant="secondary" className="gap-1"><Globe2 className="h-3.5 w-3.5" />リモート</Badge>}
+            <span className="inline-flex items-center gap-1">
+              <Building2 className="h-4 w-4" />
+              {job.company}
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="h-4 w-4" />
+              {job.location}
+            </span>
+            {job.isRemote && (
+              <Badge variant="secondary" className="gap-1">
+                <Globe2 className="h-3.5 w-3.5" />
+                リモート
+              </Badge>
+            )}
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             {fmtSalary(job.salaryMin, job.salaryMax, job.currency) && (
-              <Badge variant="outline" className="gap-1"><DollarSign className="h-3.5 w-3.5" />{fmtSalary(job.salaryMin, job.salaryMax, job.currency)}</Badge>
+              <Badge variant="outline" className="gap-1">
+                <DollarSign className="h-3.5 w-3.5" />
+                {fmtSalary(job.salaryMin, job.salaryMax, job.currency)}
+              </Badge>
             )}
             <Badge variant="outline">{job.employmentType}</Badge>
             {typeof job.matchCount === "number" && (
-              <Badge variant="secondary">{job.matchCount}/{job.matchTotal} 件のスキルマッチ</Badge>
+              <Badge variant="secondary">
+                {job.matchCount}/{job.matchTotal} 件のスキルマッチ
+              </Badge>
             )}
           </div>
         </div>
-        <Button className="gap-1">応募 <ExternalLink className="h-4 w-4" /></Button>
+        <Button className="gap-1">
+          応募 <ExternalLink className="h-4 w-4" />
+        </Button>
       </div>
 
       <Separator />
@@ -448,17 +529,29 @@ function JobDetails({ job }: { job: Job }) {
             <div className="text-sm font-medium">リーチ可能なメンバー</div>
             <div className="mt-3 flex flex-col gap-3">
               {job.contacts.map((c, i) => (
-                <div key={i} className="flex items-center justify-between rounded-lg border p-3">
+                <div
+                  key={i}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
-                      {c.avatar ? <AvatarImage src={c.avatar} alt={c.name} /> : <AvatarFallback>{c.name[0]}</AvatarFallback>}
+                      {c.avatar ? (
+                        <AvatarImage src={c.avatar} alt={c.name} />
+                      ) : (
+                        <AvatarFallback>{c.name[0]}</AvatarFallback>
+                      )}
                     </Avatar>
                     <div>
                       <div className="font-medium leading-tight">{c.name}</div>
-                      <div className="text-xs text-muted-foreground">{c.title} ・ {c.relation}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {c.title} ・ {c.relation}
+                      </div>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-1"><MessageCircle className="h-4 w-4" />メッセージ</Button>
+                  <Button variant="outline" size="sm" className="gap-1">
+                    <MessageCircle className="h-4 w-4" />
+                    メッセージ
+                  </Button>
                 </div>
               ))}
             </div>
@@ -475,7 +568,9 @@ function JobDetails({ job }: { job: Job }) {
           {job.skills && job.skills.length > 0 && (
             <div className="not-prose mt-4 flex flex-wrap gap-2">
               {job.skills.map((s) => (
-                <Badge key={s} variant="secondary">{s}</Badge>
+                <Badge key={s} variant="secondary">
+                  {s}
+                </Badge>
               ))}
             </div>
           )}
@@ -483,10 +578,15 @@ function JobDetails({ job }: { job: Job }) {
           <h3 className="mt-6">応募情報</h3>
           <ul>
             <li>掲載: {job.postedAgo}</li>
-            {typeof job.applicants === "number" && <li>応募者: {job.applicants}+ 名</li>}
+            {typeof job.applicants === "number" && (
+              <li>応募者: {job.applicants}+ 名</li>
+            )}
             <li>雇用形態: {job.employmentType}</li>
             {fmtSalary(job.salaryMin, job.salaryMax, job.currency) && (
-              <li>給与レンジ: {fmtSalary(job.salaryMin, job.salaryMax, job.currency)}</li>
+              <li>
+                給与レンジ:{" "}
+                {fmtSalary(job.salaryMin, job.salaryMax, job.currency)}
+              </li>
             )}
           </ul>
         </div>

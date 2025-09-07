@@ -5,7 +5,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Share2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import type { FeedPost } from "@/lib/types";
 
 // Mock data for demonstration
@@ -15,54 +21,58 @@ const mockFeedPosts: FeedPost[] = [
     profileId: "user1",
     type: "project",
     title: "AIチャットボットの開発",
-    description: "Next.jsとOpenAI APIを使用してカスタマーサポート用のチャットボットを開発しました。リアルタイムでの応答処理と多言語対応を実装。",
+    description:
+      "Next.jsとOpenAI APIを使用してカスタマーサポート用のチャットボットを開発しました。リアルタイムでの応答処理と多言語対応を実装。",
     media: [
       {
         type: "image",
         url: "https://images.unsplash.com/photo-1555421689-d68471e189f2?w=500&h=300&fit=crop",
-        caption: "チャットボットのUI"
+        caption: "チャットボットのUI",
       },
       {
-        type: "image", 
+        type: "image",
         url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop",
-        caption: "管理画面"
-      }
+        caption: "管理画面",
+      },
     ],
     profile: {
       username: "yamada_taro",
       firstName: "太郎",
       lastName: "山田",
-      imageUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+      imageUrl:
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
     },
     likes: 12,
     comments: 3,
     createdAt: "2024-01-15T10:30:00Z",
-    updatedAt: "2024-01-15T10:30:00Z"
+    updatedAt: "2024-01-15T10:30:00Z",
   },
   {
-    id: "2", 
+    id: "2",
     profileId: "user2",
     type: "activity",
     title: "ハッカソンで優勝しました！",
-    description: "48時間のハッカソンで、環境問題解決のためのWebアプリケーションを開発し、優勝することができました。チームワークの重要性を再認識。",
+    description:
+      "48時間のハッカソンで、環境問題解決のためのWebアプリケーションを開発し、優勝することができました。チームワークの重要性を再認識。",
     media: [
       {
         type: "image",
         url: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=300&fit=crop",
-        caption: "表彰式の様子"
-      }
+        caption: "表彰式の様子",
+      },
     ],
     profile: {
       username: "sato_hanako",
       firstName: "花子",
-      lastName: "佐藤", 
-      imageUrl: "https://images.unsplash.com/photo-1494790108755-2616b2e3ba0e?w=100&h=100&fit=crop&crop=face"
+      lastName: "佐藤",
+      imageUrl:
+        "https://images.unsplash.com/photo-1494790108755-2616b2e3ba0e?w=100&h=100&fit=crop&crop=face",
     },
     likes: 28,
     comments: 8,
     createdAt: "2024-01-14T14:20:00Z",
-    updatedAt: "2024-01-14T14:20:00Z"
-  }
+    updatedAt: "2024-01-14T14:20:00Z",
+  },
 ];
 
 export default function FeedList() {
@@ -125,7 +135,9 @@ function FeedPostCard({ post }: { post: FeedPost }) {
 
   const prevMedia = () => {
     if (post.media.length > 1) {
-      setCurrentMediaIndex((prev) => (prev - 1 + post.media.length) % post.media.length);
+      setCurrentMediaIndex(
+        (prev) => (prev - 1 + post.media.length) % post.media.length,
+      );
     }
   };
 
@@ -137,8 +149,10 @@ function FeedPostCard({ post }: { post: FeedPost }) {
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+    );
+
     if (diffInHours < 24) {
       return `${diffInHours}時間前`;
     } else {
@@ -156,7 +170,8 @@ function FeedPostCard({ post }: { post: FeedPost }) {
           <Avatar>
             <AvatarImage src={post.profile?.imageUrl} />
             <AvatarFallback>
-              {post.profile?.firstName?.[0]}{post.profile?.lastName?.[0]}
+              {post.profile?.firstName?.[0]}
+              {post.profile?.lastName?.[0]}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
@@ -164,7 +179,9 @@ function FeedPostCard({ post }: { post: FeedPost }) {
               <p className="font-medium">
                 {post.profile?.firstName} {post.profile?.lastName}
               </p>
-              <Badge variant={post.type === "project" ? "default" : "secondary"}>
+              <Badge
+                variant={post.type === "project" ? "default" : "secondary"}
+              >
                 {post.type === "project" ? "プロジェクト" : "活動"}
               </Badge>
             </div>
@@ -247,12 +264,12 @@ function FeedPostCard({ post }: { post: FeedPost }) {
             <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
             {(post.likes || 0) + (liked ? 1 : 0)}
           </Button>
-          
+
           <Button variant="ghost" size="sm" className="gap-1">
             <MessageCircle className="h-4 w-4" />
             {post.comments || 0}
           </Button>
-          
+
           <Button variant="ghost" size="sm" className="gap-1">
             <Share2 className="h-4 w-4" />
             共有

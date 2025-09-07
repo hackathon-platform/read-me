@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabaseClient";
 export async function uploadImage(
   file: File,
   type: "banner" | "icon",
-  orgSlug: string
+  orgSlug: string,
 ): Promise<string> {
   try {
     // Validate file
@@ -49,9 +49,9 @@ export async function uploadImage(
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from("organization")
-      .getPublicUrl(filePath);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("organization").getPublicUrl(filePath);
 
     return publicUrl;
   } catch (error) {

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -23,9 +23,10 @@ const recommendedUsers = [
 export default function RecommendedUsers() {
   const [query, setQuery] = useState("");
 
-  const filteredUsers = recommendedUsers.filter((user) =>
-    user.name.toLowerCase().includes(query.toLowerCase()) ||
-    user.username.toLowerCase().includes(query.toLowerCase())
+  const filteredUsers = recommendedUsers.filter(
+    (user) =>
+      user.name.toLowerCase().includes(query.toLowerCase()) ||
+      user.username.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (
@@ -57,7 +58,9 @@ export default function RecommendedUsers() {
               </Avatar>
               <div>
                 <p className="font-medium text-sm">{user.name}</p>
-                <p className="text-xs text-muted-foreground">@{user.username}</p>
+                <p className="text-xs text-muted-foreground">
+                  @{user.username}
+                </p>
               </div>
             </Link>
           ))}

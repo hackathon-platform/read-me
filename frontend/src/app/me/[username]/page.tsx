@@ -184,7 +184,7 @@ export default async function ProfilePage({
             <ProfileSection profile={profile} />
             <ProfileTabs />
           </div>
-  
+
           {/* Right: Recommended users */}
           <div className="hidden lg:block">
             <RecommendedUsers />
@@ -192,5 +192,5 @@ export default async function ProfilePage({
         </div>
       </div>
     </>
-  );  
+  );
 }

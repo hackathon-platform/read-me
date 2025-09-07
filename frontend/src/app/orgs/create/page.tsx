@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -42,7 +42,10 @@ export default function CreateOrganizationForm() {
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: field === "slug" ? value.toLowerCase().replace(/[^a-z0-9-]/g, "") : value,
+      [field]:
+        field === "slug"
+          ? value.toLowerCase().replace(/[^a-z0-9-]/g, "")
+          : value,
     }));
   };
 
@@ -124,13 +127,13 @@ export default function CreateOrganizationForm() {
           <div className="space-y-4">
             {/* Organization Name */}
             <div>
-                <input
-                  type="text"
-                  placeholder="組織名"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  className="w-full text-2xl font-bold bg-transparent border-b-2 pb-2 focus:outline-none focus:border-purple-500 transition-colors"
-                />
+              <input
+                type="text"
+                placeholder="組織名"
+                value={formData.name}
+                onChange={(e) => handleInputChange("name", e.target.value)}
+                className="w-full text-2xl font-bold bg-transparent border-b-2 pb-2 focus:outline-none focus:border-purple-500 transition-colors"
+              />
             </div>
 
             {/* URL Slug */}
@@ -144,7 +147,7 @@ export default function CreateOrganizationForm() {
                   type="text"
                   placeholder="例: tokyo-tech-community"
                   value={formData.slug}
-                  onChange={(e) => handleInputChange('slug', e.target.value)}
+                  onChange={(e) => handleInputChange("slug", e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border-2 border-border rounded-lg focus:border-primary focus:outline-none transition-colors bg-background text-foreground"
                 />
               </div>
@@ -168,7 +171,9 @@ export default function CreateOrganizationForm() {
                 <textarea
                   placeholder="組織の活動内容や目的を説明してください"
                   value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("description", e.target.value)
+                  }
                   rows={2}
                   className="w-full pl-10 pr-4 py-2 border-2 border-border rounded-lg focus:border-primary focus:outline-none transition-colors resize-none bg-background text-foreground"
                 />
@@ -186,7 +191,7 @@ export default function CreateOrganizationForm() {
                   type="url"
                   placeholder="https://example.com"
                   value={formData.website}
-                  onChange={(e) => handleInputChange('website', e.target.value)}
+                  onChange={(e) => handleInputChange("website", e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border-2 border-border rounded-lg focus:border-primary focus:outline-none transition-colors bg-background text-foreground"
                 />
               </div>
@@ -203,7 +208,7 @@ export default function CreateOrganizationForm() {
                   type="email"
                   placeholder="contact@example.com"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border-2 border-border rounded-lg focus:border-primary focus:outline-none transition-colors bg-background text-foreground"
                 />
               </div>
@@ -241,61 +246,69 @@ export default function CreateOrganizationForm() {
                     <label
                       htmlFor="banner-upload"
                       className={`flex items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
-                        uploadingBanner || !formData.slug 
-                          ? 'opacity-50 cursor-not-allowed border-border' 
-                          : 'border-border hover:border-primary hover:bg-primary/10'
+                        uploadingBanner || !formData.slug
+                          ? "opacity-50 cursor-not-allowed border-border"
+                          : "border-border hover:border-primary hover:bg-primary/10"
                       }`}
                     >
-                    <div className="text-center">
-                      {uploadingBanner ? (
-                        <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-1" />
-                      ) : (
-                        <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
-                      )}
-                      <p className="text-sm text-foreground">
-                        {uploadingBanner ? 'アップロード中...' : 'バナー画像をアップロード'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">推奨: 1600x400px</p>
-                    </div>
-                  </label>
-                </div>
+                      <div className="text-center">
+                        {uploadingBanner ? (
+                          <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-1" />
+                        ) : (
+                          <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
+                        )}
+                        <p className="text-sm text-foreground">
+                          {uploadingBanner
+                            ? "アップロード中..."
+                            : "バナー画像をアップロード"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          推奨: 1600x400px
+                        </p>
+                      </div>
+                    </label>
+                  </div>
                 )}
 
                 {/* Icon Upload */}
                 {formData.slug && (
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    アイコン画像
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleIconUpload}
-                    disabled={uploadingIcon || !formData.slug}
-                    className="hidden"
-                    id="icon-upload"
-                  />
-                  <label
-                    htmlFor="icon-upload"
-                    className={`flex items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
-                      uploadingIcon || !formData.slug 
-                        ? 'opacity-50 cursor-not-allowed border-border' 
-                        : 'border-border hover:border-primary hover:bg-primary/10'
-                    }`}
-                  >
-                    <div className="text-center">
-                      {uploadingIcon ? (
-                        <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-1" />
-                      ) : (
-                        <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
-                      )}
-                      <p className="text-sm text-foreground">
-                        {uploadingIcon ? 'アップロード中...' : 'アイコン画像をアップロード'}
-                      </p>
-                      <p className="text-xs text-muted-foreground">推奨: 256x256px</p>
-                    </div>
-                  </label>
-                </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      アイコン画像
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleIconUpload}
+                      disabled={uploadingIcon || !formData.slug}
+                      className="hidden"
+                      id="icon-upload"
+                    />
+                    <label
+                      htmlFor="icon-upload"
+                      className={`flex items-center justify-center w-full h-24 border-2 border-dashed rounded-lg cursor-pointer transition-all ${
+                        uploadingIcon || !formData.slug
+                          ? "opacity-50 cursor-not-allowed border-border"
+                          : "border-border hover:border-primary hover:bg-primary/10"
+                      }`}
+                    >
+                      <div className="text-center">
+                        {uploadingIcon ? (
+                          <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-1" />
+                        ) : (
+                          <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
+                        )}
+                        <p className="text-sm text-foreground">
+                          {uploadingIcon
+                            ? "アップロード中..."
+                            : "アイコン画像をアップロード"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          推奨: 256x256px
+                        </p>
+                      </div>
+                    </label>
+                  </div>
                 )}
               </div>
             </CardContent>
@@ -313,7 +326,7 @@ export default function CreateOrganizationForm() {
               <p className="text-sm mb-3 text-muted-foreground">
                 左側のフォームを入力すると、このプレビューが更新されます
               </p>
-              
+
               {/* Organization Page Preview */}
               <div className="bg-card rounded-lg shadow-sm border overflow-hidden">
                 {/* Banner Section */}
@@ -337,7 +350,7 @@ export default function CreateOrganizationForm() {
                       <div className="absolute bottom-4 left-16 w-10 h-10 bg-blue-300/25 rounded-full blur-lg"></div>
                     </div>
                   )}
-                  
+
                   {/* Icon */}
                   <div className="absolute -bottom-8 left-6">
                     <div className="w-16 h-16 bg-background rounded-full border-3 border-background shadow-md flex items-center justify-center">
@@ -375,7 +388,10 @@ export default function CreateOrganizationForm() {
                     {formData.website && (
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Globe className="w-4 h-4 mr-2" />
-                        <a href={formData.website} className="text-blue-600 hover:underline">
+                        <a
+                          href={formData.website}
+                          className="text-blue-600 hover:underline"
+                        >
                           {formData.website}
                         </a>
                       </div>
@@ -383,7 +399,10 @@ export default function CreateOrganizationForm() {
                     {formData.email && (
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Mail className="w-4 h-4 mr-2" />
-                        <a href={`mailto:${formData.email}`} className="text-blue-600 hover:underline">
+                        <a
+                          href={`mailto:${formData.email}`}
+                          className="text-blue-600 hover:underline"
+                        >
                           {formData.email}
                         </a>
                       </div>
@@ -392,9 +411,7 @@ export default function CreateOrganizationForm() {
 
                   {/* Sample Action Buttons */}
                   <div className="flex gap-2 mt-6">
-                    <Button size="sm">
-                      フォロー
-                    </Button>
+                    <Button size="sm">フォロー</Button>
                     <Button size="sm" variant="outline">
                       イベントを見る
                     </Button>
@@ -406,7 +423,9 @@ export default function CreateOrganizationForm() {
           {/* Submit Button */}
           <Button
             onClick={handleSubmit}
-            disabled={loading || uploadingBanner || uploadingIcon || !isFormValid}
+            disabled={
+              loading || uploadingBanner || uploadingIcon || !isFormValid
+            }
             className="w-full py-4 text-lg mt-3"
           >
             {loading ? (
@@ -426,9 +445,24 @@ export default function CreateOrganizationForm() {
 
 function Eye({ className }: { className: string }) {
   return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+      />
     </svg>
   );
 }

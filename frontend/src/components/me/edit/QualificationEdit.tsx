@@ -40,8 +40,8 @@ interface Props {
   profileId: string;
   initialData: Qualification[];
   onCancel: () => void;
-  onSave: () => void;   // 保存成功時にDrawerを閉じる
-  formId?: string;      // 追加：外部フッターからsubmitするためのID
+  onSave: () => void; // 保存成功時にDrawerを閉じる
+  formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
 export function QualificationEdit({
@@ -49,7 +49,7 @@ export function QualificationEdit({
   initialData,
   onCancel,
   onSave,
-  formId = "qualification-edit-form"
+  formId = "qualification-edit-form",
 }: Props) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -91,7 +91,11 @@ export function QualificationEdit({
 
   return (
     <Form {...form}>
-      <form id={formId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-2">
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 pt-2"
+      >
         {fields.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">

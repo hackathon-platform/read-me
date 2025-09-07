@@ -47,7 +47,6 @@ export default async function OrganizationPage({
           )}
           <h1 className="text-2xl font-semibold">{organization.name}</h1>
         </div>
-
       </div>
     </div>
   );

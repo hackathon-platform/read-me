@@ -16,7 +16,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarDays, Plus, Search, User, LogOut, Code2, ChevronDown } from "lucide-react";
+import {
+  CalendarDays,
+  Plus,
+  Search,
+  User,
+  LogOut,
+  Code2,
+  ChevronDown,
+} from "lucide-react";
 import { NavUser } from "@/components/ui/nav-user";
 
 export default function Header() {
@@ -79,16 +87,10 @@ export default function Header() {
                   // ─── ログイン済みユーザー向けメニュー ───
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="link"
-                        className="relative h-8 p-0"
-                      >
+                      <Button variant="link" className="relative h-8 p-0">
                         <Avatar className="h-7 w-7 rounded-full">
                           {avatarUrl ? (
-                            <AvatarImage
-                              src={avatarUrl}
-                              alt={fullName}
-                            />
+                            <AvatarImage src={avatarUrl} alt={fullName} />
                           ) : (
                             <AvatarFallback className="rounded-full">
                               {getInitial(lastName)}

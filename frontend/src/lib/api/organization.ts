@@ -36,7 +36,6 @@ export async function getOrganizationBySlug(slug: string) {
 //   return events;
 // }
 
-
 /**
  * Create a new organization and register creator as 'owner'.
  */
@@ -75,7 +74,8 @@ export async function createOrganization({
     .select()
     .single();
 
-  if (orgError || !org) throw new Error(orgError?.message || "組織の作成に失敗しました");
+  if (orgError || !org)
+    throw new Error(orgError?.message || "組織の作成に失敗しました");
 
   // 2. Insert initial organizer record
   const { error: organizerError } = await supabase.from("organizer").insert({

@@ -52,7 +52,7 @@ interface Props {
   initialData: Education[];
   onCancel: () => void;
   onSave: () => void;
-  formId?: string;      // 追加：外部フッターからsubmitするためのID
+  formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
 export function EducationEdit({
@@ -60,7 +60,7 @@ export function EducationEdit({
   initialData,
   onCancel,
   onSave,
-  formId = "education-edit-form"
+  formId = "education-edit-form",
 }: Props) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -105,7 +105,11 @@ export function EducationEdit({
 
   return (
     <Form {...form}>
-      <form id={formId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
         {fields.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">

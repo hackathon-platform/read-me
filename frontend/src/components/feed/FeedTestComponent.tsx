@@ -30,8 +30,8 @@ export default function FeedTestComponent() {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      
-      setTestResults(prev => ({
+
+      setTestResults((prev) => ({
         ...prev,
         componentsLoad: true,
         typesValid: true,
@@ -49,7 +49,7 @@ export default function FeedTestComponent() {
       </CardHeader>
       <CardContent className="space-y-4">
         <Button onClick={runTests}>Run Tests</Button>
-        
+
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             {testResults.componentsLoad ? (
@@ -59,7 +59,7 @@ export default function FeedTestComponent() {
             )}
             <span>Components Load Successfully</span>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {testResults.typesValid ? (
               <CheckCircle className="h-4 w-4 text-green-500" />
@@ -68,7 +68,7 @@ export default function FeedTestComponent() {
             )}
             <span>TypeScript Types Valid</span>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {testResults.apiStructure ? (
               <CheckCircle className="h-4 w-4 text-green-500" />
@@ -78,7 +78,7 @@ export default function FeedTestComponent() {
             <span>API Structure Ready</span>
           </div>
         </div>
-        
+
         <div className="mt-4 p-3 bg-muted rounded-lg">
           <h4 className="font-semibold mb-2">Feed Feature Summary:</h4>
           <ul className="text-sm space-y-1">

@@ -95,7 +95,6 @@ export default function MemberPanel() {
     }
   };
 
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("ja-JP", {
       year: "numeric",

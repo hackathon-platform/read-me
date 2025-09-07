@@ -52,7 +52,6 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, signOut: originalSignOut, loading } = useSupabase();
 
-
   const prevUserRef = useRef<User | null>(null);
 
   const defaultUserData = (): UserData => ({
@@ -74,7 +73,6 @@ export function NavUser() {
     }
     return defaultUserData();
   });
-
 
   const getInitial = (lastName?: string) =>
     lastName?.charAt(0).toUpperCase() || "U";

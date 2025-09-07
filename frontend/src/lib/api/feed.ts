@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
  */
 export async function uploadFeedMedia(
   file: File,
-  type: "image" | "video"
+  type: "image" | "video",
 ): Promise<string> {
   try {
     // Validate file
@@ -23,13 +23,18 @@ export async function uploadFeedMedia(
     }
 
     // Validate file type
-    const allowedImageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    const allowedImageTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
     const allowedVideoTypes = ["video/mp4", "video/webm", "video/ogg"];
-    
+
     if (type === "image" && !allowedImageTypes.includes(file.type)) {
       throw new Error("Invalid image type. Please upload a valid image file.");
     }
-    
+
     if (type === "video" && !allowedVideoTypes.includes(file.type)) {
       throw new Error("Invalid video type. Please upload a valid video file.");
     }
@@ -53,9 +58,9 @@ export async function uploadFeedMedia(
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from("feed-media")
-      .getPublicUrl(filePath);
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("feed-media").getPublicUrl(filePath);
 
     return publicUrl;
   } catch (error) {
@@ -81,7 +86,10 @@ export async function createFeedPost(postData: {
 }) {
   try {
     // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
     if (userError || !user) {
       throw new Error("User not authenticated");
     }
@@ -97,7 +105,7 @@ export async function createFeedPost(postData: {
     };
 
     console.log("Creating feed post:", feedPost);
-    
+
     // For now, just return the mock data
     return feedPost;
   } catch (error) {
@@ -116,7 +124,7 @@ export async function getFeedPosts(limit: number = 10, offset: number = 0) {
   try {
     // TODO: Implement actual API call to get feed posts
     // This would require creating the appropriate database table in Supabase
-    
+
     // For now, return mock data
     return [];
   } catch (error) {
