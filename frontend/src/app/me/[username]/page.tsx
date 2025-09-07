@@ -8,6 +8,7 @@ import { ExperienceSection } from "@/components/me/ExperienceSection";
 import { QualificationSection } from "@/components/me/QualificationSection";
 import { ResumeSection } from "@/components/me/ResumeSection";
 import { ProjectsSection } from "@/components/me/ProjectsSection";
+import RecommendedUsers from "@/components/me/RecommendedUsers";
 import type { Profile, Skill } from "@/lib/types";
 import PageHeader from "@/components/layout/PageHeader";
 
@@ -138,13 +139,13 @@ export default async function ProfilePage({
       </TabsList>
 
       <TabsContent value="projects" className="mt-3">
-        <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
+        <div className="pt-2 space-y-4">
           <ProjectsSection profileId={profile.id} projects={profile.projects} />
         </div>
       </TabsContent>
 
       <TabsContent value="profile" className="my-3">
-        <div className="border rounded-sm md:px-6 px-3 pt-4 pb-6 space-y-4">
+        <div className="pt-2 space-y-4">
           <ExperienceSection
             profileId={profile.id}
             experiences={profile.experiences}
@@ -176,10 +177,20 @@ export default async function ProfilePage({
           { label: username, current: true },
         ]}
       />
-      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full pb-3">
-        <ProfileSection profile={profile} />
-        <ProfileTabs />
+      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 md:px-3 w-full pb-3">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-6">
+          {/* Left: Profile content */}
+          <div className="pace-y-6">
+            <ProfileSection profile={profile} />
+            <ProfileTabs />
+          </div>
+  
+          {/* Right: Recommended users */}
+          <div className="hidden lg:block">
+            <RecommendedUsers />
+          </div>
+        </div>
       </div>
     </>
-  );
+  );  
 }
