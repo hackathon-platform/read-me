@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import Loading from "@/components/common/Loading";
 
-export default function YourProfileRedirectPage() {
+export default function ProfileRedirectPage() {
   const router = useRouter();
   const { user, isLoading } = useSupabaseAuth();
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -52,12 +53,7 @@ export default function YourProfileRedirectPage() {
 
   // Show loading only when necessary
   if (isLoading || isRedirecting) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-        <p>読み込み中…</p>
-      </div>
-    );
+    return <Loading/>
   }
 
   return null;
