@@ -134,7 +134,7 @@ export default async function EventPage({
           <TabsContent value="gallary">
           </TabsContent>
           <TabsContent value="participant">
-            {participantData[0].profile_id}
+            {participantData?.[0]?.profile_id ?? "No profile"}
           </TabsContent>
         </Tabs>
         </div>
