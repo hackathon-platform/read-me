@@ -42,8 +42,16 @@ export default async function EventPage({
     )
     .eq("slug", slug)
     .single<EventRow>();
-
+  
+  console.log('event id', data?.id)
   if (error || !data) return notFound();
+
+  const { data: participantData, error: participantError } = await supabase
+    .from("participant")
+    .select(
+      "profile_id,event_id,role"
+    )
+    .eq("event_id", data.id);
 
   const endAtJP =
     data.end_at
@@ -53,8 +61,9 @@ export default async function EventPage({
         })
       : null;
 
+  console.log('participantData', participantData)
   return (
-    <div className="space-y-6">
+    <div>
       <PageHeader
         breadcrumbs={[
           { label: "イベント", href: "/event" },
@@ -63,7 +72,7 @@ export default async function EventPage({
       />
 
       {/* Hero */}
-      <div className="rounded-lg overflow-hidden border bg-card">
+      <div className="overflow-hidden border bg-card">
         <div className="relative h-48">
           {data.banner_url ? (
             <img
@@ -77,78 +86,57 @@ export default async function EventPage({
 
           {/* タイトルオーバーレイ */}
           <div className="absolute bottom-3 left-4 right-4">
-            <h1 className="text-2xl font-semibold drop-shadow-sm">
+            <h1 className="text-2xl font-semibold ">
               {data.name}
             </h1>
-            <p className="text-xs text-muted-foreground">/event/{data.slug}</p>
-          </div>
-        </div>
-
-        {/* Body */}
-        <div className="pt-5 pb-8 space-y-5">
-          {/* メタ情報 */}
-          <div className="flex flex-wrap items-center gap-2">
-            {endAtJP && (
-              <Badge variant="secondary" className="gap-1">
-                <CalendarDays className="w-3.5 h-3.5" />
-                受付終了: {endAtJP}
-              </Badge>
-            )}
+            {/* <p className="text-xs text-muted-foreground">/event/{data.slug}</p> */}
             {data.website && (
               <Badge variant="outline" className="gap-1">
                 <Globe2 className="w-3.5 h-3.5" />
                 <Link
                   href={data.website}
                   target="_blank"
-                  className="underline underline-offset-2"
                 >
                   公式サイト
                 </Link>
               </Badge>
             )}
-            {data.email && (
-              <Badge variant="outline" className="gap-1">
-                <Mail className="w-3.5 h-3.5" />
-                <a
-                  href={`mailto:${data.email}`}
-                  className="underline underline-offset-2"
-                >
-                  お問い合わせ
-                </a>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div>
+          {/* メタ情報 */}
+          {/* <div className="flex flex-wrap items-center gap-2">
+            {endAtJP && (
+              <Badge variant="secondary" className="gap-1">
+                <CalendarDays className="w-3.5 h-3.5" />
+                受付終了: {endAtJP}
               </Badge>
             )}
-          </div>
+          </div> */}
 
-          <Tabs defaultValue="account">
+          <Tabs defaultValue="about">
           <TabsList>
-            <TabsTrigger value="account">Account</TabsTrigger>
-            <TabsTrigger value="password">Password</TabsTrigger>
+            <TabsTrigger value="about">概要</TabsTrigger>
+            <TabsTrigger value="gallary">成果物ギャラリー</TabsTrigger>
+            <TabsTrigger value="participant">参加者</TabsTrigger>
           </TabsList>
-          <TabsContent value="account">
+          <TabsContent value="about">
+            {/* 概要 */}
+            {data.description && (
+              <section className="prose prose-sm dark:prose-invert max-w-none">
+                <h2 className="mb-2">概要</h2>
+                <p className="whitespace-pre-wrap">{data.description}</p>
+              </section>
+            )}
           </TabsContent>
-          <TabsContent value="password">
-            a
+          <TabsContent value="gallary">
+          </TabsContent>
+          <TabsContent value="participant">
+            {participantData[0].profile_id}
           </TabsContent>
         </Tabs>
-
-          {/* 概要 */}
-          {data.description && (
-            <section className="prose prose-sm dark:prose-invert max-w-none">
-              <h2 className="mb-2">概要</h2>
-              <p className="whitespace-pre-wrap">{data.description}</p>
-            </section>
-          )}
-
-          {/* CTA */}
-          <div className="flex flex-wrap gap-2">
-            {data.website && (
-              <Button asChild>
-                <Link href={data.website} target="_blank">
-                  参加ページを開く <ExternalLink className="ml-1 w-4 h-4" />
-                </Link>
-              </Button>
-            )}
-          </div>
         </div>
       </div>
     </div>

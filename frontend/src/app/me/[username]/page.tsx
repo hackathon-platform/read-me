@@ -132,7 +132,7 @@ export default async function ProfilePage({
   };
 
   const ProfileTabs = () => (
-    <Tabs defaultValue="projects" className="w-full">
+    <Tabs defaultValue="projects" className="w-full pb-2">
       <TabsList className="grid grid-cols-2 w-full">
         <TabsTrigger value="projects">プロジェクト</TabsTrigger>
         <TabsTrigger value="profile">プロフィール</TabsTrigger>
@@ -181,7 +181,7 @@ export default async function ProfilePage({
         {/* <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-6"> */}
         <div>
           {/* Left: Profile content */}
-          <div className="pace-y-6">
+          <div className="pace-y-6 px-3 md:px-5">
             <ProfileSection profile={profile} />
             <ProfileTabs />
           </div>

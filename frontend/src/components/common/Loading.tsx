@@ -12,17 +12,16 @@ const TIPS = [
 ];
 
 export default function Loading() {
-  // Pick one tip per mount (no re-renders)
-  const tipRef = React.useRef(
-    TIPS[Math.floor(Math.random() * TIPS.length)]
-  );
+  // null on the server & first client render (no mismatch),
+  // then set randomly after mount.
+  const [tip, setTip] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setTip(TIPS[Math.floor(Math.random() * TIPS.length)]);
+  }, []);
 
   return (
-    <div
-      className="place-items-center p-6"
-      role="status"
-      aria-live="polite"
-    >
+    <div className="grid place-items-center p-6" role="status" aria-live="polite">
       <div className="relative flex flex-col items-center gap-3 text-center">
         {/* spinner */}
         <div className="h-14 w-14 rounded-full border-4 border-muted-foreground/20 border-t-primary motion-safe:animate-spin motion-reduce:animate-none" />
@@ -37,9 +36,9 @@ export default function Loading() {
           </span>
         </p>
 
-        {/* tiny tip (professional but friendly) */}
-        <p className="text-sm text-muted-foreground/80">
-          ヒント：{tipRef.current}
+        {/* tip: render placeholder on server, fill after mount */}
+        <p className="text-sm text-muted-foreground/80" suppressHydrationWarning>
+          ヒント：{tip ?? "\u00A0"}
         </p>
       </div>
     </div>

@@ -82,7 +82,7 @@ const formSchema = z
     path: ["end_date"],
   });
 
-export default function CreateEventPage() {
+export default function CreateEvent() {
   const router = useRouter();
   const { supabase, user, loading } = useSupabase();
   const [isSubmitting, setIsSubmitting] = useState(false);

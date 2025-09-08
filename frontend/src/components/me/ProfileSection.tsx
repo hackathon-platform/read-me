@@ -26,7 +26,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
   const formId = "profile-edit-form";
 
   return (
-    <div className="relative px-3 md:px-5">
+    <div className="relative">
       <ProfileDisplay profile={profile} />
 
       <Drawer open={open} onOpenChange={setOpen}>

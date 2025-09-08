@@ -32,7 +32,7 @@ const data = {
     },
     {
       title: "プロジェクト投稿",
-      url: "/event",
+      url: "/project/new",
       icon: SquarePlus,
       isActive: true,
       items: [],

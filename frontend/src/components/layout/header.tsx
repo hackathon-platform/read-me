@@ -29,7 +29,6 @@ import { NavUser } from "@/components/ui/nav-user";
 
 export default function Header() {
   const { user, signOut, loading } = useSupabase();
-  console.log("Header → user:", user, "loading:", loading);
 
   const navItems = [
     {
@@ -66,7 +65,6 @@ export default function Header() {
   const lastName = user?.last_name ?? "";
   const fullName = firstName && lastName ? `${lastName} ${firstName} ` : "";
   const avatarUrl = user?.image_url ?? "";
-  console.log("user", user);
   return (
     <div>
       <header className={headerClasses}>
