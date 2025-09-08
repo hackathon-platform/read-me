@@ -108,7 +108,7 @@ export function EducationEdit({
       <form
         id={formId}
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6"
+        className="space-y-6 pt-2"
       >
         {fields.length === 0 ? (
           <Card>

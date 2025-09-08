@@ -15,36 +15,30 @@ import {
 
 import { NavMain } from "@/components/ui/nav-main";
 import { NavSecondary } from "@/components/ui/nav-secondary";
-import { NavUser } from "@/components/ui/nav-user";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 
 const data = {
   navMain: [
     {
-      title: "プロファイル",
+      title: "プロフィール",
       url: "/me",
       icon: User,
       items: [],
     },
     {
       title: "参加する",
-      url: "/events",
+      url: "/event",
       icon: CalendarCheck,
       isActive: true,
       items: [],
     },
     {
       title: "開催する",
-      url: "/orgs",
+      url: "/org",
       icon: Megaphone,
       items: [
         { title: "開催中のイベント", url: "/#" },

@@ -73,7 +73,6 @@ export function TimelineDisplay<T>({
 
       {items.length === 0 ? (
         <div className="rounded-lg border border-dashed p-6 text-center text-muted-foreground">
-          <div className="opacity-30 mb-2">{icon}</div>
           <p className="text-sm">{heading}が登録されていません。</p>
         </div>
       ) : (

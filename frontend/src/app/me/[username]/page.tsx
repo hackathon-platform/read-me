@@ -173,7 +173,7 @@ export default async function ProfilePage({
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "プロファイル", href: "/me" },
+          { label: "プロフィール", href: "/me" },
           { label: username, current: true },
         ]}
       />

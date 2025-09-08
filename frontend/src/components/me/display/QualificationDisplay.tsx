@@ -33,7 +33,6 @@ export function QualificationDisplay({
 
       {qualifications.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center">
-          <Award className="h-8 w-8 mx-auto text-muted-foreground" />
           <p className="text-sm text-muted-foreground mt-3">
             資格が登録されていません。
           </p>
