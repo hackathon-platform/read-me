@@ -10,9 +10,9 @@ type Props = {
 export default function PageLayout({ children }: Props) {
   return (
     <SidebarProvider>
-      <AppSidebar className="pt-[3rem]" />
+      <AppSidebar className="pt-[3.5rem]"/>
       <SidebarInset className="h-[calc(100vh-3.5rem)] overflow-y-auto">
-        <main className="p-3">{children}</main>
+        <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

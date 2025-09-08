@@ -1,8 +1,8 @@
+// components/ui/tabs-devpost.tsx
 "use client";
 
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-
 import { cn } from "@/lib/utils";
 
 function Tabs({
@@ -12,7 +12,7 @@ function Tabs({
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
-      className={cn("flex flex-col gap-2", className)}
+      className={cn(className)}
       {...props}
     />
   );
@@ -26,7 +26,8 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        "bg-muted text-muted-foreground inline-flex h-9 w-fit items-center justify-center rounded-sm p-[3px]",
+        // Devpost-like: a simple bar with a bottom border; tabs sit on it
+        "relative -mb-px flex flex-row items-end",
         className,
       )}
       {...props}
@@ -42,7 +43,20 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-sm border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        // pill-ish top with its own border (except bottom), lifted 1px to merge with panel
+        "inline-flex items-center border border-b-0 px-3 py-2 text-sm font-medium",
+        // default (inactive)
+        "bg-background text-muted-foreground border-transparent",
+        // hover
+        "hover:bg-background/60 hover:text-foreground hover:border-border",
+        // active state connects visually to panel
+        "data-[state=active]:bg-popover data-[state=active]:text-foreground data-[state=active]:border-border",
+        // remove the tiny seam to the content border
+        "-mb-px",
+        // a11y focus
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+        "disabled:pointer-events-none disabled:opacity-50",
+        "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -57,7 +71,13 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("flex-1 outline-none", className)}
+      className={cn(
+        // panel looks like Devpost's “sheet” and connects to the active tab
+        "bg-popover p-4 -mt-px",
+        // no double radius on top
+        "rounded-t-none",
+        className,
+      )}
       {...props}
     />
   );

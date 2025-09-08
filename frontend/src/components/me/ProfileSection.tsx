@@ -26,12 +26,12 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
   const formId = "profile-edit-form";
 
   return (
-    <div className="relative">
+    <div className="relative px-3 md:px-5">
       <ProfileDisplay profile={profile} />
 
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <button className="absolute top-2 right-2">
+          <button className="absolute top-2 right-2 md:top-4 md:right-4">
             <EditIcon size={16} />
           </button>
         </DrawerTrigger>

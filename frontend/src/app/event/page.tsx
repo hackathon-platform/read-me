@@ -1,0 +1,22 @@
+// app/event/page.tsx (一覧)
+import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
+
+export default async function EventIndex() {
+  const { data: events } = await supabase
+    .from("event")
+    .select("id,name,slug")
+    .order("created_at", { ascending: false });
+
+  return (
+    <ul className="space-y-2">
+      {events?.map((e) => (
+        <li key={e.id}>
+          <Link href={`/event/${e.slug}`} className="hover:underline">
+            {e.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}

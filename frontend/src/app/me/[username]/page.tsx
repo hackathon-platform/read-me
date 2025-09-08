@@ -138,14 +138,14 @@ export default async function ProfilePage({
         <TabsTrigger value="profile">プロフィール</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="projects" className="mt-3">
+      <TabsContent value="projects">
         <div className="pt-2 space-y-4">
           <ProjectsSection profileId={profile.id} projects={profile.projects} />
         </div>
       </TabsContent>
 
-      <TabsContent value="profile" className="my-3">
-        <div className="pt-2 space-y-4">
+      <TabsContent value="profile">
+        <div className="space-y-4">
           <ExperienceSection
             profileId={profile.id}
             experiences={profile.experiences}
@@ -177,8 +177,9 @@ export default async function ProfilePage({
           { label: username, current: true },
         ]}
       />
-      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 md:px-3 w-full pb-3">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-6">
+      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 w-full">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-6"> */}
+        <div>
           {/* Left: Profile content */}
           <div className="pace-y-6">
             <ProfileSection profile={profile} />
@@ -186,9 +187,9 @@ export default async function ProfilePage({
           </div>
 
           {/* Right: Recommended users */}
-          <div className="hidden lg:block">
+          {/* <div className="hidden lg:block">
             <RecommendedUsers />
-          </div>
+          </div> */}
         </div>
       </div>
     </>

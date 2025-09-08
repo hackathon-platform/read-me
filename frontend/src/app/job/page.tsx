@@ -290,6 +290,14 @@ export default function JobsBoardPage() {
   return (
     // Fit INSIDE SidebarInset: same height, normal flow (not fixed), no overlay
     <div className="relative h-[calc(100vh-5.5rem)] overflow-hidden bg-background">
+      <ListHeader
+        count={filtered.length}
+        query={query}
+        setQuery={setQuery}
+        onlyRemote={onlyRemote}
+        setOnlyRemote={setOnlyRemote}
+      />
+      <Separator />
       <ResizablePanelGroup direction="horizontal" className="h-full">
         {/* Left: Details */}
         <ResizablePanel
@@ -317,14 +325,6 @@ export default function JobsBoardPage() {
           className="min-w-[320px] overflow-hidden"
         >
           <div className="flex h-full min-h-0 flex-col">
-            <ListHeader
-              count={filtered.length}
-              query={query}
-              setQuery={setQuery}
-              onlyRemote={onlyRemote}
-              setOnlyRemote={setOnlyRemote}
-            />
-            <Separator />
             <div className="flex-1 overflow-y-auto overscroll-contain">
               <ul className="divide-y">
                 {filtered.map((job) => (

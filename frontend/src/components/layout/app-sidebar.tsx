@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Briefcase,
   Activity,
+  SquarePlus,
 } from "lucide-react";
 
 import { NavMain } from "@/components/ui/nav-main";
@@ -30,6 +31,13 @@ const data = {
       items: [],
     },
     {
+      title: "プロジェクト投稿",
+      url: "/event",
+      icon: SquarePlus,
+      isActive: true,
+      items: [],
+    },
+    {
       title: "参加する",
       url: "/event",
       icon: CalendarCheck,
@@ -37,20 +45,20 @@ const data = {
       items: [],
     },
     {
-      title: "開催する",
+      title: "イベント開催",
       url: "/org",
       icon: Megaphone,
       items: [
         { title: "開催中のイベント", url: "/#" },
-        { title: "運営チーム", url: "/#" },
+        { title: "イベント新規作成", url: "/org/new" },
       ],
     },
-    // {
-    //   title: "応募する",
-    //   url: "/job",
-    //   icon: Briefcase,
-    //   items: [],
-    // },
+    {
+      title: "インターン",
+      url: "/job",
+      icon: Briefcase,
+      items: [],
+    },
     // {
     //   title: "ドキュメント",
     //   url: "/#",

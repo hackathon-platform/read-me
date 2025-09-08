@@ -27,7 +27,7 @@ export default function PageHeader({
 }: PageHeaderProps) {
   return (
     <header
-      className={`flex shrink-0 items-center gap-2 border-b pb-2.5 ${className}`}
+      className={`flex shrink-0 items-center gap-2 border-b p-2 ${className}`}
     >
       <div className="flex items-center gap-2 px-1">
         <SidebarTrigger className="-ml-1" />

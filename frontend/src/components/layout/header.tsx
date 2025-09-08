@@ -70,7 +70,7 @@ export default function Header() {
   return (
     <div>
       <header className={headerClasses}>
-        <div className="w-full flex h-[3rem] items-center justify-between px-4 bg-sidebar">
+        <div className="w-full flex h-[3.5rem] items-center justify-between px-4 bg-sidebar">
           {/* Logo / Brand */}
           <div className="flex">
             <Link href="/" className="flex text-xl font-bold items-center">
