@@ -30,7 +30,7 @@ export type ParticipantWithProfile = {
 // Event basic by slug
 export async function getEventBasicBySlug(
   sb: SupabaseClient,
-  slug: string
+  slug: string,
 ): Promise<EventRow | null> {
   const { data, error } = await sb
     .from("event")
@@ -48,12 +48,9 @@ export async function getEventBasicBySlug(
 // Participants with joined profile (INNER JOIN with explicit FK + fallback)
 export async function getParticipantsWithProfiles(
   sb: SupabaseClient,
-  eventId: string
+  eventId: string,
 ): Promise<ParticipantWithProfile[]> {
-  const fkCandidates = [
-    "organizer_profile_id_fkey",
-    "organizer_user_id_fkey",
-  ];
+  const fkCandidates = ["organizer_profile_id_fkey", "organizer_user_id_fkey"];
 
   for (const fk of fkCandidates) {
     const { data, error } = await sb
@@ -70,13 +67,15 @@ export async function getParticipantsWithProfiles(
           last_name,
           image_url
         )
-      `
+      `,
       ) // ← 末尾カンマを削除
       .eq("event_id", eventId)
       .order("joined_at", { ascending: true });
 
     if (!error) {
-      return (data ?? []).filter((r: any) => r.profile) as ParticipantWithProfile[];
+      return (data ?? []).filter(
+        (r: any) => r.profile,
+      ) as ParticipantWithProfile[];
     }
     console.warn(`[getParticipantsWithProfiles] try fk=${fk} failed`, error);
   }

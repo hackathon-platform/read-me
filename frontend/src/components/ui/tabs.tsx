@@ -10,11 +10,7 @@ function Tabs({
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Root>) {
   return (
-    <TabsPrimitive.Root
-      data-slot="tabs"
-      className={cn(className)}
-      {...props}
-    />
+    <TabsPrimitive.Root data-slot="tabs" className={cn(className)} {...props} />
   );
 }
 

@@ -53,7 +53,7 @@ export default function ProfileRedirectPage() {
 
   // Show loading only when necessary
   if (isLoading || isRedirecting) {
-    return <Loading/>
+    return <Loading />;
   }
 
   return null;

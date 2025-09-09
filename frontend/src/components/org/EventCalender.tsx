@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 
 /** Props: current value as "YYYY-MM-DDTHH:mm" (local), and onChange callback */
 type Props = {
-  value?: string;                 // e.g. "2025-09-19T12:00"
-  onChange: (v: string) => void;  // "" when cleared
+  value?: string; // e.g. "2025-09-19T12:00"
+  onChange: (v: string) => void; // "" when cleared
 };
 
 /** Parse "YYYY-MM-DDTHH:mm[:ss]" into local Date + "HH:mm" */
@@ -34,17 +34,27 @@ function combineLocalDateTime(date: Date, time: string) {
   const [hStr, mStr] = (time || "12:00").split(":");
   const hh = Number(hStr ?? 12);
   const mm = Number(mStr ?? 0);
-  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hh, mm, 0, 0);
+  const d = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hh,
+    mm,
+    0,
+    0,
+  );
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
+    d.getHours(),
   )}:${pad(d.getMinutes())}`;
 }
 
 export default function EventCalender({ value, onChange }: Props) {
   // hydrate from value if present
   const parsed = React.useMemo(() => parseLocalDateTime(value), [value]);
-  const [date, setDate] = React.useState<Date | undefined>(parsed?.date ?? startOfToday());
+  const [date, setDate] = React.useState<Date | undefined>(
+    parsed?.date ?? startOfToday(),
+  );
   const [time, setTime] = React.useState<string>(parsed?.time ?? "12:30");
 
   // keep in sync if parent updates value
@@ -88,7 +98,7 @@ export default function EventCalender({ value, onChange }: Props) {
             <Input
               id="time-to"
               type="time"
-              step={60}                 // minutes precision; use 1 if you want seconds
+              step={60} // minutes precision; use 1 if you want seconds
               value={time}
               onChange={(e) => setTime(e.target.value)}
               className="appearance-none pl-8 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"

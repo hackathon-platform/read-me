@@ -7,16 +7,19 @@ export type EventForOrgCard = {
   slug: string;
   description: string | null;
   banner_url: string | null;
-  icon_url?: string | null;       // for the card's round icon (fallback shown if null)
-  members_count?: number;         // participants length
+  icon_url?: string | null; // for the card's round icon (fallback shown if null)
+  members_count?: number; // participants length
   // you can add status/end_at/etc if you want to surface later
 };
 
-export async function getEventByOwner(userId: string): Promise<EventForOrgCard[]> {
+export async function getEventByOwner(
+  userId: string,
+): Promise<EventForOrgCard[]> {
   // Join participants to compute a count; explicit FK name avoids ambiguity
   const { data, error } = await supabase
     .from("event")
-    .select(`
+    .select(
+      `
       id,
       name,
       slug,
@@ -24,7 +27,8 @@ export async function getEventByOwner(userId: string): Promise<EventForOrgCard[]
       banner_url,
       created_at,
       participants:participant!organizer_organization_id_fkey ( id )
-    `)
+    `,
+    )
     .eq("created_by", userId)
     .order("created_at", { ascending: false });
 

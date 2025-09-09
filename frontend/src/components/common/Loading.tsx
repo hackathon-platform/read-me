@@ -21,7 +21,11 @@ export default function Loading() {
   }, []);
 
   return (
-    <div className="grid place-items-center p-6" role="status" aria-live="polite">
+    <div
+      className="grid place-items-center p-6"
+      role="status"
+      aria-live="polite"
+    >
       <div className="relative flex flex-col items-center gap-3 text-center">
         {/* spinner */}
         <div className="h-14 w-14 rounded-full border-4 border-muted-foreground/20 border-t-primary motion-safe:animate-spin motion-reduce:animate-none" />
@@ -31,13 +35,20 @@ export default function Loading() {
           読み込み中
           <span aria-hidden="true" className="inline-flex translate-y-[1px]">
             <span className="mx-0.5 animate-bounce">.</span>
-            <span className="mx-0.5 animate-bounce [animation-delay:120ms]">.</span>
-            <span className="mx-0.5 animate-bounce [animation-delay:240ms]">.</span>
+            <span className="mx-0.5 animate-bounce [animation-delay:120ms]">
+              .
+            </span>
+            <span className="mx-0.5 animate-bounce [animation-delay:240ms]">
+              .
+            </span>
           </span>
         </p>
 
         {/* tip: render placeholder on server, fill after mount */}
-        <p className="text-sm text-muted-foreground/80" suppressHydrationWarning>
+        <p
+          className="text-sm text-muted-foreground/80"
+          suppressHydrationWarning
+        >
           ヒント：{tip ?? "\u00A0"}
         </p>
       </div>

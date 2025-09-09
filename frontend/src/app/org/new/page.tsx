@@ -10,7 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle, CheckCircle2, XCircle, ImageIcon, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  ImageIcon,
+  Loader2,
+} from "lucide-react";
 
 const isSlugValid = (v: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v);
 
@@ -22,12 +28,12 @@ export default function CreateEventPage() {
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
 
-  const [bannerUrl, setBannerUrl] = useState("");        // 即時プレビュー（確定）
+  const [bannerUrl, setBannerUrl] = useState(""); // 即時プレビュー（確定）
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileKey, setFileKey] = useState(0);             // Inputの値リセット用
+  const [fileKey, setFileKey] = useState(0); // Inputの値リセット用
 
   const [websiteUrl, setWebsiteUrl] = useState("");
-  const [endAt, setEndAt] = useState("");                // "YYYY-MM-DDTHH:mm"
+  const [endAt, setEndAt] = useState(""); // "YYYY-MM-DDTHH:mm"
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -72,13 +78,13 @@ export default function CreateEventPage() {
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     // organize by user and slug so multiple events don’t clash
     const filePath = `${userId}/${slug || "event"}/${filename}`;
-    
+
     const { error: uploadError } = await supabase.storage
-    .from("event")
-    .upload(filePath, file, {
-      upsert: false,         // unique filename, no need to upsert
-      cacheControl: "0",     // be explicit (helps downstream caches)
-    });
+      .from("event")
+      .upload(filePath, file, {
+        upsert: false, // unique filename, no need to upsert
+        cacheControl: "0", // be explicit (helps downstream caches)
+      });
     if (uploadError) throw new Error(uploadError.message);
     const { data } = supabase.storage.from("event").getPublicUrl(filePath);
     // add a version param for extra safety
@@ -89,7 +95,9 @@ export default function CreateEventPage() {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e) =>
-        e.target?.result ? resolve(e.target.result as string) : reject(new Error("failed to read"));
+        e.target?.result
+          ? resolve(e.target.result as string)
+          : reject(new Error("failed to read"));
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
@@ -106,21 +114,21 @@ export default function CreateEventPage() {
       return;
     }
     const dataUrl = await readAsDataURL(file);
-    setBannerUrl(dataUrl);     // 即時反映
-    setSelectedFile(file);     // 保存時にアップロード
+    setBannerUrl(dataUrl); // 即時反映
+    setSelectedFile(file); // 保存時にアップロード
   }
 
   // キャンセル → バナー設定をリセット（プレビューとファイル選択を元に戻す＝空に）
   function cancelBanner() {
     setBannerUrl("");
     setSelectedFile(null);
-    setFileKey((k) => k + 1);  // Inputを再マウントして値クリア
+    setFileKey((k) => k + 1); // Inputを再マウントして値クリア
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-  
+
     if (!eventName.trim() || !slug.trim()) {
       setError("すべての必須項目を入力してください。");
       return;
@@ -137,15 +145,19 @@ export default function CreateEventPage() {
       setError("認証エラー。再度ログインしてください。");
       return;
     }
-  
+
     setIsSaving(true);
     try {
       // 1) 画像のアップロード（任意）
       let uploadedImageUrl: string | null = null;
       if (selectedFile) {
-        uploadedImageUrl = await uploadImageToSupabase(selectedFile, user.id, slug.trim());
+        uploadedImageUrl = await uploadImageToSupabase(
+          selectedFile,
+          user.id,
+          slug.trim(),
+        );
       }
-  
+
       // 2) イベント作成（insertでIDを取得）
       const { data: createdEvent, error: insertEventError } = await supabase
         .from("event")
@@ -162,18 +174,22 @@ export default function CreateEventPage() {
         ])
         .select("id, slug")
         .single();
-  
+
       if (insertEventError || !createdEvent?.id) {
-        throw new Error(insertEventError?.message || "イベントの作成に失敗しました。");
+        throw new Error(
+          insertEventError?.message || "イベントの作成に失敗しました。",
+        );
       }
-  
+
       // 3) 参加者（owner）として作成者を登録
-      const { error: insertOwnerError } = await supabase.from("participant").insert({
-        event_id: createdEvent.id,
-        profile_id: user.id,
-        role: "owner",
-      });
-  
+      const { error: insertOwnerError } = await supabase
+        .from("participant")
+        .insert({
+          event_id: createdEvent.id,
+          profile_id: user.id,
+          role: "owner",
+        });
+
       if (insertOwnerError) {
         // 失敗時はイベントをロールバック（可能なら）
         try {
@@ -181,9 +197,11 @@ export default function CreateEventPage() {
         } catch (rollbackErr) {
           console.warn("[CreateEventPage] rollback failed:", rollbackErr);
         }
-        throw new Error("参加者（オーナー）の設定に失敗しました。もう一度お試しください。");
+        throw new Error(
+          "参加者（オーナー）の設定に失敗しました。もう一度お試しください。",
+        );
       }
-  
+
       toast.success("イベントを登録しました。");
       router.replace(`/event/${createdEvent.slug}`);
     } catch (err: any) {
@@ -191,7 +209,6 @@ export default function CreateEventPage() {
       setIsSaving(false);
     }
   }
-  
 
   const required = {
     eventName: Boolean(eventName.trim()),
@@ -215,7 +232,11 @@ export default function CreateEventPage() {
             required={required}
             slugState={{ slugChecking, slugTaken, value: slug }}
           />
-          <Button onClick={handleSubmit} disabled={!allRequiredOk || isSaving} className="h-8">
+          <Button
+            onClick={handleSubmit}
+            disabled={!allRequiredOk || isSaving}
+            className="h-8"
+          >
             {isSaving ? (
               <span className="inline-flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -232,7 +253,11 @@ export default function CreateEventPage() {
       <div className="animate-in fade-in duration-500 w-full">
         <div className="relative h-48 bg-gradient-to-br from-pink-400 via-purple-500 via-blue-500 to-cyan-400 overflow-hidden">
           {bannerUrl ? (
-            <img src={bannerUrl} alt="banner" className="w-full h-full object-cover" />
+            <img
+              src={bannerUrl}
+              alt="banner"
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="absolute inset-0 grid place-items-center text-white/90 pointer-events-none">
               <div className="text-center">
@@ -326,7 +351,8 @@ export default function CreateEventPage() {
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            半角英数字とハイフンのみ。URL は <code>/event/{slug || "your-slug"}</code> になります。
+            半角英数字とハイフンのみ。URL は{" "}
+            <code>/event/{slug || "your-slug"}</code> になります。
           </p>
         </div>
 
@@ -371,7 +397,11 @@ function ChecklistBadge({
   slugState,
 }: {
   required: { eventName: boolean; slug: boolean };
-  slugState: { slugChecking: boolean; slugTaken: boolean | null; value: string };
+  slugState: {
+    slugChecking: boolean;
+    slugTaken: boolean | null;
+    value: string;
+  };
 }) {
   const items = [
     { key: "eventName", label: "イベント名", ok: required.eventName },
@@ -384,10 +414,16 @@ function ChecklistBadge({
           variant="outline"
           key={it.key}
           className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${
-            it.ok ? "text-emerald-700 border-emerald-300" : "text-amber-700 border-amber-300"
+            it.ok
+              ? "text-emerald-700 border-emerald-300"
+              : "text-amber-700 border-amber-300"
           }`}
         >
-          {it.ok ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
+          {it.ok ? (
+            <CheckCircle2 className="w-3.5 h-3.5" />
+          ) : (
+            <AlertCircle className="w-3.5 h-3.5" />
+          )}
           {it.label}
         </Badge>
       ))}

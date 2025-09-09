@@ -12,13 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import {
-  ImageOff,
-  Plus,
-  ExternalLink,
-  LayoutGrid,
-  List,
-} from "lucide-react";
+import { ImageOff, Plus, ExternalLink, LayoutGrid, List } from "lucide-react";
 
 /* ====================== Types ====================== */
 type Org = {
@@ -59,7 +53,9 @@ export default function OrganizationsPage() {
 
   return (
     <div>
-      <PageHeader breadcrumbs={[{ label: "運営", href: "/org", current: true }]} />
+      <PageHeader
+        breadcrumbs={[{ label: "運営", href: "/org", current: true }]}
+      />
 
       <div className="animate-in fade-in duration-500 mx-auto w-full px-4 py-4">
         {/* Heading */}
@@ -179,7 +175,10 @@ function OrganizationCard({ org }: { org: Org }) {
         </CardHeader>
 
         <CardContent className="pb-4">
-          <p className="text-sm text-muted-foreground line-clamp-1" title={org.description ?? undefined}>
+          <p
+            className="text-sm text-muted-foreground line-clamp-1"
+            title={org.description ?? undefined}
+          >
             {org.description || "説明がありません。"}
           </p>
         </CardContent>
@@ -198,7 +197,11 @@ function OrganizationRow({ org }: { org: Org }) {
           {/* Thumb */}
           <div className="w-40 bg-muted shrink-0">
             {org.banner_url ? (
-              <img src={org.banner_url} alt={`${org.name} banner`} className="h-full w-full object-cover" />
+              <img
+                src={org.banner_url}
+                alt={`${org.name} banner`}
+                className="h-full w-full object-cover"
+              />
             ) : (
               <div className="h-full w-full grid place-items-center text-muted-foreground min-h-20">
                 <ImageOff className="w-6 h-6" />
@@ -216,7 +219,9 @@ function OrganizationRow({ org }: { org: Org }) {
                   </span>
                   {org.status && (
                     <Badge
-                      variant={org.status === "published" ? "default" : "secondary"}
+                      variant={
+                        org.status === "published" ? "default" : "secondary"
+                      }
                       className="px-2 py-0.5"
                     >
                       {org.status === "published" ? "公開中" : "下書き"}
@@ -224,7 +229,10 @@ function OrganizationRow({ org }: { org: Org }) {
                   )}
                 </div>
 
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-1" title={org.description ?? undefined}>
+                <p
+                  className="text-sm text-muted-foreground mt-1 line-clamp-1"
+                  title={org.description ?? undefined}
+                >
                   {org.description || "説明がありません。"}
                 </p>
 
@@ -280,7 +288,9 @@ function NewRow() {
     <Link href="/org/new" className="group block">
       <Card className="border-dashed hover:border-solid hover:shadow-md transition">
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="text-sm text-muted-foreground">新しいイベントを作成</div>
+          <div className="text-sm text-muted-foreground">
+            新しいイベントを作成
+          </div>
           <Button variant="secondary" size="sm">
             <Plus className="w-4 h-4 mr-1" />
             作成
@@ -300,7 +310,9 @@ function EmptyState() {
           <ImageOff className="w-6 h-6 text-muted-foreground" />
         </div>
         <div>
-          <h4 className="text-lg font-semibold">運営中のイベントがありません</h4>
+          <h4 className="text-lg font-semibold">
+            運営中のイベントがありません
+          </h4>
           <p className="text-sm text-muted-foreground mt-1">
             まずは新しいイベントを作成しましょう。
           </p>

@@ -3,16 +3,15 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import PageHeader from "@/components/layout/PageHeader";
 
-
 export default async function CreateProject() {
   return (
     <>
-        <PageHeader
-            breadcrumbs={[
-            { label: "プロジェクト", href: "/project" },
-            { label: "作成", href: "/project/create" },
-            ]}
-        />
+      <PageHeader
+        breadcrumbs={[
+          { label: "プロジェクト", href: "/project" },
+          { label: "作成", href: "/project/create" },
+        ]}
+      />
     </>
     // <ul className="space-y-2">
     //   {events?.map((e) => (

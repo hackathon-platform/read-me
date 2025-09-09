@@ -16,11 +16,7 @@ import {
 
 import { NavMain } from "@/components/ui/nav-main";
 import { NavSecondary } from "@/components/ui/nav-secondary";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 
 const data = {
   navMain: [
@@ -48,9 +44,7 @@ const data = {
       title: "イベント開催",
       url: "/org",
       icon: Megaphone,
-      items: [
-        { title: "イベント新規作成", url: "/org/new" },
-      ],
+      items: [{ title: "イベント新規作成", url: "/org/new" }],
     },
     {
       title: "インターン",

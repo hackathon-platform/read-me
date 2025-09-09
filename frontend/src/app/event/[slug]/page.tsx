@@ -4,15 +4,25 @@ import PageHeader from "@/components/layout/PageHeader";
 import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getEventBasicBySlug, getParticipantsWithProfiles } from "@/lib/api/participants";
+import {
+  getEventBasicBySlug,
+  getParticipantsWithProfiles,
+} from "@/lib/api/participants";
 
 // ISR
 export const revalidate = 120;
 
 function getRoleBadgeVariant(
-  role?: string | null
+  role?: string | null,
 ): "default" | "secondary" | "destructive" | "outline" {
   switch ((role ?? "").toLowerCase()) {
     case "owner":
@@ -97,24 +107,27 @@ export default async function EventPage({
           </div>
         )}
 
-
         {/* Meta row under banner */}
         <div className="px-4 py-3 border-b items-center">
           <h1 className="text-2xl font-semibold mr-auto">{event.name}</h1>
           <div className="flex flex-wrap gap-2 pt-2">
-          {event.website_url && (
-            <Badge variant="outline" className="gap-1">
-              <Link href={event.website_url} target="_blank" rel="noopener noreferrer">
-                公式サイト
-              </Link>
-            </Badge>
-          )}
-          {stats.endAt && (
-            <Badge variant="secondary" className="gap-1">
-              終了日: {stats.endAt}
-            </Badge>
-          )}
-          <Badge variant="secondary">参加者 {stats.participants} 名</Badge>
+            {event.website_url && (
+              <Badge variant="outline" className="gap-1">
+                <Link
+                  href={event.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  公式サイト
+                </Link>
+              </Badge>
+            )}
+            {stats.endAt && (
+              <Badge variant="secondary" className="gap-1">
+                終了日: {stats.endAt}
+              </Badge>
+            )}
+            <Badge variant="secondary">参加者 {stats.participants} 名</Badge>
           </div>
         </div>
 
@@ -128,12 +141,14 @@ export default async function EventPage({
             </TabsList>
 
             <TabsContent value="about" className="p-4">
-              {(event.description || event.website_url || stats.endAt) ? (
+              {event.description || event.website_url || stats.endAt ? (
                 <section className="prose prose-sm dark:prose-invert max-w-none">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="text-sm">
                       <div className="text-muted-foreground">終了日</div>
-                      <div className="font-medium">{stats.endAt ?? "未設定"}</div>
+                      <div className="font-medium">
+                        {stats.endAt ?? "未設定"}
+                      </div>
                     </div>
                     <div className="text-sm">
                       <div className="text-muted-foreground">公式サイト</div>
@@ -172,7 +187,9 @@ export default async function EventPage({
             </TabsContent>
 
             <TabsContent value="gallery" className="p-4">
-              <div className="text-sm text-muted-foreground">ギャラリーは準備中です。</div>
+              <div className="text-sm text-muted-foreground">
+                ギャラリーは準備中です。
+              </div>
               {/* TODO: gallery */}
             </TabsContent>
 
@@ -195,7 +212,9 @@ export default async function EventPage({
                           <TableHead className="w-[56px]"> </TableHead>
                           <TableHead>名前 / ユーザー名</TableHead>
                           <TableHead>役割</TableHead>
-                          <TableHead className="text-right">プロフィール</TableHead>
+                          <TableHead className="text-right">
+                            プロフィール
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -205,20 +224,28 @@ export default async function EventPage({
                             `${p.last_name ?? ""} ${p.first_name ?? ""}`.trim() ||
                             (p.username ?? "User");
                           const initials =
-                            (p.last_name?.[0] ?? "") + (p.first_name?.[0] ?? "");
+                            (p.last_name?.[0] ?? "") +
+                            (p.first_name?.[0] ?? "");
                           return (
                             <TableRow key={p.id}>
                               <TableCell>
                                 <Avatar className="h-9 w-9">
-                                  <AvatarImage src={p.image_url ?? undefined} alt={p.username ?? ""} />
-                                  <AvatarFallback>{initials || "U"}</AvatarFallback>
+                                  <AvatarImage
+                                    src={p.image_url ?? undefined}
+                                    alt={p.username ?? ""}
+                                  />
+                                  <AvatarFallback>
+                                    {initials || "U"}
+                                  </AvatarFallback>
                                 </Avatar>
                               </TableCell>
                               <TableCell>
                                 <div className="flex flex-col">
                                   <div className="font-medium">{name}</div>
                                   {p.username && (
-                                    <div className="text-xs text-muted-foreground">@{p.username}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      @{p.username}
+                                    </div>
                                   )}
                                 </div>
                               </TableCell>
@@ -236,7 +263,9 @@ export default async function EventPage({
                                     開く
                                   </Link>
                                 ) : (
-                                  <span className="text-muted-foreground">—</span>
+                                  <span className="text-muted-foreground">
+                                    —
+                                  </span>
                                 )}
                               </TableCell>
                             </TableRow>
