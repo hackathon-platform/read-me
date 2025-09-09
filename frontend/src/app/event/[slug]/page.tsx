@@ -1,160 +1,270 @@
-// frontend/src/app/event/[slug]/page.tsx
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CalendarDays, Globe2, Mail, ExternalLink } from "lucide-react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getEventBasicBySlug, getParticipantsWithProfiles } from "@/lib/api/participants";
 
-// ISR（必要なければ削除）
+// ISR
 export const revalidate = 120;
 
-type EventRow = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  banner_url: string | null;
-  website: string | null;
-  email: string | null;
-  created_at: string | null;
-  end_at: string | null;
-};
+function getRoleBadgeVariant(
+  role?: string | null
+): "default" | "secondary" | "destructive" | "outline" {
+  switch ((role ?? "").toLowerCase()) {
+    case "owner":
+      return "destructive";
+    case "admin":
+    case "judge":
+      return "default";
+    case "mentor":
+    case "member":
+    case "participant":
+    case "guest":
+      return "secondary";
+    default:
+      return "outline";
+  }
+}
+
+function getRoleDisplay(role?: string | null) {
+  const r = (role ?? "").toLowerCase();
+  if (r === "owner") return "オーナー";
+  if (r === "admin") return "管理者";
+  if (r === "judge") return "審査員";
+  if (r === "mentor") return "メンター";
+  if (r === "participant" || r === "member") return "参加者";
+  if (r === "guest") return "ゲスト";
+  return role ?? "未設定";
+}
+
+function formatJPDate(s?: string | null) {
+  if (!s) return "";
+  try {
+    return new Date(s).toLocaleString("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      hour12: false,
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return s ?? "";
+  }
+}
 
 export default async function EventPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  // ✅ Next 15: params は await が必要
+  const { slug } = await params;
 
-  const { data, error } = await supabase
-    .from("event")
-    .select(
-      "id,name,slug,description,banner_url,website,email,created_at,end_at"
-    )
-    .eq("slug", slug)
-    .single<EventRow>();
-  
-  console.log('event id', data?.id)
-  if (error || !data) return notFound();
+  // 1) fetch event (server-side, cached by ISR)
+  const event = await getEventBasicBySlug(supabase, slug);
+  if (!event) return notFound();
 
-  const { data: participantData, error: participantError } = await supabase
-    .from("participant")
-    .select(
-      "profile_id,event_id,role"
-    )
-    .eq("event_id", data.id);
+  // 2) fetch participants + profiles
+  const participants = await getParticipantsWithProfiles(supabase, event.id);
 
-  const endAtJP =
-    data.end_at
-      ? new Date(data.end_at).toLocaleString("ja-JP", {
-          timeZone: "Asia/Tokyo",
-          hour12: false,
-        })
-      : null;
+  const stats = {
+    participants: participants.length,
+    endAt: event.end_at ? formatJPDate(event.end_at) : null,
+  };
 
-  console.log('participantData', participantData)
   return (
     <div>
       <PageHeader
         breadcrumbs={[
           { label: "イベント", href: "/event" },
-          { label: data.name, current: true },
+          { label: event.slug, current: true },
         ]}
       />
 
-      {/* Hero */}
-      <div className="overflow-hidden border bg-card">
-        <div className="relative h-48">
-          {data.banner_url ? (
+      <div className="overflow-hidden border-b bg-card">
+        {/* Banner */}
+        {event.banner_url && (
+          <div className="relative h-48">
             <img
-              src={data.banner_url}
-              alt={`${data.name} banner`}
+              src={event.banner_url}
+              alt={`${event.name} banner`}
               className="w-full h-full object-cover"
             />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-slate-200 via-slate-300 to-slate-200 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800" />
-          )}
+          </div>
+        )}
 
-          {/* タイトルオーバーレイ */}
-          <div className="absolute bottom-3 left-4 right-4">
-            <h1 className="text-2xl font-semibold ">
-              {data.name}
-            </h1>
-            {/* <p className="text-xs text-muted-foreground">/event/{data.slug}</p> */}
-            {data.website && (
-              <Badge variant="outline" className="gap-1">
-                <Globe2 className="w-3.5 h-3.5" />
-                <Link
-                  href={data.website}
-                  target="_blank"
-                >
-                  公式サイト
-                </Link>
-              </Badge>
-            )}
+
+        {/* Meta row under banner */}
+        <div className="px-4 py-3 border-b items-center">
+          <h1 className="text-2xl font-semibold mr-auto">{event.name}</h1>
+          <div className="flex flex-wrap gap-2 pt-2">
+          {event.website_url && (
+            <Badge variant="outline" className="gap-1">
+              <Link href={event.website_url} target="_blank" rel="noopener noreferrer">
+                公式サイト
+              </Link>
+            </Badge>
+          )}
+          {stats.endAt && (
+            <Badge variant="secondary" className="gap-1">
+              終了日: {stats.endAt}
+            </Badge>
+          )}
+          <Badge variant="secondary">参加者 {stats.participants} 名</Badge>
           </div>
         </div>
 
         {/* Body */}
         <div>
-          {/* メタ情報 */}
-          {/* <div className="flex flex-wrap items-center gap-2">
-            {endAtJP && (
-              <Badge variant="secondary" className="gap-1">
-                <CalendarDays className="w-3.5 h-3.5" />
-                受付終了: {endAtJP}
-              </Badge>
-            )}
-          </div> */}
+          <Tabs defaultValue="about" className="w-full">
+            <TabsList className="sticky top-[56px] z-20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b rounded-none w-full justify-start px-2">
+              <TabsTrigger value="about">概要</TabsTrigger>
+              <TabsTrigger value="gallery">成果物ギャラリー</TabsTrigger>
+              <TabsTrigger value="participant">参加者</TabsTrigger>
+            </TabsList>
 
-          <Tabs defaultValue="about">
-          <TabsList>
-            <TabsTrigger value="about">概要</TabsTrigger>
-            <TabsTrigger value="gallary">成果物ギャラリー</TabsTrigger>
-            <TabsTrigger value="participant">参加者</TabsTrigger>
-          </TabsList>
-          <TabsContent value="about">
-            {/* 概要 */}
-            {data.description && (
-              <section className="prose prose-sm dark:prose-invert max-w-none">
-                <h2 className="mb-2">概要</h2>
-                <p className="whitespace-pre-wrap">{data.description}</p>
-              </section>
-            )}
-          </TabsContent>
-          <TabsContent value="gallary">
-          </TabsContent>
-          <TabsContent value="participant">
-            {participantData?.[0]?.profile_id ?? "No profile"}
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="about" className="p-4">
+              {(event.description || event.website_url || stats.endAt) ? (
+                <section className="prose prose-sm dark:prose-invert max-w-none">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="text-sm">
+                      <div className="text-muted-foreground">終了日</div>
+                      <div className="font-medium">{stats.endAt ?? "未設定"}</div>
+                    </div>
+                    <div className="text-sm">
+                      <div className="text-muted-foreground">公式サイト</div>
+                      <div className="font-medium">
+                        {event.website_url ? (
+                          <Link
+                            className="underline underline-offset-4"
+                            href={event.website_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {event.website_url}
+                          </Link>
+                        ) : (
+                          "未設定"
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-sm">
+                      <div className="text-muted-foreground">参加者</div>
+                      <div className="font-medium">{stats.participants} 名</div>
+                    </div>
+                  </div>
+                  {event.description && (
+                    <>
+                      <h2 className="text-muted-foreground mt-2">概要</h2>
+                      <p className="whitespace-pre-wrap">{event.description}</p>
+                    </>
+                  )}
+                </section>
+              ) : (
+                <div className="text-sm text-muted-foreground py-6">
+                  このイベントの概要情報はまだありません。
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="gallery" className="p-4">
+              <div className="text-sm text-muted-foreground">ギャラリーは準備中です。</div>
+              {/* TODO: gallery */}
+            </TabsContent>
+
+            <TabsContent value="participant" className="p-2">
+              {participants.length === 0 ? (
+                <div className="text-sm text-muted-foreground py-6">
+                  参加者がまだいません
+                </div>
+              ) : (
+                <div className="py-2">
+                  <div className="flex justify-between items-center px-2 pb-2">
+                    <div className="text-sm text-muted-foreground">
+                      合計: <strong>{participants.length}</strong> 名
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[56px]"> </TableHead>
+                          <TableHead>名前 / ユーザー名</TableHead>
+                          <TableHead>役割</TableHead>
+                          <TableHead className="text-right">プロフィール</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {participants.map((row) => {
+                          const p = row.profile;
+                          const name =
+                            `${p.last_name ?? ""} ${p.first_name ?? ""}`.trim() ||
+                            (p.username ?? "User");
+                          const initials =
+                            (p.last_name?.[0] ?? "") + (p.first_name?.[0] ?? "");
+                          return (
+                            <TableRow key={p.id}>
+                              <TableCell>
+                                <Avatar className="h-9 w-9">
+                                  <AvatarImage src={p.image_url ?? undefined} alt={p.username ?? ""} />
+                                  <AvatarFallback>{initials || "U"}</AvatarFallback>
+                                </Avatar>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col">
+                                  <div className="font-medium">{name}</div>
+                                  {p.username && (
+                                    <div className="text-xs text-muted-foreground">@{p.username}</div>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant={getRoleBadgeVariant(row.role)}>
+                                  {getRoleDisplay(row.role)}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {p.username ? (
+                                  <Link
+                                    className="text-primary underline underline-offset-4"
+                                    href={`/me/${p.username}`}
+                                  >
+                                    開く
+                                  </Link>
+                                ) : (
+                                  <span className="text-muted-foreground">—</span>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
   );
 }
 
-// （任意）OGP/タイトル
+// (Optional) OGP / title
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { data } = await supabase
-    .from("event")
-    .select("name,description,banner_url")
-    .eq("slug", params.slug)
-    .single();
+  // ✅ Next 15: params は await が必要
+  const { slug } = await params;
 
+  const data = await getEventBasicBySlug(supabase, slug);
   if (!data) return { title: "Event" };
 
   return {

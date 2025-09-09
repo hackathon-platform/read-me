@@ -1,596 +1,380 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
-import { uploadImage } from "@/lib/api/upload";
-import { createEvent } from "@/lib/api/event";
 import { supabase } from "@/lib/supabaseClient";
-import {
-  CalendarDays,
-  Globe,
-  Image as ImageIcon,
-  Users,
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
+import { toast } from "sonner";
+import PageHeader from "@/components/layout/PageHeader";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import PageHeader from "@/components/layout/PageHeader";
-
-// ▼ 追加：shadcn datepicker (Calendar) + Popover + Input
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import EventCalender from "@/components/org/EventCalender";
+import { Textarea } from "@/components/ui/textarea";
+import { AlertCircle, CheckCircle2, XCircle, ImageIcon, Loader2 } from "lucide-react";
 
-// ------------------------------------------------------------
-// Types & Utils
-// ------------------------------------------------------------
-
-
-type EventData = {
-  name: string;
-  slug: string;
-  description: string;
-  bannerUrl: string;
-  website: string;
-  endAt: string;
-  teamMax: number;
-  submissionTemplate: string;
-};
-
-const DEFAULT_TEMPLATE = `# 提出テンプレート / Submission Template
-
-## プロジェクト名 / Title
-
-## 1. 概要 / Overview
-- 何を解決？誰のため？
-
-## 2. デモ / Demo
-- デプロイURL: 
-- 動画URL: 
-- スライド: 
-
-## 3. リポジトリ / Repository
-- GitHub: 
-
-## 4. 技術スタック / Tech Stack
-
-## 5. 特筆事項 / Notes
-`;
-
-const sanitizeSlug = (v: string) => v.toLowerCase().replace(/[^a-z0-9-]/g, "");
 const isSlugValid = (v: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v);
-const uid = () => Math.random().toString(36).slice(2, 9);
 
-function formatDate(startAt: string, tz: string) {
-  if (!startAt) return "";
-  try {
-    const fmt = new Intl.DateTimeFormat("ja-JP", {
-      timeZone: tz || "Asia/Tokyo",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-    return fmt.format(new Date(startAt));
-  } catch {
-    return "";
-  }
-}
-
-function formatDateRange(startAt: string, endAt: string, tz: string) {
-  const s = formatDate(startAt, tz);
-  const e = endAt ? formatDate(endAt, tz) : "";
-  if (!s && !e) return "";
-  if (s && !e) return `${s} -`;
-  if (!s && e) return `- ${e}`;
-  return `${s} - ${e}`;
-}
-
-// ------------------------------------------------------------
-// contentEditable helper with robust placeholders
-// ------------------------------------------------------------
-function useEditableBinder(
-  value: string,
-  onChange: (v: string) => void,
-  opts?: { placeholder?: string; singleLine?: boolean }
-) {
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if ((el.textContent ?? "") !== value) el.textContent = value;
-    el.dataset.placeholder = opts?.placeholder ?? "";
-    el.dataset.empty = String(!value.trim());
-  }, [value, opts?.placeholder]);
-
-  const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-    const v = e.currentTarget.textContent || "";
-    e.currentTarget.dataset.empty = String(!v.trim());
-    onChange(v);
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const text = e.clipboardData.getData("text/plain");
-    document.execCommand("insertText", false, text);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (opts?.singleLine && e.key === "Enter") {
-      e.preventDefault();
-      (e.target as HTMLDivElement).blur();
-    }
-  };
-
-  return { ref, handleInput, handlePaste, handleKeyDown } as const;
-}
-
-// ------------------------------------------------------------
-// Page
-// ------------------------------------------------------------
-
-export default function CreateHackathonInline() {
+export default function CreateEventPage() {
   const router = useRouter();
-  const { user } = useSupabaseAuth();
+  const { user, isLoading } = useSupabaseAuth();
 
-  const [data, setData] = useState<EventData>({
-    name: "",
-    slug: "",
-    description: "",
-    website: "",
-    email: "",
-    bannerUrl: "",
-    iconUrl: "",
-    startAt: "",
-    endAt: "",
-    timezone: "Asia/Tokyo",
-    locationType: "online",
-    locationName: "オンライン",
-    locationAddress: "",
-    registrationUrl: "",
-    teamMin: 1,
-    teamMax: 4,
-    tracks: ["AI / 生成AI"],
-    prizes: [{ id: uid(), title: "最優秀賞" }],
-    faqs: [{ id: uid(), q: "個人参加でも大丈夫？", a: "はい、当日のチーム組成も可能です。" }],
-    submissionTemplate: DEFAULT_TEMPLATE,
-  });
+  const [eventName, setEventName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [bannerPreview, setBannerPreview] = useState<string>("");
-  const [iconPreview, setIconPreview] = useState<string>("");
-  const [uploadingBanner, setUploadingBanner] = useState(false);
-  const [uploadingIcon, setUploadingIcon] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [dirty, setDirty] = useState(false);
+  const [bannerUrl, setBannerUrl] = useState("");        // 即時プレビュー（確定）
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileKey, setFileKey] = useState(0);             // Inputの値リセット用
 
-  // slug availability
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [endAt, setEndAt] = useState("");                // "YYYY-MM-DDTHH:mm"
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugTaken, setSlugTaken] = useState<boolean | null>(null);
 
-  const setField = <K extends keyof EventData>(key: K, value: EventData[K]) => {
-    setData((prev) => ({ ...prev, [key]: value }));
-    setDirty(true);
-  };
-
+  // Auth gate
   useEffect(() => {
-    if (!data.slug && data.name) setData((p) => ({ ...p, slug: sanitizeSlug(data.name) }));
-  }, [data.name]);
+    if (!isLoading && !user) router.replace("/auth/login");
+  }, [isLoading, user, router]);
 
-  const dateRangeText = useMemo(
-    () => formatDateRange(data.startAt, data.endAt, data.timezone),
-    [data.startAt, data.endAt, data.timezone]
-  );
-
-  async function checkSlugAvailability(slug: string) {
-    if (!slug) return setSlugTaken(null);
-    setSlugChecking(true);
-    try {
-      const { data: row } = await supabase
-        .from("event")
-        .select("id")
-        .eq("slug", slug)
-        .maybeSingle();
-      setSlugTaken(Boolean(row));
-    } catch {
+  // Debounced slug availability check
+  useEffect(() => {
+    if (!slug || !isSlugValid(slug)) {
       setSlugTaken(null);
-    } finally {
-      setSlugChecking(false);
+      return;
     }
+    const id = setTimeout(async () => {
+      try {
+        setSlugChecking(true);
+        const { data: row } = await supabase
+          .from("event")
+          .select("id")
+          .eq("slug", slug)
+          .maybeSingle();
+        setSlugTaken(Boolean(row));
+      } catch {
+        setSlugTaken(null);
+      } finally {
+        setSlugChecking(false);
+      }
+    }, 500);
+    return () => clearTimeout(id);
+  }, [slug]);
+
+  if (isLoading) {
+    return <div className="text-center py-20">読み込み中…</div>;
   }
 
+  async function uploadImageToSupabase(file: File, userId: string) {
+    const ext = file.name.split(".").pop()?.toLowerCase() || "png";
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    // organize by user and slug so multiple events don’t clash
+    const filePath = `${userId}/${slug || "event"}/${filename}`;
+    
+    const { error: uploadError } = await supabase.storage
+    .from("event")
+    .upload(filePath, file, {
+      upsert: false,         // unique filename, no need to upsert
+      cacheControl: "0",     // be explicit (helps downstream caches)
+    });
+    if (uploadError) throw new Error(uploadError.message);
+    const { data } = supabase.storage.from("event").getPublicUrl(filePath);
+    // add a version param for extra safety
+    return `${data.publicUrl}?v=${Date.now()}`;
+  }
+
+  function readAsDataURL(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) =>
+        e.target?.result ? resolve(e.target.result as string) : reject(new Error("failed to read"));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // 画像選択 → 即時プレビュー＆保存対象にセット
+  async function handleImage(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size / 1024 / 1024 > 1) {
+      toast.error("画像は1MB以下にしてください。");
+      // 入力をリセット（同じファイルも再選択可能に）
+      setFileKey((k) => k + 1);
+      return;
+    }
+    const dataUrl = await readAsDataURL(file);
+    setBannerUrl(dataUrl);     // 即時反映
+    setSelectedFile(file);     // 保存時にアップロード
+  }
+
+  // キャンセル → バナー設定をリセット（プレビューとファイル選択を元に戻す＝空に）
+  function cancelBanner() {
+    setBannerUrl("");
+    setSelectedFile(null);
+    setFileKey((k) => k + 1);  // Inputを再マウントして値クリア
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+  
+    if (!eventName.trim() || !slug.trim()) {
+      setError("すべての必須項目を入力してください。");
+      return;
+    }
+    if (!isSlugValid(slug)) {
+      setError("スラッグは半角英数字とハイフンのみ使用できます。");
+      return;
+    }
+    if (slugTaken) {
+      setError("このスラッグは既に使用されています。");
+      return;
+    }
+    if (!user?.id) {
+      setError("認証エラー。再度ログインしてください。");
+      return;
+    }
+  
+    setIsSaving(true);
+    try {
+      // 1) 画像のアップロード（任意）
+      let uploadedImageUrl: string | null = null;
+      if (selectedFile) {
+        uploadedImageUrl = await uploadImageToSupabase(selectedFile, user.id, slug.trim());
+      }
+  
+      // 2) イベント作成（insertでIDを取得）
+      const { data: createdEvent, error: insertEventError } = await supabase
+        .from("event")
+        .insert([
+          {
+            created_by: user.id,
+            name: eventName.trim(),
+            slug: slug.trim(),
+            description: description.trim() || null,
+            banner_url: uploadedImageUrl ?? null,
+            website_url: websiteUrl.trim() || null,
+            end_at: endAt ? new Date(endAt).toISOString() : null,
+          },
+        ])
+        .select("id, slug")
+        .single();
+  
+      if (insertEventError || !createdEvent?.id) {
+        throw new Error(insertEventError?.message || "イベントの作成に失敗しました。");
+      }
+  
+      // 3) 参加者（owner）として作成者を登録
+      const { error: insertOwnerError } = await supabase.from("participant").insert({
+        event_id: createdEvent.id,
+        profile_id: user.id,
+        role: "owner",
+      });
+  
+      if (insertOwnerError) {
+        // 失敗時はイベントをロールバック（可能なら）
+        try {
+          await supabase.from("event").delete().eq("id", createdEvent.id);
+        } catch (rollbackErr) {
+          console.warn("[CreateEventPage] rollback failed:", rollbackErr);
+        }
+        throw new Error("参加者（オーナー）の設定に失敗しました。もう一度お試しください。");
+      }
+  
+      toast.success("イベントを登録しました。");
+      router.replace(`/event/${createdEvent.slug}`);
+    } catch (err: any) {
+      setError(err?.message ?? "保存に失敗しました。");
+      setIsSaving(false);
+    }
+  }
+  
+
   const required = {
-    name: Boolean(data.name.trim()),
-    slug: Boolean(data.slug.trim()) && isSlugValid(data.slug) && slugTaken === false,
+    eventName: Boolean(eventName.trim()),
+    slug: Boolean(slug.trim()) && isSlugValid(slug) && slugTaken === false,
   };
   const allRequiredOk = Object.values(required).every(Boolean);
 
-  const onBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingBanner(true);
-    try {
-      setBannerPreview(URL.createObjectURL(file));
-      const publicUrl = await uploadImage(file, "banner", data.slug || uid());
-      setField("bannerUrl", publicUrl);
-    } catch (err) {
-      console.error(err);
-      toast.error("バナーのアップロードに失敗しました");
-    } finally {
-      setUploadingBanner(false);
-    }
-  };
-
-  async function handlePublish() {
-    if (!user) return toast.error("ログインが必要です");
-    if (!allRequiredOk) return toast.error("必須項目を埋めてください");
-
-    setSaving(true);
-    try {
-      const created = await createEvent({
-        name: data.name,
-        slug: data.slug,
-        description: data.description || null,
-        website: data.website || null,
-        email: data.email || null,
-        banner_url: data.bannerUrl || null,
-        icon_url: data.iconUrl || null,
-        created_by: user.id,
-      });
-      setDirty(false);
-      toast.success("イベントを作成しました");
-      router.push(`/events/${created.slug}`);
-    } catch (e: any) {
-      console.error(e);
-      toast.error("イベントの作成に失敗しました");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  // ------------------------------------------------------------
-  // UI
-  // ------------------------------------------------------------
-
   return (
-    <div>
-      <PageHeader breadcrumbs={[{ label: "運営", href: "/org", current: true }]} />
+    <>
+      <PageHeader
+        breadcrumbs={[
+          { label: "イベント運営", href: "/org" },
+          { label: "新規作成", current: true },
+        ]}
+      />
 
       {/* Sticky Bar */}
       <div className="sticky top-0 z-30 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b">
         <div className="mx-4 h-12 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2">
-            {dirty ? (
-              <span className="inline-flex items-center gap-1 text-amber-600"><AlertCircle className="w-4 h-4" />未保存の変更</span>
+          <ChecklistBadge
+            required={required}
+            slugState={{ slugChecking, slugTaken, value: slug }}
+          />
+          <Button onClick={handleSubmit} disabled={!allRequiredOk || isSaving} className="h-8">
+            {isSaving ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                公開中…
+              </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-emerald-600"><CheckCircle2 className="w-4 h-4" />すべて保存済み</span>
+              "公開する"
             )}
-          </div>
-          <div className="flex items-center gap-2">
-            <ChecklistBadge required={required} slugState={{ slugChecking, slugTaken, value: data.slug }} />
-            <Button onClick={handlePublish} disabled={!allRequiredOk || saving} className="h-8">
-              {saving ? <>公開中...</> : "公開する"}
-            </Button>
-          </div>
+          </Button>
         </div>
       </div>
 
-      {/* Hero */}
-      <div className="mt-4 rounded-lg overflow-hidden border bg-card">
-        <div className="relative h-48 bg-gradient-to-br from-pink-400 via-purple-500 via-blue-500 to-cyan-400">
-          {bannerPreview || data.bannerUrl ? (
-            <img src={bannerPreview || data.bannerUrl} alt="banner" className="w-full h-full object-cover" />
+      {/* Banner */}
+      <div className="animate-in fade-in duration-500 w-full">
+        <div className="relative h-48 bg-gradient-to-br from-pink-400 via-purple-500 via-blue-500 to-cyan-400 overflow-hidden">
+          {bannerUrl ? (
+            <img src={bannerUrl} alt="banner" className="w-full h-full object-cover" />
           ) : (
-            <div className="absolute inset-0 grid place-items-center text-white/90">
+            <div className="absolute inset-0 grid place-items-center text-white/90 pointer-events-none">
               <div className="text-center">
                 <ImageIcon className="w-7 h-7 mx-auto mb-1" />
                 <p className="text-xs">バナー画像 – クリックでアップロード</p>
               </div>
             </div>
           )}
-          <input id="banner-upload" type="file" accept="image/*" className="hidden" onChange={onBannerUpload} />
-          <label htmlFor="banner-upload" className="absolute inset-0 cursor-pointer" />
-        </div>
 
-        {/* Body */}
-        <div className="px-6 pt-5 pb-8">
-          <EditableH1
-            value={data.name}
-            onChange={(v) => setField("name", v)}
-            placeholder="クリックしてイベント名（必須）"
+          {/* どこでもクリックで選択できるラベル（背面） */}
+          <label
+            htmlFor="banner-upload"
+            className="absolute inset-0 cursor-pointer z-0"
+            aria-label="バナー画像を選択"
           />
 
-          {/* Slug */}
-          <div className="mt-1 text-xs text-muted-foreground">
-            <EditableInline
-              value={data.slug}
-              onChange={(v) => setField("slug", sanitizeSlug(v))}
-              onBlur={() => checkSlugAvailability(data.slug)}
-              placeholder="example（英小文字・数字・ハイフン）"
-              prefix="#"
-              invalid={Boolean(data.slug) && !isSlugValid(data.slug)}
-            />
-            <span className="ml-2">
-              {data.slug ? `URL: yoursite.com/events/${data.slug}` : "例: yoursite.com/events/example"}
-            </span>
-            {slugChecking && <span className="ml-2 text-amber-600">（スラッグ確認中...）</span>}
-            {slugTaken === true && <span className="ml-2 text-destructive">（このスラッグは使用済み）</span>}
-            {slugTaken === false && !!data.slug && isSlugValid(data.slug) && (
-              <span className="ml-2 text-emerald-600">（使用可能）</span>
-            )}
-          </div>
-
-          {/* Meta Row */}
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            {/* 終了日時（shadcn datepicker） */}
-            <EndAtBadge
-              value={data.endAt}
-              tz={data.timezone}
-              onChange={(v) => setField("endAt", v)}
-            />
-
-            {/* チーム人数 */}
-            <Badge variant="secondary" className="px-2 py-1">
-              <Users className="w-3.5 h-3.5 mr-1" />
-              最大
-              <EditableInline
-                value={String(data.teamMax)}
-                onChange={(v) => setField("teamMax", Number(v.replace(/\D/g, "")) || 4)}
-                placeholder="4"
-                compact
-              />
-              <span className="ml-1">人 / チーム</span>
-            </Badge>
-            <Badge variant="outline" className="px-2 py-1">
-              <Globe className="w-3.5 h-3.5 mr-1" />
-              <EditableInline
-                value={data.website}
-                onChange={(v) => setField("website", v)}
-                placeholder="公式サイト URL"
-                compact
-              />
-            </Badge>
-          </div>
-
-          {/* Description */}
-          <SectionTitle>概要 / About</SectionTitle>
-          <EditableP
-            className="mt-1"
-            value={data.description}
-            onChange={(v) => setField("description", v)}
-            placeholder="イベントの目的・対象・特色などを記載してください"
+          {/* hidden file input（値リセット用にkeyを使用） */}
+          <Input
+            key={fileKey}
+            id="banner-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImage}
           />
 
-          {/* Submission Template */}
-          <SectionTitle>提出テンプレート（コピーして使える）</SectionTitle>
-          <EditablePre
-            value={data.submissionTemplate}
-            onChange={(v) => setField("submissionTemplate", v)}
-            placeholder={DEFAULT_TEMPLATE}
-          />
+          {/* キャンセルボタン（選択済みの時のみ表示、ラベルより前面） */}
+          {bannerUrl && (
+            <div className="absolute bottom-2 right-2 z-10">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation(); // ラベルクリックへの伝搬を防止
+                  cancelBanner();
+                }}
+              >
+                キャンセル
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-    </div>
-  );
-}
 
-/* ============================================================
-   終了日時ピッカー（分割コンポーネント）
-   ============================================================ */
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="mx-auto max-w-3xl p-4 space-y-6">
+        {error && (
+          <div className="rounded-md border border-destructive/30 bg-destructive/5 text-destructive p-3 text-sm">
+            {error}
+          </div>
+        )}
 
-   function EndAtBadge({
-    value,
-    tz,
-    onChange,
-  }: {
-    value: string;
-    tz: string;
-    onChange: (v: string) => void;
-  }) {
-    const [open, setOpen] = useState(false);
-    const label = value ? `終了: ${formatDate(value, tz)}` : "終了日時を選択";
-  
-    return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Badge variant="secondary" className="px-3 py-2 cursor-pointer">
-            <CalendarDays className="w-3.5 h-3.5 mr-1" />
-            {label}
-          </Badge>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-          <EventCalender
-            value={value}
-            onChange={(v) => {
-              onChange(v);      // sets parent endAt
-              setOpen(false);   // close popover
-            }}
+        {/* Event Name */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            イベント名 <span className="text-destructive">*</span>
+          </label>
+          <Input
+            type="text"
+            value={eventName}
+            onChange={(e) => setEventName(e.target.value)}
+            placeholder="例）Hack the Japan 2025"
           />
-        </PopoverContent>
-      </Popover>
-    );
-  }
+        </div>
 
+        {/* Slug */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            URL スラッグ <span className="text-destructive">*</span>
+          </label>
+          <div className="relative">
+            <Input
+              type="text"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              placeholder="hack-the-japan-2025"
+              className="pr-10"
+            />
+            <div className="absolute inset-y-0 right-2 flex items-center">
+              {slugChecking ? (
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              ) : slug && isSlugValid(slug) ? (
+                slugTaken === false ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                ) : slugTaken === true ? (
+                  <XCircle className="w-4 h-4 text-destructive" />
+                ) : null
+              ) : null}
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            半角英数字とハイフンのみ。URL は <code>/event/{slug || "your-slug"}</code> になります。
+          </p>
+        </div>
 
-// 文字列 "YYYY-MM-DDTHH:mm" → { date(ローカル), time "HH:mm" }
-function parseLocalDateTime(s: string | undefined) {
-  if (!s) return null;
-  const m = s.match(
-    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/
+        {/* Description */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">説明</label>
+          <Textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={5}
+            placeholder="イベントの概要、対象、スケジュールなど…"
+          />
+        </div>
+
+        {/* Website */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">公式サイト URL</label>
+          <Input
+            type="url"
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            placeholder="https://example.com"
+          />
+        </div>
+
+        {/* End At */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">終了日時</label>
+          <Input
+            type="datetime-local"
+            value={endAt}
+            onChange={(e) => setEndAt(e.target.value)}
+          />
+        </div>
+      </form>
+    </>
   );
-  if (!m) return null;
-  const y = Number(m[1]);
-  const mo = Number(m[2]) - 1;
-  const d = Number(m[3]);
-  const hh = Number(m[4]);
-  const mm = Number(m[5]);
-  return { date: new Date(y, mo, d, hh, mm, 0, 0), time: `${m[4]}:${m[5]}` };
-}
-
-// Date(ローカル) + "HH:mm" → "YYYY-MM-DDTHH:mm"（タイムゾーン無しローカル表記）
-function combineLocalDateTime(date: Date, time: string) {
-  const [hh, mm] = (time || "12:00").split(":").map((n) => Number(n));
-  const d = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    isNaN(hh) ? 12 : hh,
-    isNaN(mm) ? 0 : mm,
-    0,
-    0
-  );
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-    d.getHours()
-  )}:${pad(d.getMinutes())}`;
-}
-
-/* ============================================================
-   既存のインライン編集コンポーネント
-   ============================================================ */
-
-function EditableH1({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-}) {
-  const { ref, handleInput, handlePaste, handleKeyDown } = useEditableBinder(value, onChange, { placeholder, singleLine: true });
-  return (
-    <div
-      ref={ref}
-      contentEditable
-      suppressContentEditableWarning
-      onInput={handleInput}
-      onPaste={handlePaste}
-      onKeyDown={handleKeyDown}
-      className="text-2xl font-bold tracking-tight outline-none focus:ring-2 focus:ring-ring/40 rounded
-                 data-[empty=true]:before:content-[attr(data-placeholder)]
-                 data-[empty=true]:before:text-muted-foreground"
-      role="textbox"
-      aria-label="イベント名"
-    />
-  );
-}
-
-function EditableP({
-  value,
-  onChange,
-  className,
-  placeholder,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  className?: string;
-  placeholder?: string;
-}) {
-  const { ref, handleInput, handlePaste } = useEditableBinder(value, onChange, { placeholder });
-  return (
-    <div
-      ref={ref}
-      contentEditable
-      suppressContentEditableWarning
-      onInput={handleInput}
-      onPaste={handlePaste}
-      className={`outline-none focus:ring-2 focus:ring-ring/40 rounded min-h-6
-                  data-[empty=true]:before:content-[attr(data-placeholder)]
-                  data-[empty=true]:before:text-muted-foreground ${className || ""}`}
-      role="textbox"
-      aria-label="テキスト"
-    />
-  );
-}
-
-function EditableInline({
-  value,
-  onChange,
-  onBlur,
-  placeholder,
-  prefix,
-  invalid,
-  compact,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  onBlur?: () => void;
-  placeholder?: string;
-  prefix?: React.ReactNode | string;
-  invalid?: boolean;
-  compact?: boolean;
-}) {
-  const { ref, handleInput, handlePaste, handleKeyDown } = useEditableBinder(value, onChange, { placeholder, singleLine: true });
-  return (
-    <span
-      className={`group inline-flex items-center rounded border ${compact ? "px-1.5 py-0.5 text-xs" : "px-2 py-1.5 text-sm"}
-                  ${invalid ? "border-destructive" : "border-border"} focus-within:ring-2 focus-within:ring-ring/40 bg-background`}
-    >
-      {typeof prefix === "string" ? <span className="text-muted-foreground mr-1">{prefix}</span> : prefix}
-      <div
-        ref={ref}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={handleInput}
-        onPaste={handlePaste}
-        onKeyDown={handleKeyDown}
-        onBlur={onBlur}
-        className="flex-1 outline-none min-w-10
-                   data-[empty=true]:before:content-[attr(data-placeholder)]
-                   data-[empty=true]:before:text-muted-foreground"
-        role="textbox"
-        aria-label="inline"
-      />
-    </span>
-  );
-}
-
-function EditablePre({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-}) {
-  const { ref, handleInput, handlePaste } = useEditableBinder(value, onChange, { placeholder });
-  return (
-    <pre
-      ref={ref as any}
-      contentEditable
-      suppressContentEditableWarning
-      onInput={handleInput as any}
-      onPaste={handlePaste as any}
-      className="whitespace-pre-wrap rounded-md border bg-background p-4 text-sm outline-none focus:ring-2 focus:ring-ring/40
-                 data-[empty=true]:before:content-[attr(data-placeholder)]
-                 data-[empty=true]:before:text-muted-foreground"
-      aria-label="提出テンプレート"
-    />
-  );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h3 className="mt-6 mb-2 text-sm font-semibold tracking-wide text-foreground/90">{children}</h3>;
 }
 
 function ChecklistBadge({
   required,
   slugState,
 }: {
-  required: { name: boolean; slug: boolean };
+  required: { eventName: boolean; slug: boolean };
   slugState: { slugChecking: boolean; slugTaken: boolean | null; value: string };
 }) {
   const items = [
-    { key: "name", label: "イベント名", ok: required.name },
+    { key: "eventName", label: "イベント名", ok: required.eventName },
     { key: "slug", label: "URL スラッグ", ok: required.slug },
   ];
   return (

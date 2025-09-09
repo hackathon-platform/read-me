@@ -49,7 +49,6 @@ const data = {
       url: "/org",
       icon: Megaphone,
       items: [
-        { title: "開催中のイベント", url: "/#" },
         { title: "イベント新規作成", url: "/org/new" },
       ],
     },

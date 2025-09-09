@@ -41,7 +41,7 @@ export default function PageHeader({
               <React.Fragment key={item.label}>
                 {"href" in item ? (
                   <BreadcrumbItem
-                    className={idx === 0 ? "hidden md:block" : ""}
+                    className={idx === 0 ? "black" : ""}
                   >
                     <BreadcrumbLink href={item.href}>
                       {item.label}
@@ -54,7 +54,7 @@ export default function PageHeader({
                 )}
                 {idx < breadcrumbs.length - 1 && (
                   <BreadcrumbSeparator
-                    className={idx === 0 ? "hidden md:block" : ""}
+                    className={idx === 0 ? "block" : ""}
                   />
                 )}
               </React.Fragment>

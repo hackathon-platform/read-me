@@ -1,49 +1,56 @@
-// app/org/page.tsx (or your current path)
+// app/org/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PageHeader from "@/components/layout/PageHeader";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
-import { getOrganizationsByUser } from "@/lib/api/organization";
+import { getEventByOwner } from "@/lib/api/geteventbyowner";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import PageHeader from "@/components/layout/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import {
   ImageOff,
   Plus,
   ExternalLink,
-  Building2,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 
+/* ====================== Types ====================== */
 type Org = {
   id: string;
   name: string;
-  org_name?: string; // slug-ish
   slug?: string;
+  org_name?: string; // fallback for slug
   description?: string | null;
   icon_url?: string | null;
   banner_url?: string | null;
-  status?: "draft" | "published"; // if exists
-  members_count?: number; // if exists
-  events_count?: number;  // if exists
+  status?: "draft" | "published";
+  members_count?: number;
+  events_count?: number;
 };
+type ViewMode = "grid" | "list";
 
+/* ====================== Page ====================== */
 export default function OrganizationsPage() {
   const { user } = useSupabaseAuth();
   const [events, setEvents] = useState<Org[]>([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<ViewMode>("grid");
 
   useEffect(() => {
     if (!user) return;
     (async () => {
       setLoading(true);
       try {
-        const eventData = await getOrganizationsByUser(user.id);
-        setEvents((eventData || []) as Org[]);
-      } catch (error) {
-        console.error("Error fetching organizations:", error);
+        const data = await getEventByOwner(user.id);
+        setEvents((data || []) as Org[]);
+      } catch (err) {
+        console.error("Error fetching events:", err);
       } finally {
         setLoading(false);
       }
@@ -53,53 +60,78 @@ export default function OrganizationsPage() {
   return (
     <div>
       <PageHeader breadcrumbs={[{ label: "運営", href: "/org", current: true }]} />
-      <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 max-w-7xl mx-auto w-full md:px-4 py-4">
-        <div className="mb-4 flex items-center justify-between">
+
+      <div className="animate-in fade-in duration-500 mx-auto w-full px-4 py-4">
+        {/* Heading */}
+        <div className="mb-4 flex items-center justify-between gap-2">
           <h3 className="text-2xl md:text-3xl font-bold">運営中のイベント</h3>
-          <Button asChild>
-            <Link href="/org/new">
-              <Plus className="w-4 h-4 mr-1" />
-              新しいイベント
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex gap-1">
+              <Button
+                type="button"
+                variant={view === "grid" ? "default" : "outline"}
+                size="icon"
+                onClick={() => setView("grid")}
+                aria-label="グリッド表示"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </Button>
+              <Button
+                type="button"
+                variant={view === "list" ? "default" : "outline"}
+                size="icon"
+                onClick={() => setView("list")}
+                aria-label="リスト表示"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+            </div>
+            <Button asChild>
+              <Link href="/org/new">
+                <Plus className="w-4 h-4 mr-1" />
+                新しいイベント
+              </Link>
+            </Button>
+          </div>
         </div>
 
+        {/* Content */}
         {loading ? (
-          <LoadingGridSkeleton />
+          <LoadingSkeleton view={view} />
+        ) : events.length === 0 ? (
+          <EmptyState />
+        ) : view === "grid" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <NewCard />
+            {events.map((e) => (
+              <OrganizationCard key={e.id} org={e} />
+            ))}
+          </div>
         ) : (
-          <section className="space-y-6">
-            {events.length === 0 ? (
-              <EmptyState />
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* New card shortcut */}
-                <NewCard />
-
-                {events.map((e) => (
-                  <OrganizationCard key={e.id} org={e} />
-                ))}
-              </div>
-            )}
-          </section>
+          <div className="space-y-3">
+            <NewRow />
+            {events.map((e) => (
+              <OrganizationRow key={e.id} org={e} />
+            ))}
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-/* ------------------------------ UI Parts ------------------------------ */
-
-function getOrgHref(e: Org) {
+/* ====================== Helpers ====================== */
+function getEventHref(e: Org) {
   const slug = e.slug ?? e.org_name ?? e.id;
-  // 元コードは `/event/${e.org_name}`。ルーティングに合わせて必要ならここを調整。
   return `/event/${slug}`;
 }
 
+/* ====================== Grid Card ====================== */
 function OrganizationCard({ org }: { org: Org }) {
-  const href = getOrgHref(org);
+  const href = getEventHref(org);
   return (
     <Link href={href} className="group block">
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      <Card className="relative pt-0 overflow-hidden hover:shadow-lg transition-shadow">
         {/* Banner */}
         <div className="relative h-28 bg-muted">
           {org.banner_url ? (
@@ -113,32 +145,17 @@ function OrganizationCard({ org }: { org: Org }) {
               <ImageOff className="w-6 h-6" />
             </div>
           )}
-
-          {/* Icon */}
-          <div className="absolute -bottom-6 left-4">
-            <div className="h-12 w-12 rounded-xl ring-2 ring-background border bg-background overflow-hidden grid place-items-center shadow-sm">
-              {org.icon_url ? (
-                <img
-                  src={org.icon_url}
-                  alt={`${org.name} icon`}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Building2 className="w-5 h-5 text-muted-foreground" />
-              )}
-            </div>
-          </div>
         </div>
 
-        <CardHeader className="pt-7 pb-2">
+        <CardHeader className="pb-2">
           <div className="flex items-start justify-between gap-2">
             <CardTitle className="text-base md:text-lg leading-tight">
-              <span className="line-clamp-2">{org.name}</span>
+              <span className="line-clamp-1">{org.name}</span>
             </CardTitle>
-            <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            {/* <ExternalLink className="w-4 h-4 absolute z-20 top-2 right-2 text-muted-background opacity-0 group-hover:opacity-100 transition-opacity" /> */}
           </div>
 
-          {/* Chips row */}
+          {/* Badges */}
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {org.status && (
               <Badge
@@ -162,7 +179,7 @@ function OrganizationCard({ org }: { org: Org }) {
         </CardHeader>
 
         <CardContent className="pb-4">
-          <p className="text-sm text-muted-foreground line-clamp-3">
+          <p className="text-sm text-muted-foreground line-clamp-1" title={org.description ?? undefined}>
             {org.description || "説明がありません。"}
           </p>
         </CardContent>
@@ -171,17 +188,86 @@ function OrganizationCard({ org }: { org: Org }) {
   );
 }
 
+/* ====================== List Row ====================== */
+function OrganizationRow({ org }: { org: Org }) {
+  const href = getEventHref(org);
+  return (
+    <Link href={href} className="group block">
+      <Card className="py-0 overflow-hidden hover:shadow-md transition">
+        <div className="flex items-stretch gap-4">
+          {/* Thumb */}
+          <div className="w-40 bg-muted shrink-0">
+            {org.banner_url ? (
+              <img src={org.banner_url} alt={`${org.name} banner`} className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full grid place-items-center text-muted-foreground min-h-20">
+                <ImageOff className="w-6 h-6" />
+              </div>
+            )}
+          </div>
+
+          {/* Body */}
+          <div className="flex-1 py-3 pr-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-base md:text-lg font-semibold leading-tight line-clamp-1">
+                    {org.name}
+                  </span>
+                  {org.status && (
+                    <Badge
+                      variant={org.status === "published" ? "default" : "secondary"}
+                      className="px-2 py-0.5"
+                    >
+                      {org.status === "published" ? "公開中" : "下書き"}
+                    </Badge>
+                  )}
+                </div>
+
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-1" title={org.description ?? undefined}>
+                  {org.description || "説明がありません。"}
+                </p>
+
+                <div className="mt-2 flex items-center gap-2">
+                  {typeof org.members_count === "number" && (
+                    <Badge variant="outline" className="px-2 py-0.5">
+                      メンバー {org.members_count}
+                    </Badge>
+                  )}
+                  {typeof org.events_count === "number" && (
+                    <Badge variant="outline" className="px-2 py-0.5">
+                      イベント {org.events_count}
+                    </Badge>
+                  )}
+                  {org.slug && (
+                    <Badge variant="outline" className="px-2 py-0.5">
+                      /event/{org.slug}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              <ExternalLink className="w-4 h-4 text-muted-foreground opacity-60 group-hover:opacity-100 transition-opacity" />
+            </div>
+          </div>
+        </div>
+      </Card>
+    </Link>
+  );
+}
+
+/* ====================== “Create new” ====================== */
 function NewCard() {
   return (
     <Link href="/org/new" className="group block">
-      <Card className="border-dashed hover:border-solid hover:shadow-md transition">
+      <Card className="pt-0 border-dashed hover:border-solid hover:shadow-md transition">
         <div className="h-28 grid place-items-center bg-muted/30" />
         <CardHeader className="py-4">
           <CardTitle className="text-base md:text-lg flex items-center">
             <span className="inline-flex h-6 w-6 items-center justify-center rounded-md border mr-2 group-hover:bg-accent">
               <Plus className="w-4 h-4" />
             </span>
-            新しいハッカソンを作成
+            新しいイベントを作成
           </CardTitle>
         </CardHeader>
       </Card>
@@ -189,6 +275,23 @@ function NewCard() {
   );
 }
 
+function NewRow() {
+  return (
+    <Link href="/org/new" className="group block">
+      <Card className="border-dashed hover:border-solid hover:shadow-md transition">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="text-sm text-muted-foreground">新しいイベントを作成</div>
+          <Button variant="secondary" size="sm">
+            <Plus className="w-4 h-4 mr-1" />
+            作成
+          </Button>
+        </div>
+      </Card>
+    </Link>
+  );
+}
+
+/* ====================== Empty / Skeleton ====================== */
 function EmptyState() {
   return (
     <Card className="border-dashed">
@@ -197,9 +300,9 @@ function EmptyState() {
           <ImageOff className="w-6 h-6 text-muted-foreground" />
         </div>
         <div>
-          <h4 className="text-lg font-semibold">まだ参加中の組織がありません</h4>
+          <h4 className="text-lg font-semibold">運営中のイベントがありません</h4>
           <p className="text-sm text-muted-foreground mt-1">
-            まずは新しいを作成するか、既存の組織に参加しましょう。
+            まずは新しいイベントを作成しましょう。
           </p>
         </div>
         <Button asChild>
@@ -213,7 +316,16 @@ function EmptyState() {
   );
 }
 
-function LoadingGridSkeleton() {
+function LoadingSkeleton({ view }: { view: ViewMode }) {
+  if (view === "list") {
+    return (
+      <div className="space-y-3">
+        <SkeletonRow />
+        <SkeletonRow />
+        <SkeletonRow />
+      </div>
+    );
+  }
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <SkeletonCard />
@@ -222,12 +334,11 @@ function LoadingGridSkeleton() {
     </div>
   );
 }
-
 function SkeletonCard() {
   return (
     <Card className="overflow-hidden pt-0">
-      <Skeleton className="h-28 w-full" />
-      <CardHeader className="pt-2 pb-2">
+      <Skeleton className="h-28 w-full rounded-none" />
+      <CardHeader className="pb-2">
         <Skeleton className="h-4 w-2/3" />
         <div className="mt-3 flex gap-2">
           <Skeleton className="h-5 w-16" />
@@ -236,8 +347,24 @@ function SkeletonCard() {
       </CardHeader>
       <CardContent className="pb-4">
         <Skeleton className="h-4 w-full mb-2" />
-        <Skeleton className="h-4 w-5/6" />
       </CardContent>
+    </Card>
+  );
+}
+function SkeletonRow() {
+  return (
+    <Card className="overflow-hidden">
+      <div className="flex items-stretch gap-4">
+        <Skeleton className="w-40 h-20" />
+        <div className="flex-1 py-3 pr-3">
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-3 w-3/4 mt-2" />
+          <div className="mt-2 flex gap-2">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-24" />
+          </div>
+        </div>
+      </div>
     </Card>
   );
 }
