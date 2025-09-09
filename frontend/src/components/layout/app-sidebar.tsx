@@ -43,23 +43,6 @@ const data = {
       icon: Megaphone,
       items: [{ title: "イベント新規作成", url: "/event/new" }],
     },
-    {
-      title: "インターン",
-      url: "/job",
-      icon: Briefcase,
-      items: [],
-    },
-    // {
-    //   title: "ドキュメント",
-    //   url: "/#",
-    //   icon: BookOpen,
-    //   items: [
-    //     { title: "ようこそ！", url: "/#" },
-    //     { title: "はじめに", url: "/#" },
-    //     { title: "イベント参加方法", url: "/#" },
-    //     { title: "イベント開催方法", url: "/#" },
-    //   ],
-    // },
   ],
   navSecondary: [
     {
