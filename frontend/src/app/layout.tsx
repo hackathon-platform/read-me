@@ -4,8 +4,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
-  title: "イベントナビ",
-  description: "イベントの参加者を一括管理",
+  title: "ReadME",
+  description: "成果物プラットフォーム",
 };
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
