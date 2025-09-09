@@ -41,7 +41,7 @@ const data = {
       title: "イベント開催",
       url: "/org",
       icon: Megaphone,
-      items: [{ title: "イベント新規作成", url: "/org/new" }],
+      items: [{ title: "イベント新規作成", url: "/event/new" }],
     },
     {
       title: "インターン",
@@ -63,12 +63,12 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Support",
+      title: "サポート",
       url: "/#",
       icon: LifeBuoy,
     },
     {
-      title: "Feedback",
+      title: "フィードバック",
       url: "/#",
       icon: MessageSquare,
     },

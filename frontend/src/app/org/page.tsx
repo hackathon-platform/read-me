@@ -83,7 +83,7 @@ export default function OrganizationsPage() {
               </Button>
             </div>
             <Button asChild>
-              <Link href="/org/new">
+              <Link href="/event/new">
                 <Plus className="w-4 h-4 mr-1" />
                 新しいイベント
               </Link>
@@ -267,7 +267,7 @@ function OrganizationRow({ org }: { org: Org }) {
 /* ====================== “Create new” ====================== */
 function NewCard() {
   return (
-    <Link href="/org/new" className="group block">
+    <Link href="/event/new" className="group block">
       <Card className="pt-0 border-dashed hover:border-solid hover:shadow-md transition">
         <div className="h-28 grid place-items-center bg-muted/30" />
         <CardHeader className="py-4">
@@ -285,7 +285,7 @@ function NewCard() {
 
 function NewRow() {
   return (
-    <Link href="/org/new" className="group block">
+    <Link href="/event/new" className="group block">
       <Card className="border-dashed hover:border-solid hover:shadow-md transition">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="text-sm text-muted-foreground">
@@ -318,7 +318,7 @@ function EmptyState() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/org/new">
+          <Link href="/event/new">
             <Plus className="w-4 h-4 mr-1" />
             新しいイベント
           </Link>
