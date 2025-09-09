@@ -2,11 +2,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Github, Linkedin, Instagram, Facebook, Link } from "lucide-react";
 import { Profile, Social } from "@/lib/types";
-interface ProfileSectionProps {
+interface BasicDisplayProps {
   profile: Profile;
 }
 
-export default function ProfileDisplay({ profile }: ProfileSectionProps) {
+export default function BasicDisplay({ profile }: BasicDisplayProps) {
   const initials = profile.lastName[0];
   console.log("profile", profile);
   const getSocialIcon = (social: Social) => {
@@ -27,27 +27,27 @@ export default function ProfileDisplay({ profile }: ProfileSectionProps) {
   return (
     <div className="relative py-2.5">
       <div className="flex justify-between">
-        <div className="flex gap-6">
-          <Avatar className="h-32 w-32 border-2 border-accent">
+        <div className="flex gap-4">
+          <Avatar className="h-23 w-23 border-2 border-accent">
             <AvatarImage
               src={profile.imageUrl}
               alt={`${profile.lastName} ${profile.firstName}`}
             />
             <AvatarFallback className="text-xl">{initials}</AvatarFallback>
           </Avatar>
-          <div className="space-y-1">
+          <div>
             <div className="mt-1 flex flex-col gap-0.5">
-              <p className="text-sm text-muted-foreground tracking-wider">
+              <p className="text-xs text-muted-foreground tracking-wider">
                 {profile.lastNameKana} {profile.firstNameKana}
               </p>
               <h2 className="text-2xl font-bold">
                 {profile.lastName} {profile.firstName}
               </h2>
             </div>
-            <div className="font-semibold text-muted-foreground">
-              @{profile.username}
-            </div>
-            <div className="flex gap-1">
+            <div className="flex gap-1 items-center">
+              <p className="font-semibold text-muted-foreground">
+                @{profile.username}
+              </p>
               {profile.socials.map((social, index) => (
                 <a
                   key={index}
@@ -65,7 +65,7 @@ export default function ProfileDisplay({ profile }: ProfileSectionProps) {
         </div>
       </div>
       {profile.description && (
-        <p className="mt-2 px-1 text-sm leading-relaxed break-words">
+        <p className="mt-2 px-1 text-sm whitespace-pre-wrap">
           {profile.description}
         </p>
       )}

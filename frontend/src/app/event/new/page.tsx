@@ -418,6 +418,16 @@ export default function CreateEventPage() {
           />
         </div>
 
+        {/* End At */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">終了日時</label>
+          <Input
+            type="datetime-local"
+            value={endAt}
+            onChange={(e) => setEndAt(e.target.value)}
+          />
+        </div>
+
         {/* Website */}
         <div className="space-y-2">
           <label className="text-sm font-medium">公式サイト URL</label>
@@ -426,16 +436,6 @@ export default function CreateEventPage() {
             value={websiteUrl}
             onChange={(e) => setWebsiteUrl(e.target.value)}
             placeholder="https://example.com"
-          />
-        </div>
-
-        {/* End At */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">終了日時</label>
-          <Input
-            type="datetime-local"
-            value={endAt}
-            onChange={(e) => setEndAt(e.target.value)}
           />
         </div>
       </form>
@@ -542,6 +542,12 @@ function EventPreview(props: {
       <div className="px-4 py-3 border-b">
         <h1 className="text-2xl font-semibold mr-auto">{props.name}</h1>
         <div className="flex flex-wrap gap-2 pt-2">
+          {endAtJP && (
+            <Badge variant="secondary" className="gap-1">
+              終了日: {endAtJP}
+            </Badge>
+          )}
+          <Badge variant="secondary">参加者 {props.participantsCount} 名</Badge>
           {props.websiteUrl && (
             <Badge variant="outline" className="gap-1">
               <Link
@@ -553,12 +559,6 @@ function EventPreview(props: {
               </Link>
             </Badge>
           )}
-          {endAtJP && (
-            <Badge variant="secondary" className="gap-1">
-              終了日: {endAtJP}
-            </Badge>
-          )}
-          <Badge variant="secondary">参加者 {props.participantsCount} 名</Badge>
         </div>
       </div>
 
@@ -584,6 +584,12 @@ function EventPreview(props: {
                     <div className="font-medium">{endAtJP ?? "未設定"}</div>
                   </div>
                   <div className="text-sm">
+                    <div className="text-muted-foreground">参加者</div>
+                    <div className="font-medium">
+                      {props.participantsCount} 名
+                    </div>
+                  </div>
+                  <div className="text-sm">
                     <div className="text-muted-foreground">公式サイト</div>
                     <div className="font-medium">
                       {props.websiteUrl ? (
@@ -598,12 +604,6 @@ function EventPreview(props: {
                       ) : (
                         "未設定"
                       )}
-                    </div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="text-muted-foreground">参加者</div>
-                    <div className="font-medium">
-                      {props.participantsCount} 名
                     </div>
                   </div>
                 </div>

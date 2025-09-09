@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import ProfileDisplay from "./display/ProfileDisplay";
-import { ProfileEdit } from "./edit/ProfileEdit";
-import { Profile } from "@/lib/types";
+import { EducationDisplay } from "../display/EducationDisplay";
+import { EducationEdit } from "../edit/EducationEdit";
+import { Education } from "@/lib/types";
 import { EditIcon } from "lucide-react";
 import {
   Drawer,
@@ -17,41 +17,38 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 
-interface ProfileSectionProps {
-  profile: Profile;
+interface Props {
+  profileId: string;
+  educations: Education[];
 }
 
-export function ProfileSection({ profile }: ProfileSectionProps) {
+export function EducationSection({ profileId, educations }: Props) {
   const [open, setOpen] = useState(false);
-  const formId = "profile-edit-form";
+  const formId = "education-edit-form";
 
   return (
     <div className="relative">
-      <ProfileDisplay profile={profile} />
+      <EducationDisplay educations={educations} />
 
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <button className="absolute top-2 right-2 md:top-4 md:right-4">
+          <button className="absolute top-1 right-2">
             <EditIcon size={16} />
           </button>
         </DrawerTrigger>
-
         <DrawerContent className="max-h-[90vh] lg:px-40">
           <DrawerHeader>
-            <DrawerTitle>プロフィール編集</DrawerTitle>
-            <DrawerDescription>
-              基本情報やSNSリンクを編集できます
-            </DrawerDescription>
+            <DrawerTitle>学歴編集</DrawerTitle>
+            <DrawerDescription>学歴情報を編集できます</DrawerDescription>
           </DrawerHeader>
 
           {/* フォーム本体（スクロール領域） */}
           <div className="overflow-y-auto px-4 pb-2 max-h-[calc(90vh-120px)]">
-            <ProfileEdit
-              initialData={profile}
+            <EducationEdit
+              profileId={profileId}
+              initialData={educations}
               onSave={() => setOpen(false)}
               onCancel={() => setOpen(false)}
-              formId={formId}
-              key={open ? "open" : "closed"} // 閉じたら初期値に戻したい場合に再マウント
             />
           </div>
 
@@ -61,8 +58,6 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
                 キャンセル
               </Button>
             </DrawerClose>
-
-            {/* 外部からフォーム送信 */}
             <Button type="submit" form={formId}>
               保存
             </Button>

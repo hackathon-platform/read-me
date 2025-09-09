@@ -5,18 +5,10 @@ import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
   getEventBasicBySlug,
   getParticipantsWithProfiles,
 } from "@/lib/api/participants";
+import { ParticipantsPane } from "@/components/event/ParticipantsPane";
 
 // ISR
 export const revalidate = 120;
@@ -108,9 +100,15 @@ export default async function EventPage({
         )}
 
         {/* Meta row under banner */}
-        <div className="px-4 py-3 border-b items-center">
+        <div className="bg-popover px-4 py-3 border-b items-center">
           <h1 className="text-2xl font-semibold mr-auto">{event.name}</h1>
           <div className="flex flex-wrap gap-2 pt-2">
+            {stats.endAt && (
+              <Badge variant="secondary" className="gap-1">
+                終了日: {stats.endAt}
+              </Badge>
+            )}
+            <Badge variant="secondary">参加者 {stats.participants} 名</Badge>
             {event.website_url && (
               <Badge variant="outline" className="gap-1">
                 <Link
@@ -122,12 +120,6 @@ export default async function EventPage({
                 </Link>
               </Badge>
             )}
-            {stats.endAt && (
-              <Badge variant="secondary" className="gap-1">
-                終了日: {stats.endAt}
-              </Badge>
-            )}
-            <Badge variant="secondary">参加者 {stats.participants} 名</Badge>
           </div>
         </div>
 
@@ -151,6 +143,10 @@ export default async function EventPage({
                       </div>
                     </div>
                     <div className="text-sm">
+                      <div className="text-muted-foreground">参加者</div>
+                      <div className="font-medium">{stats.participants} 名</div>
+                    </div>
+                    <div className="text-sm">
                       <div className="text-muted-foreground">公式サイト</div>
                       <div className="font-medium">
                         {event.website_url ? (
@@ -166,10 +162,6 @@ export default async function EventPage({
                           "未設定"
                         )}
                       </div>
-                    </div>
-                    <div className="text-sm">
-                      <div className="text-muted-foreground">参加者</div>
-                      <div className="font-medium">{stats.participants} 名</div>
                     </div>
                   </div>
                   {event.description && (
@@ -193,88 +185,13 @@ export default async function EventPage({
               {/* TODO: gallery */}
             </TabsContent>
 
-            <TabsContent value="participant" className="p-2">
+            <TabsContent value="participant" className="p-0">
               {participants.length === 0 ? (
                 <div className="text-sm text-muted-foreground py-6">
                   参加者がまだいません
                 </div>
               ) : (
-                <div className="py-2">
-                  <div className="flex justify-between items-center px-2 pb-2">
-                    <div className="text-sm text-muted-foreground">
-                      合計: <strong>{participants.length}</strong> 名
-                    </div>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[56px]"> </TableHead>
-                          <TableHead>名前 / ユーザー名</TableHead>
-                          <TableHead>役割</TableHead>
-                          <TableHead className="text-right">
-                            プロフィール
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {participants.map((row) => {
-                          const p = row.profile;
-                          const name =
-                            `${p.last_name ?? ""} ${p.first_name ?? ""}`.trim() ||
-                            (p.username ?? "User");
-                          const initials =
-                            (p.last_name?.[0] ?? "") +
-                            (p.first_name?.[0] ?? "");
-                          return (
-                            <TableRow key={p.id}>
-                              <TableCell>
-                                <Avatar className="h-9 w-9">
-                                  <AvatarImage
-                                    src={p.image_url ?? undefined}
-                                    alt={p.username ?? ""}
-                                  />
-                                  <AvatarFallback>
-                                    {initials || "U"}
-                                  </AvatarFallback>
-                                </Avatar>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex flex-col">
-                                  <div className="font-medium">{name}</div>
-                                  {p.username && (
-                                    <div className="text-xs text-muted-foreground">
-                                      @{p.username}
-                                    </div>
-                                  )}
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant={getRoleBadgeVariant(row.role)}>
-                                  {getRoleDisplay(row.role)}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {p.username ? (
-                                  <Link
-                                    className="text-primary underline underline-offset-4"
-                                    href={`/me/${p.username}`}
-                                  >
-                                    開く
-                                  </Link>
-                                ) : (
-                                  <span className="text-muted-foreground">
-                                    —
-                                  </span>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </div>
+                <ParticipantsPane participants={participants} />
               )}
             </TabsContent>
           </Tabs>
@@ -284,13 +201,12 @@ export default async function EventPage({
   );
 }
 
-// (Optional) OGP / title
+// OGP / title
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  // ✅ Next 15: params は await が必要
   const { slug } = await params;
 
   const data = await getEventBasicBySlug(supabase, slug);

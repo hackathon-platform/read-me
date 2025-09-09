@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ExperienceDisplay } from "./display/ExperienceDisplay";
-import { ExperienceEdit } from "./edit/ExperienceEdit";
-import { Experience } from "@/lib/types";
+import { QualificationEdit } from "../edit/QualificationEdit";
+import { QualificationDisplay } from "../display/QualificationDisplay";
+import { Qualification } from "@/lib/types";
 import { EditIcon } from "lucide-react";
 import {
   Drawer,
@@ -19,17 +19,16 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   profileId: string;
-  experiences: Experience[];
+  qualifications: Qualification[];
 }
 
-export function ExperienceSection({ profileId, experiences }: Props) {
+export function QualificationSection({ profileId, qualifications }: Props) {
   const [open, setOpen] = useState(false);
-  const formId = "experience-edit-form";
+  const formId = "qualification-edit-form";
 
   return (
     <div className="relative">
-      <ExperienceDisplay experiences={experiences} />
-
+      <QualificationDisplay qualifications={qualifications} />
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
           <button className="absolute top-1 right-2">
@@ -38,17 +37,18 @@ export function ExperienceSection({ profileId, experiences }: Props) {
         </DrawerTrigger>
         <DrawerContent className="max-h-[90vh] lg:px-40">
           <DrawerHeader>
-            <DrawerTitle>職歴編集</DrawerTitle>
-            <DrawerDescription>職歴情報を編集できます</DrawerDescription>
+            <DrawerTitle>資格・免許編集</DrawerTitle>
+            <DrawerDescription>資格・免許情報を編集できます</DrawerDescription>
           </DrawerHeader>
 
           {/* フォーム本体（スクロール領域） */}
           <div className="overflow-y-auto px-4 pb-2 max-h-[calc(90vh-120px)]">
-            <ExperienceEdit
+            <QualificationEdit
               profileId={profileId}
-              initialData={experiences}
+              initialData={qualifications}
               onSave={() => setOpen(false)}
               onCancel={() => setOpen(false)}
+              formId={formId}
             />
           </div>
 
@@ -59,7 +59,7 @@ export function ExperienceSection({ profileId, experiences }: Props) {
               </Button>
             </DrawerClose>
             <Button type="submit" form={formId}>
-              保存する
+              保存
             </Button>
           </DrawerFooter>
         </DrawerContent>

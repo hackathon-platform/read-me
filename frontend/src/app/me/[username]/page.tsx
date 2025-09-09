@@ -1,15 +1,8 @@
 import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProfileSection } from "@/components/me/ProfileSection";
-import { EducationSection } from "@/components/me/EducationSection";
-import { ExperienceSection } from "@/components/me/ExperienceSection";
-import { QualificationSection } from "@/components/me/QualificationSection";
-import { ResumeSection } from "@/components/me/ResumeSection";
-import { ProjectsSection } from "@/components/me/ProjectsSection";
 import type { Profile, Skill } from "@/lib/types";
 import PageHeader from "@/components/layout/PageHeader";
+import { ProfileContent } from "@/components/me/ProfileContent";
 
 export default async function ProfilePage({
   params,
@@ -130,44 +123,6 @@ export default async function ProfilePage({
     })),
   };
 
-  const ProfileTabs = () => (
-    <Tabs defaultValue="projects" className="w-full pb-2">
-      <TabsList className="grid grid-cols-2 w-full">
-        <TabsTrigger value="projects">プロジェクト</TabsTrigger>
-        <TabsTrigger value="profile">プロフィール</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="projects">
-        <div className="pt-2 space-y-4">
-          <ProjectsSection profileId={profile.id} projects={profile.projects} />
-        </div>
-      </TabsContent>
-
-      <TabsContent value="profile">
-        <div className="space-y-4">
-          <ExperienceSection
-            profileId={profile.id}
-            experiences={profile.experiences}
-          />
-          <EducationSection
-            profileId={profile.id}
-            educations={profile.education}
-          />
-          <QualificationSection
-            profileId={profile.id}
-            qualifications={profile.qualifications}
-          />
-          {profile.resumeUrl && (
-            <>
-              <Separator className="my-6" />
-              <ResumeSection resumeUrl={profile.resumeUrl} />
-            </>
-          )}
-        </div>
-      </TabsContent>
-    </Tabs>
-  );
-
   return (
     <>
       <PageHeader
@@ -177,18 +132,8 @@ export default async function ProfilePage({
         ]}
       />
       <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 w-full">
-        {/* <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-6"> */}
-        <div>
-          {/* Left: Profile content */}
-          <div className="pace-y-6 px-3 md:px-5">
-            <ProfileSection profile={profile} />
-            <ProfileTabs />
-          </div>
-
-          {/* Right: Recommended users */}
-          {/* <div className="hidden lg:block">
-            <RecommendedUsers />
-          </div> */}
+        <div className="px-3 md:px-5">
+          <ProfileContent profile={profile} />
         </div>
       </div>
     </>

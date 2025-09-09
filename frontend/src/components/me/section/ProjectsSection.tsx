@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Plus, RefreshCw } from "lucide-react";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import type { Project } from "@/lib/types";
-import ProjectFormModal from "./project/ProjectFormModal";
-import ProjectCard from "./project/ProjectCard";
-import DeleteDialog from "./project/DeleteDialog";
-import EmptyState from "./project/EmptyState";
+import ProjectFormModal from "../project/ProjectFormModal";
+import ProjectCard from "../project/ProjectCard";
+import DeleteDialog from "../project/DeleteDialog";
+import EmptyState from "../project/EmptyState";
 import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 
