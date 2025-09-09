@@ -2,15 +2,12 @@
 
 import * as React from "react";
 import {
-  Code2,
   User,
   CalendarCheck,
   Megaphone,
-  BookOpen,
   LifeBuoy,
   MessageSquare,
   Briefcase,
-  Activity,
   SquarePlus,
 } from "lucide-react";
 

@@ -1,7 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import NextLink from "next/link";
 import { Github, Linkedin, Instagram, Facebook, Link } from "lucide-react";
 import { Profile, Social } from "@/lib/types";
 interface ProfileSectionProps {

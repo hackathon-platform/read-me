@@ -17,7 +17,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Plus, Award, Calendar, X } from "lucide-react";
 import { Qualification } from "@/lib/types";
 import { toast } from "sonner";
@@ -47,7 +46,6 @@ interface Props {
 export function QualificationEdit({
   profileId,
   initialData,
-  onCancel,
   onSave,
   formId = "qualification-edit-form",
 }: Props) {

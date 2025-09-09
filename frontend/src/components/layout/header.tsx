@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useSupabase } from "@/components/supabase-provider";
@@ -25,7 +23,6 @@ import {
   Code2,
   ChevronDown,
 } from "lucide-react";
-import { NavUser } from "@/components/ui/nav-user";
 
 export default function Header() {
   const { user, signOut, loading } = useSupabase();

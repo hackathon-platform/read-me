@@ -19,7 +19,6 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   Plus,
   Briefcase,
@@ -65,7 +64,6 @@ interface Props {
 export function ExperienceEdit({
   profileId,
   initialData,
-  onCancel,
   onSave,
   formId = "experience-edit-form",
 }: Props) {

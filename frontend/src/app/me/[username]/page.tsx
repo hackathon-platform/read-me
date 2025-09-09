@@ -8,7 +8,6 @@ import { ExperienceSection } from "@/components/me/ExperienceSection";
 import { QualificationSection } from "@/components/me/QualificationSection";
 import { ResumeSection } from "@/components/me/ResumeSection";
 import { ProjectsSection } from "@/components/me/ProjectsSection";
-import RecommendedUsers from "@/components/me/RecommendedUsers";
 import type { Profile, Skill } from "@/lib/types";
 import PageHeader from "@/components/layout/PageHeader";
 

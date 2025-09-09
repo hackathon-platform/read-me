@@ -2,7 +2,6 @@
 
 import {
   BadgeCheck,
-  Bell,
   CalendarDays,
   ChevronsUpDown,
   LogOut,

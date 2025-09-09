@@ -19,7 +19,6 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   Plus,
   GraduationCap,
@@ -58,7 +57,6 @@ interface Props {
 export function EducationEdit({
   profileId,
   initialData,
-  onCancel,
   onSave,
   formId = "education-edit-form",
 }: Props) {
