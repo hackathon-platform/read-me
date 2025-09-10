@@ -65,8 +65,6 @@ function TabsTrigger({
         "hover:bg-background/60 hover:text-foreground hover:border-border hover:underline hover:underline-offset-4",
         // active state connects visually to panel
         "data-[state=active]:bg-popover data-[state=active]:text-foreground data-[state=active]:border-border",
-        // remove the tiny seam to the content border
-        "-mb-px",
         // a11y focus
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
         "disabled:pointer-events-none disabled:opacity-50",
