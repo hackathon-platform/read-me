@@ -73,7 +73,6 @@ export default function Header() {
               <span>ReadME</span>
             </Link>
           </div>
-
           {/* Right side: Theme toggle + user menu / auth links */}
           <div>
             {!loading && (
@@ -121,17 +120,9 @@ export default function Header() {
                           <span>登録済みイベント</span>
                         </DropdownMenuItem>
                       </Link>
+                      <ThemeToggle />
 
                       <DropdownMenuSeparator />
-
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem
-                          className="flex items-center justify-between"
-                          onSelect={(e) => e.preventDefault()}
-                        >
-                          <ThemeToggle />
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
 
                       <DropdownMenuItem onClick={() => signOut()}>
                         <LogOut className="h-4 w-4 mr-2" />
