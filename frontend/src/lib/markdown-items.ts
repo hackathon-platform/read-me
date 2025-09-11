@@ -13,6 +13,7 @@ import {
   SeparatorHorizontal,
   Code as CodeIcon,
   Braces,
+  Grid3x3,
 } from "lucide-react";
 
 export type Item = {
@@ -125,6 +126,20 @@ export const ITEMS: Item[] = [
     value: "hr",
     md: "---\n\n",
     icon: SeparatorHorizontal,
+  },
+  {
+    group: "その他",
+    label: "表（3×3）",
+    value: "table-3x3",
+    md: [
+      "| ヘッダ1 | ヘッダ2 | ヘッダ3 |",
+      "| ------ | ------ | ------ |",
+      `| {|} |  |  |`,
+      "|  |  |  |",
+      "|  |  |  |",
+      "",
+    ].join("\n"),
+    icon: Grid3x3,
   },
   {
     group: "その他",
