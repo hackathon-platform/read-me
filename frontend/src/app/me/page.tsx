@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/supabaseClient";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import Loading from "@/components/common/Loading";
 
