@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import PageHeader from "@/components/layout/PageHeader";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
-import { getEventByOwner } from "@/lib/api/geteventbyowner";
+import { getEventByOwner } from "@/lib/supabase/get/event-by-owner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

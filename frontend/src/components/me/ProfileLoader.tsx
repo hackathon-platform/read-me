@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/supabaseClient";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileContent } from "@/components/me/ProfileContent";
 import type { Profile, Skill } from "@/lib/types";
