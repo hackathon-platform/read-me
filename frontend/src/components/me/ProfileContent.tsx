@@ -7,8 +7,8 @@ import { EducationSection } from "./section/EducationSection";
 import { ExperienceSection } from "./section/ExperienceSection";
 import { QualificationSection } from "./section/QualificationSection";
 import { ResumeSection } from "./ResumeSection";
-import { ProjectsSection } from "./section/ProjectsSection";
 import type { Profile } from "@/lib/types";
+import ProjectGallery from "@/components/me/section/ProjectGallery";
 
 export function ProfileContent({ profile }: { profile: Profile }) {
   return (
@@ -16,17 +16,14 @@ export function ProfileContent({ profile }: { profile: Profile }) {
       <BasicSection profile={profile} />
 
       <Tabs defaultValue="projects" className="w-full pb-2">
-        <TabsList className="grid grid-cols-2 w-full">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="projects">プロジェクト</TabsTrigger>
           <TabsTrigger value="profile">プロフィール</TabsTrigger>
         </TabsList>
 
         <TabsContent value="projects">
           <div className="pt-2 space-y-4">
-            <ProjectsSection
-              profileId={profile.id}
-              projects={profile.projects}
-            />
+            <ProjectGallery profileId={profile.id} />
           </div>
         </TabsContent>
 
