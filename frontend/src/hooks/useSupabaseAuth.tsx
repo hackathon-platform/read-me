@@ -1,4 +1,3 @@
-// hooks/useSupabaseAuth.tsx - Optimized Version
 "use client";
 import {
   useState,
@@ -7,7 +6,7 @@ import {
   createContext,
   useCallback,
 } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/supabaseClient";
 import { Session, User } from "@supabase/supabase-js";
 
 interface AuthContextValue {
