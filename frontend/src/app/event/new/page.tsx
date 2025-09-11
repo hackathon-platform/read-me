@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/supabaseClient";
 import { toast } from "sonner";
 import PageHeader from "@/components/layout/PageHeader";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -28,6 +28,11 @@ import {
   DrawerClose,
 } from "@/components/ui/drawer";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  createEventWithOwner,
+  isEventSlugTaken,
+} from "@/lib/supabase/insert/event";
+import formatJPDateLocal from "@/components/common/format-jp-date-local";
 
 const isSlugValid = (v: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v);
 
@@ -119,9 +124,10 @@ export default function CreateEventPage() {
       setFileKey((k) => k + 1);
       return;
     }
-    const dataUrl = await readAsDataURL(file);
-    setBannerUrl(dataUrl); // 即時反映
-    setSelectedFile(file); // 保存時にアップロード
+    const reader = new FileReader();
+    reader.onload = (ev) => setBannerUrl(String(ev.target?.result || ""));
+    reader.readAsDataURL(file);
+    setSelectedFile(file);
   }
 
   // キャンセル → バナー設定をリセット
@@ -154,57 +160,19 @@ export default function CreateEventPage() {
 
     setIsSaving(true);
     try {
-      // 1) 画像アップロード（任意）
-      let uploadedImageUrl: string | null = null;
-      if (selectedFile) {
-        uploadedImageUrl = await uploadImageToSupabase(selectedFile, user.id);
-      }
-
-      // 2) イベント作成（id 取得）
-      const { data: createdEvent, error: insertEventError } = await supabase
-        .from("event")
-        .insert([
-          {
-            created_by: user.id,
-            name: eventName.trim(),
-            slug: slug.trim(),
-            description: description.trim() || null,
-            banner_url: uploadedImageUrl ?? null,
-            website_url: websiteUrl.trim() || null,
-            end_at: endAt ? new Date(endAt).toISOString() : null,
-          },
-        ])
-        .select("id, slug")
-        .single();
-
-      if (insertEventError || !createdEvent?.id) {
-        throw new Error(
-          insertEventError?.message || "イベントの作成に失敗しました。",
-        );
-      }
-
-      // 3) オーナー参加者の作成
-      const { error: insertOwnerError } = await supabase
-        .from("participant")
-        .insert({
-          event_id: createdEvent.id,
-          profile_id: user.id,
-          role: "owner",
-        });
-
-      if (insertOwnerError) {
-        try {
-          await supabase.from("event").delete().eq("id", createdEvent.id);
-        } catch (rollbackErr) {
-          console.warn("[CreateEventPage] rollback failed:", rollbackErr);
-        }
-        throw new Error(
-          "参加者（オーナー）の設定に失敗しました。もう一度お試しください。",
-        );
-      }
+      const { slug: createdSlug } = await createEventWithOwner({
+        userId: user.id,
+        name: eventName,
+        slug,
+        description,
+        websiteUrl,
+        endAt, // "YYYY-MM-DDTHH:mm" でも OK
+        bannerFile: selectedFile ?? null, // 選択されていればアップロード
+        bucketName: "event", // Storage バケット名。変えたい場合はここを変更
+      });
 
       toast.success("イベントを登録しました。");
-      router.replace(`/event/${createdEvent.slug}`);
+      router.replace(`/event/${createdSlug}`);
     } catch (err: any) {
       setError(err?.message ?? "保存に失敗しました。");
       setIsSaving(false);
@@ -493,21 +461,6 @@ function ChecklistBadge({
       )}
     </div>
   );
-}
-
-function formatJPDateLocal(s?: string | null) {
-  if (!s) return null;
-  try {
-    return new Date(s).toLocaleString("ja-JP", {
-      timeZone: "Asia/Tokyo",
-      hour12: false,
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return s;
-  }
 }
 
 /**

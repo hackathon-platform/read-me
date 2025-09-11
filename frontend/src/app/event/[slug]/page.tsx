@@ -1,47 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getEventBasicBySlug,
   getParticipantsWithProfiles,
-} from "@/lib/api/participants";
+} from "@/lib/supabase/get/participants";
 import { ParticipantsPane } from "@/components/event/ParticipantsPane";
 
 // ISR
 export const revalidate = 120;
-
-function getRoleBadgeVariant(
-  role?: string | null,
-): "default" | "secondary" | "destructive" | "outline" {
-  switch ((role ?? "").toLowerCase()) {
-    case "owner":
-      return "destructive";
-    case "admin":
-    case "judge":
-      return "default";
-    case "mentor":
-    case "member":
-    case "participant":
-    case "guest":
-      return "secondary";
-    default:
-      return "outline";
-  }
-}
-
-function getRoleDisplay(role?: string | null) {
-  const r = (role ?? "").toLowerCase();
-  if (r === "owner") return "オーナー";
-  if (r === "admin") return "管理者";
-  if (r === "judge") return "審査員";
-  if (r === "mentor") return "メンター";
-  if (r === "participant" || r === "member") return "参加者";
-  if (r === "guest") return "ゲスト";
-  return role ?? "未設定";
-}
 
 function formatJPDate(s?: string | null) {
   if (!s) return "";

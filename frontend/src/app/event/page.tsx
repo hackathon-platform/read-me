@@ -1,6 +1,5 @@
-// app/event/page.tsx (一覧)
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/supabaseClient";
 
 export default async function EventIndex() {
   const { data: events } = await supabase
