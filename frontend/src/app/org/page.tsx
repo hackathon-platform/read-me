@@ -82,12 +82,6 @@ export default function OrganizationsPage() {
                 <List className="w-4 h-4" />
               </Button>
             </div>
-            <Button asChild>
-              <Link href="/event/new">
-                <Plus className="w-4 h-4 mr-1" />
-                新しいイベント
-              </Link>
-            </Button>
           </div>
         </div>
 
@@ -163,7 +157,7 @@ function OrganizationCard({ org }: { org: Org }) {
             )}
             {typeof org.members_count === "number" && (
               <Badge variant="outline" className="px-2 py-0.5">
-                メンバー {org.members_count}
+                参加者 {org.members_count}
               </Badge>
             )}
             {typeof org.events_count === "number" && (
@@ -239,7 +233,7 @@ function OrganizationRow({ org }: { org: Org }) {
                 <div className="mt-2 flex items-center gap-2">
                   {typeof org.members_count === "number" && (
                     <Badge variant="outline" className="px-2 py-0.5">
-                      メンバー {org.members_count}
+                      参加者 {org.members_count}
                     </Badge>
                   )}
                   {typeof org.events_count === "number" && (

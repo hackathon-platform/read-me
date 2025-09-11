@@ -73,7 +73,6 @@ export default function MarkdownReadmeEditor({
 }: EditorProps) {
   const [content, setContent] = useState<string>(DEFAULT_MD);
   const [mode, setMode] = useState<"edit" | "preview" | "split">("split");
-  const [autoSave, setAutoSave] = useState(true);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [mounted, setMounted] = useState(false); // avoid hydration mismatch for preview
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -88,10 +87,9 @@ export default function MarkdownReadmeEditor({
 
   // Autosave
   useEffect(() => {
-    if (!autoSave) return;
     const id = setTimeout(() => localStorage.setItem(LS_KEY, content), 300);
     return () => clearTimeout(id);
-  }, [content, autoSave]);
+  }, [content]);
 
   const normalized = useMemo(() => normalizeForMarkdown(content), [content]);
 
@@ -120,13 +118,13 @@ export default function MarkdownReadmeEditor({
       });
     if (error) throw error;
 
-    const { data: pub, error: pubErr } = supabase.storage
+    const pub = supabase.storage
       .from(mediaBucketName)
       .getPublicUrl(data.path);
-    if (pubErr) throw pubErr;
+    if (!pub.data) throw new Error("Failed to retrieve public URL");
 
     onProgress?.(100);
-    return pub.publicUrl;
+    return pub.data.publicUrl;
   }
 
   const [mediaOpen, setMediaOpen] = useState<false | "image" | "video">(false);
@@ -222,10 +220,6 @@ export default function MarkdownReadmeEditor({
     <div className="mx-auto max-w-5xl p-4">
       {/* Header */}
       <div className="mb-2 flex items-center gap-2">
-        <div className="flex items-center gap-2 rounded-md border px-2 py-1">
-          <span className="text-xs text-muted-foreground">自動保存</span>
-          <Switch checked={autoSave} onCheckedChange={setAutoSave} />
-        </div>
         <div className="hidden md:flex items-center rounded-md border">
           <ToolbarButton
             className="rounded-l-md"
@@ -346,7 +340,7 @@ export default function MarkdownReadmeEditor({
           <MediaUploader
             open={Boolean(mediaOpen)}
             onOpenChange={(v) => setMediaOpen(v ? mediaOpen : false)}
-            mode={mediaOpen === "video" ? "video" : "image"}
+            mediaType={mediaOpen === "video" ? "video" : "image"}
             uploadFile={uploadFile}
             onConfirm={handleInsertMedia}
           />

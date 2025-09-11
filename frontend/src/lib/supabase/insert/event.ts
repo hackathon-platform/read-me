@@ -28,12 +28,12 @@ export async function uploadEventBanner(
     );
   }
 
-  const { data, error: pubErr } = supabase.storage
+  const { data } = supabase.storage
     .from(bucketName)
     .getPublicUrl(filePath);
 
-  if (pubErr) {
-    throw new Error(pubErr.message || "バナー画像URLの取得に失敗しました。");
+  if (!data || !data.publicUrl) {
+    throw new Error("バナー画像URLの取得に失敗しました。");
   }
 
   // キャッシュバスティング用クエリを付与
