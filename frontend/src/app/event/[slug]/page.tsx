@@ -9,24 +9,10 @@ import {
   getParticipantsWithProfiles,
 } from "@/lib/supabase/get/participants";
 import { ParticipantsPane } from "@/components/event/ParticipantsPane";
+import formatJPDate from "@/lib/utils/date";
 
 // ISR
 export const revalidate = 120;
-
-function formatJPDate(s?: string | null) {
-  if (!s) return "";
-  try {
-    return new Date(s).toLocaleString("ja-JP", {
-      timeZone: "Asia/Tokyo",
-      hour12: false,
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return s ?? "";
-  }
-}
 
 export default async function EventPage({
   params,

@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import MarkdownPreview from "@/components/markdown/MarkdownPreview";
+import formatJPDate from "@/lib/utils/date";
 
 type Props = {
   profileId: string;
@@ -167,16 +168,4 @@ function GalleryCard({
       </div>
     </button>
   );
-}
-
-function formatJPDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return iso;
-  }
 }

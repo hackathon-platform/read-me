@@ -32,7 +32,7 @@ import {
   createEventWithOwner,
   isEventSlugTaken,
 } from "@/lib/supabase/insert/event";
-import formatJPDateLocal from "@/components/common/format-jp-date-local";
+import formatJPDate from "@/lib/utils/date";
 
 const isSlugValid = (v: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v);
 
@@ -476,7 +476,7 @@ function EventPreview(props: {
   endAt: string | null; // datetime-local の文字列 or null
   participantsCount: number;
 }) {
-  const endAtJP = props.endAt ? formatJPDateLocal(props.endAt) : null;
+  const endAtJP = props.endAt ? formatJPDate(props.endAt) : null;
 
   return (
     <div className="overflow-hidden border bg-card rounded-md">

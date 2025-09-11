@@ -25,7 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
+import formatJPDate from "@/lib/utils/date";
 import { ProfileLoader } from "@/components/me/ProfileLoader";
 
 type ProfileRow = {
@@ -70,20 +70,6 @@ function getRoleDisplay(role?: string | null) {
   if (r === "participant" || r === "member") return "参加者";
   if (r === "guest") return "ゲスト";
   return role ?? "未設定";
-}
-function formatJPDate(s?: string | null) {
-  if (!s) return "";
-  try {
-    return new Date(s).toLocaleString("ja-JP", {
-      timeZone: "Asia/Tokyo",
-      hour12: false,
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return s ?? "";
-  }
 }
 
 type Props = {
