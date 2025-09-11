@@ -133,7 +133,7 @@ export default function MarkdownPreview({ content }: Props) {
             // We DON'T generate ids here. remark-slug already did that.
             h1: ({ children, ...rest }) => (
               <h1
-                className="scroll-m-20 border-b pb-1 text-3xl font-extrabold tracking-tight lg:text-4xl"
+                className="scroll-m-20 pt-5 border-b pb-1 text-3xl font-extrabold tracking-tight lg:text-4xl"
                 {...rest}
               >
                 {children}
@@ -141,7 +141,7 @@ export default function MarkdownPreview({ content }: Props) {
             ),
             h2: ({ children, ...rest }) => (
               <h2
-                className="scroll-m-20 border-b pb-1 text-2xl font-semibold tracking-tight first:mt-0"
+                className="scroll-m-20 pt-4 border-b pb-1 text-2xl font-semibold tracking-tight first:mt-0"
                 {...rest}
               >
                 {children}
@@ -149,7 +149,7 @@ export default function MarkdownPreview({ content }: Props) {
             ),
             h3: ({ children, ...rest }) => (
               <h3
-                className="scroll-m-20 text-xl font-semibold tracking-tight"
+                className="scroll-m-20 pt-3 text-xl font-semibold tracking-tight"
                 {...rest}
               >
                 {children}

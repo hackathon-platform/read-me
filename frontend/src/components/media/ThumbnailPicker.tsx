@@ -2,21 +2,21 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, VideoIcon } from "lucide-react";
-import MediaUploader from "./MediaUploader";
+import { Progress } from "@/components/ui/progress";
+import { ImageIcon, VideoIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase/supabaseClient";
 
 type Props = {
-  /** Persisted URL from DB (or null). */
+  /** DBに保存されている公開URL（なければ null） */
   value: string | null;
-  /** Called with the final persisted URL (or null on clear). */
+  /** アップロード完了時に公開URL（クリア時は null）を返す */
   onChange: (url: string | null) => void;
-
-  /** Supabase bucket name to upload into. */
   bucketName: string;
-
-  /** "image" | "video" (how to preview & accept) */
   mediaType?: "image" | "video";
+
+  /** 例: "推奨 16:9 / 2MB 以下" といったヒント文 */
+  hintText?: string;
 };
 
 export default function ThumbnailPicker({
@@ -24,39 +24,84 @@ export default function ThumbnailPicker({
   onChange,
   bucketName,
   mediaType = "image",
+  hintText,
 }: Props) {
-  const [open, setOpen] = React.useState(false);
+  const [dragActive, setDragActive] = React.useState(false);
+  const [uploading, setUploading] = React.useState(false);
+  const [progress, setProgress] = React.useState(0);
+  const [errMsg, setErrMsg] = React.useState<string | null>(null);
+
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const hasMedia = Boolean(value);
+  const accept = mediaType === "image" ? "image/*" : "video/*";
+
+  const pickFile = () => inputRef.current?.click();
+
+  const handleFile = async (file: File | null) => {
+    setErrMsg(null);
+    if (!file) return;
+    if (!file.type.startsWith(mediaType)) {
+      setErrMsg(
+        mediaType === "image" ? "画像ファイルを選択してください。" : "動画ファイルを選択してください。"
+      );
+      return;
+    }
+    try {
+      setUploading(true);
+      setProgress(10);
+      const url = await uploadViaSupabaseBucket(bucketName, file, (p) =>
+        setProgress(Math.max(5, Math.min(99, p)))
+      );
+      setProgress(100);
+      onChange(url);
+    } catch (e: any) {
+      setErrMsg(e?.message || "アップロードに失敗しました。");
+      console.error("[ThumbnailPicker] upload error:", e);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragActive(false);
+    const f = e.dataTransfer?.files?.[0] ?? null;
+    void handleFile(f);
+  };
 
   return (
     <div
       className={cn(
-        // 高さは常に固定（h-40）。幅は親に合わせて伸縮。
-        "relative group w-full h-full rounded-sm overflow-hidden bg-muted/40 transition-colors",
-        hasMedia
-          ? "border"
-          : // 空状態のみドット罫線 → ホバーでソリッドに
-            "border-2 border-dotted aspect-16/9 hover:border-solid",
+        "relative group w-full rounded-sm overflow-hidden bg-muted/40 transition-colors border",
+        !hasMedia && "border-dashed aspect-video hover:border-solid"
       )}
+      onDragEnter={(e) => {
+        if (e.dataTransfer?.items?.length) setDragActive(true);
+      }}
+      onDragOver={(e) => {
+        if (e.dataTransfer?.items?.length) {
+          e.preventDefault();
+          setDragActive(true);
+        }
+      }}
+      onDragLeave={() => setDragActive(false)}
+      onDrop={onDrop}
     >
-      {/* プレビュー（非トリミング・同じ高さ維持） */}
+      {/* プレビュー */}
       {hasMedia ? (
         mediaType === "image" ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={value as string}
-            alt="thumbnail"
-            className="h-full w-full object-contain bg-black/5"
-          />
+          <img src={value!} alt="thumbnail" className="h-full w-full object-contain bg-black/5" />
         ) : (
-          <video
-            src={value as string}
-            controls
-            className="h-full w-full object-contain bg-black/5"
-          />
+          <video src={value!} controls className="h-full w-full object-contain bg-black/5" />
         )
       ) : (
-        <div className="absolute inset-0 grid place-items-center text-muted-foreground">
+        <button
+          type="button"
+          onClick={pickFile}
+          className="absolute inset-0 grid place-items-center text-muted-foreground"
+          aria-label="サムネイルを選択"
+        >
           <div className="text-center">
             {mediaType === "image" ? (
               <ImageIcon className="mx-auto mb-1 h-7 w-7" />
@@ -64,50 +109,83 @@ export default function ThumbnailPicker({
               <VideoIcon className="mx-auto mb-1 h-7 w-7" />
             )}
             <p className="text-xs">
-              サムネイル（{mediaType === "image" ? "画像" : "動画"}）–
-              クリックでアップロード
+              クリックまたはドラッグ＆ドロップで{mediaType === "image" ? "画像" : "動画"}を選択
             </p>
+            {hintText && <p className="mt-1 text-[11px] text-muted-foreground">{hintText}</p>}
           </div>
+        </button>
+      )}
+
+      {/* クリア（最小限のUI。Uploadボタンやポップアップは廃止） */}
+      {hasMedia && (
+        <div className="absolute right-2 top-2 z-10">
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            className="h-7 w-7"
+            onClick={() => onChange(null)}
+            aria-label="クリア"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       )}
 
-      {/* 右上アクション */}
-      <div className="absolute right-2 top-2 z-10 flex gap-2">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => setOpen(true)}
-          className="shadow-sm"
-        >
-          {hasMedia ? "変更" : "アップロード"}
-        </Button>
-        {hasMedia && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => onChange(null)}
-            className="shadow-sm"
-          >
-            クリア
-          </Button>
-        )}
-      </div>
+      {/* drag中のハイライト */}
+      {dragActive && (
+        <div className="pointer-events-none absolute inset-0 z-10 rounded-sm ring-2 ring-ring ring-offset-2" />
+      )}
 
-      {/* 全面クリックで開く（ボタンより後に置くが、z-index でボタン優先） */}
-      <button
-        className="absolute inset-0 z-0 cursor-pointer appearance-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-        aria-label="サムネイルを選択"
-        onClick={() => setOpen(true)}
+      {/* 非表示のfile input */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
       />
 
-      {/* アップロードダイアログ（保存時のみDBにURLを渡す） */}
-      <MediaUploader
-        open={open}
-        onOpenChange={setOpen}
-        mediaType={mediaType}
-        bucketName={bucketName}
-        onConfirm={(url) => onChange(url)}
-      />
+      {/* アップロード進捗＆エラー */}
+      {uploading && (
+        <div className="absolute inset-x-0 bottom-0 z-20 bg-background/80 p-2 backdrop-blur">
+          <Progress value={progress} className="h-1.5" />
+        </div>
+      )}
+      {errMsg && (
+        <div className="absolute inset-x-0 bottom-0 z-20 rounded-none border-t bg-destructive/10 p-2 text-xs text-destructive">
+          {errMsg}
+        </div>
+      )}
     </div>
   );
+}
+
+/** Supabase Storage にアップロードして公開URLを返す */
+async function uploadViaSupabaseBucket(
+  bucketName: string,
+  f: File,
+  onProg?: (p: number) => void
+): Promise<string> {
+  onProg?.(5);
+  const ext = (f.name.split(".").pop() || "bin").toLowerCase();
+  const uuid =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? (crypto as any).randomUUID()
+      : Math.random().toString(36).slice(2);
+  const path = `project-assets/${new Date().toISOString().slice(0, 10)}/${uuid}.${ext}`;
+
+  const { data, error } = await supabase.storage.from(bucketName).upload(path, f, {
+    cacheControl: "3600",
+    upsert: false,
+    contentType: f.type || "application/octet-stream",
+  });
+  if (error) throw new Error(error.message || "Upload failed");
+  onProg?.(95);
+
+  const { data: pub, error: pubErr } = supabase.storage.from(bucketName).getPublicUrl(data.path);
+  if (pubErr) throw new Error(pubErr.message || "Failed to get public URL");
+  onProg?.(100);
+
+  return pub.publicUrl;
 }

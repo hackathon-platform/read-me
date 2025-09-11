@@ -4,9 +4,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import {
   Drawer,
   DrawerTrigger,
@@ -20,7 +20,6 @@ import { Eye, FileDown } from "lucide-react";
 import EditorToolbar from "./EditorToolbar";
 import TextareaEditor from "./TextareaEditor";
 import MarkdownPreview from "./MarkdownPreview";
-import MediaUploader from "@/components/media/MediaUploader";
 import ThumbnailPicker from "@/components/media/ThumbnailPicker";
 
 import { type Item } from "@/lib/markdown-items";
@@ -101,49 +100,74 @@ export default function MarkdownReadmeEditor({
   /* ---------------- Thumbnail (cover) shown above the editor (optional) -------- */
   const [cover, setCover] = useState<string | null>(null);
 
-  /* ---------------- Editor media upload (images/videos) ------------------------ */
+  /* ---------------- Inline media upload (no dialog / no URL) ------------------- */
+  const inputImgRef = useRef<HTMLInputElement>(null);
+  const inputVidRef = useRef<HTMLInputElement>(null);
+  const [uploding, setUploading] = useState(false);
+  const [uplProg, setUplProg] = useState(0);
+  const [uplErr, setUplErr] = useState<string | null>(null);
+
   async function uploadFile(
     file: File,
     onProgress?: (pct: number) => void,
   ): Promise<string> {
-    // Supabase example. Ensure your bucket (mediaBucketName) policy allows uploads for the current user.
     onProgress?.(10);
-    const ext = file.name.split(".").pop() || "bin";
-    const key = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+    const key = `editor-assets/${new Date().toISOString().slice(0, 10)}/${
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? (crypto as any).randomUUID()
+        : Math.random().toString(36).slice(2)
+    }.${ext}`;
 
     const { data, error } = await supabase.storage
       .from(mediaBucketName)
       .upload(key, file, {
         upsert: false,
+        cacheControl: "3600",
+        contentType: file.type || "application/octet-stream",
       });
     if (error) throw error;
+    onProgress?.(95);
 
-    const pub = supabase.storage
+    const { data: pub, error: pubErr } = supabase.storage
       .from(mediaBucketName)
       .getPublicUrl(data.path);
-    if (!pub.data) throw new Error("Failed to retrieve public URL");
+    if (pubErr) throw pubErr as any;
 
     onProgress?.(100);
-    return pub.data.publicUrl;
+    return pub.publicUrl;
   }
 
-  const [mediaOpen, setMediaOpen] = useState<false | "image" | "video">(false);
+  function insertAtCaret(md: string) {
+    const ta = taRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const next = content.slice(0, start) + md + content.slice(end);
+    const caret = start + md.length;
+    setContent(next);
+    requestAnimationFrame(() => {
+      ta.focus();
+      ta.setSelectionRange(caret, caret);
+    });
+  }
 
+  // Toolbar actions
   const onToolbarAction = (item: Item) => {
     const ta = taRef.current;
     if (!ta) return;
 
-    // Open media dialogs for 画像/動画
     if (item.value === "img") {
-      setMediaOpen("image");
+      // 直接ファイル選択（ダイアログなし）
+      inputImgRef.current?.click();
       return;
     }
     if (item.value === "video") {
-      setMediaOpen("video");
+      inputVidRef.current?.click();
       return;
     }
 
-    // Other actions
+    // テキスト系
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
 
@@ -175,44 +199,41 @@ export default function MarkdownReadmeEditor({
     });
   };
 
-  function insertAtCaret(md: string) {
-    const ta = taRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const next = content.slice(0, start) + md + content.slice(end);
-    const caret = start + md.length;
-    setContent(next);
-    requestAnimationFrame(() => {
-      ta.focus();
-      ta.setSelectionRange(caret, caret);
-    });
-  }
-
-  function handleInsertMedia(url: string) {
-    if (mediaOpen === "image") {
-      // No alt text required
-      insertAtCaret(`![](${url})\n\n`);
-    } else if (mediaOpen === "video") {
-      insertAtCaret(`<video controls src="${url}"></video>\n\n`);
-    }
-  }
-
   // Drag & paste upload support
   async function handleFiles(files: File[]) {
     for (const f of files) {
       try {
-        const url = await uploadFile(f);
+        setUplErr(null);
+        setUploading(true);
+        setUplProg(10);
+        const url = await uploadFile(f, (p) =>
+          setUplProg(Math.max(5, Math.min(99, p))),
+        );
+        setUplProg(100);
         if (f.type.startsWith("image/")) {
           insertAtCaret(`![](${url})\n\n`);
         } else if (f.type.startsWith("video/")) {
           insertAtCaret(`<video controls src="${url}"></video>\n\n`);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("upload failed", err);
+        setUplErr(err?.message || "アップロードに失敗しました。");
+      } finally {
+        setUploading(false);
       }
     }
   }
+
+  const handlePickImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null;
+    e.target.value = ""; // allow the same file to be picked again
+    if (f) void handleFiles([f]);
+  };
+  const handlePickVideo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] ?? null;
+    e.target.value = "";
+    if (f) void handleFiles([f]);
+  };
 
   const handleDownload = () => downloadFile("README.md", normalized);
 
@@ -248,7 +269,7 @@ export default function MarkdownReadmeEditor({
         </Button>
       </div>
 
-      {/* Optional page-level thumbnail picker (use showThumbnail={false} to hide) */}
+      {/* Optional page-level thumbnail picker */}
       {showThumbnail && (
         <div className="mb-3">
           <ThumbnailPicker
@@ -278,6 +299,22 @@ export default function MarkdownReadmeEditor({
             />
             <Separator />
 
+            {/* Hidden pickers for direct choose */}
+            <input
+              ref={inputImgRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handlePickImage}
+            />
+            <input
+              ref={inputVidRef}
+              type="file"
+              accept="video/*"
+              className="hidden"
+              onChange={handlePickVideo}
+            />
+
             {/* Body */}
             <div
               className={cn(
@@ -289,10 +326,20 @@ export default function MarkdownReadmeEditor({
               {mode !== "preview" && (
                 <div
                   className={cn(
-                    "min-h-[60vh] p-3",
+                    "relative min-h-[60vh] p-3",
                     mode === "split" ? "md:border-r" : "border-0",
                   )}
                 >
+                  {/* upload overlay (progress / error) */}
+                  {(uploding || uplErr) && (
+                    <div className="absolute inset-x-3 bottom-3 z-10 rounded-md border bg-background/90 p-2 backdrop-blur">
+                      {uploding && <Progress value={uplProg} className="h-1.5" />}
+                      {uplErr && (
+                        <div className="mt-2 text-xs text-destructive">{uplErr}</div>
+                      )}
+                    </div>
+                  )}
+
                   <TextareaEditor
                     ref={taRef}
                     value={content}
@@ -301,12 +348,12 @@ export default function MarkdownReadmeEditor({
                       handleListOnEnter(e, content, setContent)
                     }
                     onFiles={handleFiles}
-                    placeholder="ここにMarkdownを入力…"
+                    placeholder="ここにMarkdownを入力…（画像/動画はドラッグ＆ドロップやペースト、またはツールバーから直接選択できます）"
                   />
                 </div>
               )}
 
-              {/* Desktop preview: shown in split & preview (mount-gated for hydration safety) */}
+              {/* Desktop preview */}
               {mode !== "edit" && mounted && (
                 <div className="hidden md:block">
                   <MarkdownPreview content={normalized} />
@@ -314,7 +361,7 @@ export default function MarkdownReadmeEditor({
               )}
             </div>
 
-            {/* Mobile Drawer preview (mount-gated) */}
+            {/* Mobile Drawer preview */}
             <DrawerContent className="p-0">
               <div className="flex h-[85vh] max-h-[85vh] flex-col">
                 <DrawerHeader className="shrink-0 text-left">
@@ -335,15 +382,6 @@ export default function MarkdownReadmeEditor({
               </div>
             </DrawerContent>
           </Drawer>
-
-          {/* Media Uploader dialog (画像/動画) — no alt text */}
-          <MediaUploader
-            open={Boolean(mediaOpen)}
-            onOpenChange={(v) => setMediaOpen(v ? mediaOpen : false)}
-            mediaType={mediaOpen === "video" ? "video" : "image"}
-            uploadFile={uploadFile}
-            onConfirm={handleInsertMedia}
-          />
         </CardContent>
       </Card>
     </div>

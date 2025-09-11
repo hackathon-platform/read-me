@@ -58,7 +58,7 @@ export default function ProjectGallery({ profileId }: Props) {
 
   return (
     <>
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         {items.map((p) => (
           <GalleryCard key={p.id} project={p} onClick={() => onClickCard(p)} />
         ))}

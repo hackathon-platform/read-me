@@ -8,6 +8,7 @@ import {
   LifeBuoy,
   MessageSquare,
   Briefcase,
+  Home,
   SquarePlus,
 } from "lucide-react";
 
@@ -18,6 +19,12 @@ import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 const data = {
   navMain: [
     {
+      title: "ホーム",
+      url: "/",
+      icon: Home,
+      items: [],
+    },
+    {
       title: "プロフィール",
       url: "/me",
       icon: User,
@@ -27,13 +34,6 @@ const data = {
       title: "プロジェクト投稿",
       url: "/project/new",
       icon: SquarePlus,
-      isActive: true,
-      items: [],
-    },
-    {
-      title: "参加する",
-      url: "/event",
-      icon: CalendarCheck,
       isActive: true,
       items: [],
     },

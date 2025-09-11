@@ -98,7 +98,8 @@ export default function CreateProjectPage() {
               value={thumbUrl}
               onChange={setThumbUrl}
               bucketName={PROJECT_BUCKET}
-              mediaType="image" // or "video"
+              mediaType="image"
+              hintText="推奨 16:9 / 5MB 以下"
             />
           </div>
 
