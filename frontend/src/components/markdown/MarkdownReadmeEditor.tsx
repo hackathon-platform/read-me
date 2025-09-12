@@ -238,7 +238,7 @@ export default function MarkdownReadmeEditor({
   const handleDownload = () => downloadFile("README.md", normalized);
 
   return (
-    <div className="mx-auto max-w-5xl p-4">
+    <>
       {/* Header */}
       <div className="mb-2 flex items-center gap-2">
         <div className="hidden md:flex items-center rounded-md border">
@@ -388,7 +388,7 @@ export default function MarkdownReadmeEditor({
           </Drawer>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
 

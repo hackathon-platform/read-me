@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import PageHeader from "@/components/layout/PageHeader";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
@@ -21,11 +20,11 @@ import {
   DrawerFooter,
   DrawerClose,
 } from "@/components/ui/drawer";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { createEventWithOwner } from "@/lib/supabase/insert/event";
-import formatJPDate from "@/lib/utils/date";
 import ThumbnailPicker from "@/components/media/ThumbnailPicker";
 import ChecklistBadge from "@/components/common/ChecklistBadge";
+import EventPreview from "@/components/event/EventPreview";
+import MarkdownReadmeEditor from "@/components/markdown/MarkdownReadmeEditor";
 
 const PROJECT_BUCKET = "event"; // Supabase Storage のバケット名
 const isSlugValid = (v: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v);
@@ -121,12 +120,6 @@ export default function CreateEventPage() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // 旧 submit は使わず、Drawer 内の「公開する」で publish() 実行
-    setPreviewOpen(true);
-  }
-
   const items = [
     { key: "eventName", label: "イベント名", ok: Boolean(eventName.trim()) },
     {
@@ -213,220 +206,98 @@ export default function CreateEventPage() {
           </Drawer>
         </div>
       </div>
+      <div className="animate-in fade-in duration-500 mt-1 lg:mt-2 px-3 mx-auto max-w-3xl w-full">
+        {/* Banner（フォーム側の見出し用プレビュー） */}
+        <ThumbnailPicker
+          value={bannerUrl}
+          onChange={setBannerUrl}
+          bucketName={PROJECT_BUCKET}
+          mediaType="image"
+          hintText="推奨 1170 x 270px / 5MB 以下"
+          className="aspect-[13/3] max-h-72 w-full"
+        />
 
-      {/* Banner（フォーム側の見出し用プレビュー） */}
-      <ThumbnailPicker
-        value={bannerUrl}
-        onChange={setBannerUrl}
-        bucketName={PROJECT_BUCKET}
-        mediaType="image"
-        hintText="推奨 1170 x 156px / 5MB 以下"
-      />
+        {/* Form */}
+        <div className="p-4 space-y-6">
+          {error && (
+            <div className="rounded-md border border-destructive/30 bg-destructive/5 text-destructive p-3 text-sm">
+              {error}
+            </div>
+          )}
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="mx-auto max-w-3xl p-4 space-y-6">
-        {error && (
-          <div className="rounded-md border border-destructive/30 bg-destructive/5 text-destructive p-3 text-sm">
-            {error}
-          </div>
-        )}
-
-        {/* Event Name */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            イベント名 <span className="text-destructive">*</span>
-          </label>
-          <Input
-            type="text"
-            value={eventName}
-            onChange={(e) => setEventName(e.target.value)}
-            placeholder="例）Hack the Japan 2025"
-          />
-        </div>
-
-        {/* Slug */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            URL スラッグ <span className="text-destructive">*</span>
-          </label>
-          <div className="relative">
+          {/* Event Name */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              イベント名 <span className="text-destructive">*</span>
+            </label>
             <Input
               type="text"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              placeholder="hack-the-japan-2025"
-              className="pr-10"
+              value={eventName}
+              onChange={(e) => setEventName(e.target.value)}
+              placeholder="例）Hack the Japan 2025"
             />
-            <div className="absolute inset-y-0 right-2 flex items-center">
-              {slugChecking ? (
-                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-              ) : slug && isSlugValid(slug) ? (
-                slugTaken === false ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                ) : slugTaken === true ? (
-                  <XCircle className="w-4 h-4 text-destructive" />
-                ) : null
-              ) : null}
-            </div>
           </div>
-          <p className="text-xs text-muted-foreground">
-            半角英数字とハイフンのみ。URL は{" "}
-            <code>/event/{slug || "your-slug"}</code> になります。
-          </p>
-        </div>
 
-        {/* Description */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">説明</label>
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={5}
-            placeholder="イベントの概要、対象、スケジュールなど…"
-          />
-        </div>
-
-        {/* End At */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">終了日時</label>
-          <Input
-            type="datetime-local"
-            value={endAt}
-            onChange={(e) => setEndAt(e.target.value)}
-          />
-        </div>
-
-        {/* Website */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">公式サイト URL</label>
-          <Input
-            type="url"
-            value={websiteUrl}
-            onChange={(e) => setWebsiteUrl(e.target.value)}
-            placeholder="https://example.com"
-          />
-        </div>
-      </form>
-    </>
-  );
-}
-
-/**
- * Drawer 内のプレビュー
- * 本番の EventPage と同等のレイアウトをローカル state から描画
- */
-function EventPreview(props: {
-  name: string;
-  slug: string;
-  description: string;
-  bannerUrl: string | null;
-  websiteUrl: string | null;
-  endAt: string | null; // datetime-local の文字列 or null
-  participantsCount: number;
-}) {
-  const endAtJP = props.endAt ? formatJPDate(props.endAt) : null;
-
-  return (
-    <div className="overflow-hidden border bg-card rounded-md">
-      {/* Banner */}
-      {props.bannerUrl && (
-        <div className="relative h-48">
-          <img
-            src={props.bannerUrl}
-            alt={`${props.name} banner`}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
-      {/* Meta row under banner */}
-      <div className="px-4 py-3 border-b">
-        <h1 className="text-2xl font-semibold mr-auto">{props.name}</h1>
-        <div className="flex flex-wrap gap-2 pt-2">
-          {endAtJP && (
-            <Badge variant="secondary" className="gap-1">
-              終了日: {endAtJP}
-            </Badge>
-          )}
-          <Badge variant="secondary">参加者 {props.participantsCount} 名</Badge>
-          {props.websiteUrl && (
-            <Badge variant="outline" className="gap-1">
-              <Link
-                href={props.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                公式サイト
-              </Link>
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      {/* Body */}
-      <div>
-        <Tabs defaultValue="about" className="w-full">
-          <TabsList className="sticky top-0 z-10 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b rounded-none w-full justify-start px-2">
-            <TabsTrigger value="about">概要</TabsTrigger>
-            <TabsTrigger value="gallery" disabled>
-              成果物ギャラリー
-            </TabsTrigger>
-            <TabsTrigger value="participant" disabled>
-              参加者
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="about" className="p-4">
-            {props.description || props.websiteUrl || endAtJP ? (
-              <section className="prose prose-sm dark:prose-invert max-w-none">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="text-sm">
-                    <div className="text-muted-foreground">終了日</div>
-                    <div className="font-medium">{endAtJP ?? "未設定"}</div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="text-muted-foreground">参加者</div>
-                    <div className="font-medium">
-                      {props.participantsCount} 名
-                    </div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="text-muted-foreground">公式サイト</div>
-                    <div className="font-medium">
-                      {props.websiteUrl ? (
-                        <Link
-                          className="underline underline-offset-4"
-                          href={props.websiteUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {props.websiteUrl}
-                        </Link>
-                      ) : (
-                        "未設定"
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {props.description && (
-                  <>
-                    <h2 className="text-muted-foreground mt-2">概要</h2>
-                    <p className="whitespace-pre-wrap">{props.description}</p>
-                  </>
-                )}
-              </section>
-            ) : (
-              <div className="text-sm text-muted-foreground py-6">
-                このイベントの概要情報はまだありません。
+          {/* Slug */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              URL スラッグ <span className="text-destructive">*</span>
+            </label>
+            <div className="relative">
+              <Input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+                placeholder="hack-the-japan-2025"
+                className="pr-10"
+              />
+              <div className="absolute inset-y-0 right-2 flex items-center">
+                {slugChecking ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                ) : slug && isSlugValid(slug) ? (
+                  slugTaken === false ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  ) : slugTaken === true ? (
+                    <XCircle className="w-4 h-4 text-destructive" />
+                  ) : null
+                ) : null}
               </div>
-            )}
-          </TabsContent>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              半角英数字とハイフンのみ。URL は{" "}
+              <code>/event/{slug || "your-slug"}</code> になります。
+            </p>
+          </div>
 
-          <TabsContent value="gallery" className="p-4" />
-          <TabsContent value="participant" className="p-4" />
-        </Tabs>
+          {/* End At */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">終了日時</label>
+            <Input
+              type="datetime-local"
+              value={endAt}
+              onChange={(e) => setEndAt(e.target.value)}
+            />
+          </div>
+
+          {/* Website */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">公式サイト URL</label>
+            <Input
+              type="url"
+              value={websiteUrl}
+              onChange={(e) => setWebsiteUrl(e.target.value)}
+              placeholder="https://example.com"
+            />
+          </div>
+
+          {/* Editor（説明文） */}
+          <label className="text-sm font-medium">説明</label>
+          <MarkdownReadmeEditor
+            showThumbnail={false}
+            onContentChange={setDescription}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
