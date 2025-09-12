@@ -17,6 +17,7 @@ type Props = {
 
   /** 例: "推奨 16:9 / 2MB 以下" といったヒント文 */
   hintText?: string;
+  className?: string;
 };
 
 export default function ThumbnailPicker({
@@ -25,6 +26,7 @@ export default function ThumbnailPicker({
   bucketName,
   mediaType = "image",
   hintText,
+  className = "",
 }: Props) {
   const [dragActive, setDragActive] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
@@ -74,8 +76,10 @@ export default function ThumbnailPicker({
   return (
     <div
       className={cn(
-        "relative group w-full rounded-sm overflow-hidden bg-muted/40 transition-colors border",
-        !hasMedia && "border-dashed aspect-video hover:border-solid",
+        "relative group rounded-sm overflow-hidden bg-muted/40 transition-[border-color,box-shadow] border-2 border-input",
+        !hasMedia && "border-dashed hover:border-solid hover:border-ring",
+        dragActive && "border-solid border-ring",
+        className,
       )}
       onDragEnter={(e) => {
         if (e.dataTransfer?.items?.length) setDragActive(true);
@@ -147,11 +151,6 @@ export default function ThumbnailPicker({
         </div>
       )}
 
-      {/* drag中のハイライト */}
-      {dragActive && (
-        <div className="pointer-events-none absolute inset-0 z-10 rounded-sm ring-2 ring-ring ring-offset-2" />
-      )}
-
       {/* 非表示のfile input */}
       <input
         ref={inputRef}
@@ -200,11 +199,9 @@ async function uploadViaSupabaseBucket(
   if (error) throw new Error(error.message || "Upload failed");
   onProg?.(95);
 
-  const { data: pub, error: pubErr } = supabase.storage
-    .from(bucketName)
-    .getPublicUrl(data.path);
-  if (pubErr) throw new Error(pubErr.message || "Failed to get public URL");
+  const pub = supabase.storage.from(bucketName).getPublicUrl(data.path);
+  if (!pub.data) throw new Error("Failed to get public URL");
   onProg?.(100);
 
-  return pub.publicUrl;
+  return pub.data.publicUrl;
 }

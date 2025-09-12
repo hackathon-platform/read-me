@@ -121,7 +121,7 @@ function OrganizationCard({ org }: { org: Org }) {
   const href = getEventHref(org);
   return (
     <Link href={href} className="group block">
-      <Card className="relative pt-0 overflow-hidden hover:shadow-lg transition-shadow">
+      <Card className="relative pt-0 overflow-hidden border-2 hover:border-ring transition">
         {/* Banner */}
         <div className="relative h-28 bg-muted">
           {org.banner_url ? (
@@ -186,7 +186,7 @@ function OrganizationRow({ org }: { org: Org }) {
   const href = getEventHref(org);
   return (
     <Link href={href} className="group block">
-      <Card className="py-0 overflow-hidden hover:shadow-md transition">
+      <Card className="py-0 overflow-hidden border-2 hover:border-ring transition">
         <div className="flex items-stretch gap-4">
           {/* Thumb */}
           <div className="w-40 bg-muted shrink-0">
@@ -262,7 +262,7 @@ function OrganizationRow({ org }: { org: Org }) {
 function NewCard() {
   return (
     <Link href="/event/new" className="group block">
-      <Card className="pt-0 border-dashed hover:border-solid hover:shadow-md transition">
+      <Card className="pt-0 border-2 border-dashed hover:border-solid hover:border-ring transition">
         <div className="h-28 grid place-items-center bg-muted/30" />
         <CardHeader className="py-4">
           <CardTitle className="text-base md:text-lg flex items-center">
@@ -280,7 +280,7 @@ function NewCard() {
 function NewRow() {
   return (
     <Link href="/event/new" className="group block">
-      <Card className="border-dashed hover:border-solid hover:shadow-md transition">
+      <Card className="border-2 border-dashed hover:border-solid hover:border-ring transition">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="text-sm text-muted-foreground">
             新しいイベントを作成
