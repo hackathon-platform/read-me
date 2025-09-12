@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import ThumbnailPicker from "@/components/media/ThumbnailPicker";
 import MarkdownReadmeEditor from "@/components/markdown/MarkdownReadmeEditor";
@@ -26,6 +27,7 @@ const PROJECT_BUCKET = "project"; // Supabase Storage のバケット名
 const SUMMARY_LIMIT = 100;
 
 export default function CreateProjectPage() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState(""); // 必須（100字以内）
   const [eventSlug, setEventSlug] = useState(""); // 任意（event.slug 参照）
@@ -67,9 +69,18 @@ export default function CreateProjectPage() {
         setIsSaving(false);
         return;
       }
+      
+      const { data: prof, error: profErr } = await supabase
+        .from("profile")
+        .select("id")
+        .eq("auth_id", user.id)
+        .single();
+        if (profErr || !prof?.id) {
+          throw new Error("プロフィールが見つかりません。初期登録を完了してください。");
+        }
 
       const payload = {
-        profile_id: user.id,
+        profile_id: prof.id,
         title: title.trim(),
         summary: summary.trim(), // 100字以内
         thumbnail_url: thumbUrl ?? null,
@@ -77,17 +88,19 @@ export default function CreateProjectPage() {
         event_slug: eventSlug.trim() || null,
       };
 
-      const { error } = await supabase
+      const { data: created, error } = await supabase
         .from("project")
         .insert(payload)
-        .select("id")
+        .select("slug")
         .single();
 
       if (error) throw error;
 
       toast.success("プロジェクトを保存しました。");
-      // 例: 保存後に詳細ページへ遷移したい場合
-      // router.push(`/project/${data.id}`);
+      // 作成後に slug で詳細へ
+      if (created?.slug) {
+        router.push(`/project/${created.slug}`);
+      }
     } catch (e: any) {
       setError(e?.message ?? "保存に失敗しました。");
     } finally {
