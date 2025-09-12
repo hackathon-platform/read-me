@@ -48,10 +48,6 @@ export default function CreateEventPage() {
 
   const [previewOpen, setPreviewOpen] = useState(false);
 
-  if (isLoading) {
-    return <div className="text-center py-20">読み込み中…</div>;
-  }
-
   // Auth gate
   useEffect(() => {
     if (!isLoading && !user) router.replace("/auth/login");
@@ -80,6 +76,10 @@ export default function CreateEventPage() {
     }, 500);
     return () => clearTimeout(id);
   }, [slug]);
+
+  if (isLoading) {
+    return <div className="text-center py-20">読み込み中…</div>;
+  }
 
   // 公開ロジック（Drawer からもフォーム submit からも使用）
   async function publish() {
