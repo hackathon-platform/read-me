@@ -131,7 +131,7 @@ function OrganizationCard({ org }: { org: Org }) {
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             />
           ) : (
-            <div className="h-full w-full grid place-items-center text-muted-foreground">
+            <div className="h-full w-full place-items-center text-muted-foreground">
               <ImageOff className="w-6 h-6" />
             </div>
           )}

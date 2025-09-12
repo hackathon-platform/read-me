@@ -91,43 +91,8 @@ export default async function EventPage({
             </TabsList>
 
             <TabsContent value="about" className="p-4">
-              {event.description || event.website_url || stats.endAt ? (
-                <section className="prose prose-sm dark:prose-invert max-w-none">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="text-sm">
-                      <div className="text-muted-foreground">終了日</div>
-                      <div className="font-medium">
-                        {stats.endAt ?? "未設定"}
-                      </div>
-                    </div>
-                    <div className="text-sm">
-                      <div className="text-muted-foreground">参加者</div>
-                      <div className="font-medium">{stats.participants} 名</div>
-                    </div>
-                    <div className="text-sm">
-                      <div className="text-muted-foreground">公式サイト</div>
-                      <div className="font-medium">
-                        {event.website_url ? (
-                          <Link
-                            className="underline underline-offset-4"
-                            href={event.website_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {event.website_url}
-                          </Link>
-                        ) : (
-                          "未設定"
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {event.description && (
-                    <>
-                      <MarkdownPreview content={event.description} />
-                    </>
-                  )}
-                </section>
+              {event.description ? (
+                <MarkdownPreview content={event.description} />
               ) : (
                 <div className="text-sm text-muted-foreground py-6">
                   このイベントの概要情報はまだありません。
