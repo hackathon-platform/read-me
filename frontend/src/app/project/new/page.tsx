@@ -91,7 +91,7 @@ export default function CreateProjectPage() {
 
       <div className="mx-auto max-w-5xl p-4">
         {/* サムネイル + タイトル（2カラム。狭い幅では1カラム） */}
-        <div className="grid px-4 items-start gap-3 md:grid-cols-2">
+        <div className="grid items-start gap-3 md:grid-cols-2">
           {/* Thumbnail */}
           <div className="w-full">
             <ThumbnailPicker
@@ -100,6 +100,7 @@ export default function CreateProjectPage() {
               bucketName={PROJECT_BUCKET}
               mediaType="image"
               hintText="推奨 16:9 / 5MB 以下"
+              className="aspect-[16/9] w-full"
             />
           </div>
 
@@ -118,7 +119,7 @@ export default function CreateProjectPage() {
         </div>
 
         {/* Summary（必須・100字以内） */}
-        <div className="px-4 mt-4 space-y-1">
+        <div className="mt-4">
           <label className="text-sm font-medium">
             概要（必須・{SUMMARY_LIMIT}字以内）
           </label>
