@@ -15,7 +15,7 @@ import {
   DrawerTitle,
   DrawerClose,
 } from "@/components/ui/drawer";
-import { Eye, FileDown } from "lucide-react";
+import { Eye, FileDown, X } from "lucide-react";
 
 import EditorToolbar from "./EditorToolbar";
 import TextareaEditor from "./TextareaEditor";
@@ -370,18 +370,22 @@ export default function MarkdownReadmeEditor({
               <div className="flex h-[85vh] max-h-[85vh] flex-col">
                 <DrawerHeader className="shrink-0 text-left">
                   <DrawerTitle>プレビュー</DrawerTitle>
+                  <DrawerClose asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label="閉じる"
+                      className={cn("absolute top-2.5 right-2.5")}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </DrawerClose>
                 </DrawerHeader>
 
                 <div className="h-0 w-full grow overflow-y-auto px-3">
                   <div className="max-w-full pb-5">
                     {mounted && <MarkdownPreview content={normalized} />}
                   </div>
-                </div>
-
-                <div className="shrink-0 p-3">
-                  <DrawerClose asChild>
-                    <Button className="w-full">閉じる</Button>
-                  </DrawerClose>
                 </div>
               </div>
             </DrawerContent>

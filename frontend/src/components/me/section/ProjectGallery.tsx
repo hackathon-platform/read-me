@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import MarkdownPreview from "@/components/markdown/MarkdownPreview";
 import formatJPDate from "@/lib/utils/date";
+import { X } from "lucide-react";
+import ProjectContentPreview from "@/components/project/ProjectPreview";
 
 type Props = {
   profileId: string;
@@ -69,44 +70,26 @@ export default function ProjectGallery({ profileId }: Props) {
           {current && (
             <div className="mx-auto w-full max-w-5xl h-[85vh] max-h-[90vh] flex flex-col">
               {/* 固定ヘッダー */}
-              <DrawerHeader className="shrink-0">
+              <DrawerHeader className="sticky top-0 z-10 pr-12">
                 <DrawerTitle className="text-xl">{current.title}</DrawerTitle>
                 <p className="text-xs text-muted-foreground">
                   更新日: {formatJPDate(current.updated_at)}
                 </p>
+                <DrawerClose asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="閉じる"
+                    className={cn("absolute top-2.5 right-2.5")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DrawerClose>
               </DrawerHeader>
-
               {/* スクロールコンテンツ */}
               <div className="flex-1 min-h-0 overflow-y-auto">
                 {/* Media + Summary */}
-                <div className="grid items-start gap-3 md:grid-cols-2 px-4">
-                  {current.thumbnail_url && (
-                    <div className="pb-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={current.thumbnail_url}
-                        alt={current.title}
-                        className="w-full h-56 object-contain bg-black/5 rounded-md border"
-                      />
-                    </div>
-                  )}
-
-                  {current.summary && (
-                    <div className="pb-2 text-sm text-muted-foreground">
-                      {current.summary}
-                    </div>
-                  )}
-                </div>
-
-                <div className="px-4 pb-6">
-                  {/* Content (Markdown) */}
-                  {current.content && (
-                    <MarkdownPreview content={current.content} />
-                  )}
-                  <DrawerClose asChild>
-                    <Button className="w-full mt-2">閉じる</Button>
-                  </DrawerClose>
-                </div>
+                <ProjectContentPreview data={current} />
               </div>
             </div>
           )}

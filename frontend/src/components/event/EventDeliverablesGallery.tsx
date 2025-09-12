@@ -21,10 +21,13 @@ import {
   DrawerClose,
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, ImageIcon, Search } from "lucide-react";
+import { ExternalLink, ImageIcon, Search, X } from "lucide-react";
 import { supabase } from "@/lib/supabase/supabaseClient";
+import { ProjectAtEventPreview } from "@/components/project/ProjectPreview";
+import { cn } from "@/lib/utils";
 
 // schema-aligned: project as deliverable, project_member for members, participant for attendees
+
 export type Deliverable = {
   id: string;
   title: string;
@@ -304,7 +307,10 @@ export default function EventDeliverablesGallery({
                     </p>
                   </div>
                 ) : (
-                  <DeliverablePreview d={selected} />
+                  <ProjectAtEventPreview
+                    data={selected}
+                    owner={selected.owner || undefined}
+                  />
                 )}
               </TabsContent>
 
@@ -333,14 +339,24 @@ export default function EventDeliverablesGallery({
           <DrawerContent className="max-h-[85vh] overflow-auto p-0">
             <DrawerHeader className="px-4 pt-4">
               <DrawerTitle>プレビュー</DrawerTitle>
+              <DrawerClose asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="閉じる"
+                  className={cn("absolute top-2.5 right-2.5")}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
             </DrawerHeader>
             <div className="px-4 pb-4">
-              {selected && <DeliverablePreview d={selected} />}
-            </div>
-            <div className="sticky bottom-0 flex items-center justify-end gap-2 border-t bg-background/80 p-3">
-              <DrawerClose asChild>
-                <Button variant="secondary">閉じる</Button>
-              </DrawerClose>
+              {selected && (
+                <ProjectAtEventPreview
+                  data={selected}
+                  owner={selected.owner || undefined}
+                />
+              )}
             </div>
           </DrawerContent>
         </Drawer>
@@ -405,48 +421,6 @@ function GalleryGrid({
           </div>
         </button>
       ))}
-    </div>
-  );
-}
-
-function DeliverablePreview({ d }: { d: Deliverable }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-semibold leading-tight">{d.title}</h3>
-          <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-            {d.owner?.username ||
-              `${d.owner?.first_name ?? ""} ${d.owner?.last_name ?? ""}`}
-          </div>
-        </div>
-        {d.owner?.id && (
-          <Button asChild size="sm" variant="secondary">
-            <Link href={`/u/${d.owner.id}`}>
-              <ExternalLink className="mr-1 h-4 w-4" /> View profile
-            </Link>
-          </Button>
-        )}
-      </div>
-
-      {d.thumbnail_url && (
-        <img
-          src={d.thumbnail_url}
-          alt={d.title}
-          className="w-full rounded-lg border"
-        />
-      )}
-
-      {d.summary && (
-        <p className="whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
-          {d.summary}
-        </p>
-      )}
-      {d.content && (
-        <div className="prose prose-sm dark:prose-invert max-w-none">
-          <p>{d.content}</p>
-        </div>
-      )}
     </div>
   );
 }
