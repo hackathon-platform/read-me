@@ -68,36 +68,6 @@ export default function EventPreview(props: {
           <TabsContent value="about" className="p-4">
             {props.description || props.websiteUrl || endAtJP ? (
               <section className="prose prose-sm dark:prose-invert max-w-none">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="text-sm">
-                    <div className="text-muted-foreground">終了日</div>
-                    <div className="font-medium">{endAtJP ?? "未設定"}</div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="text-muted-foreground">参加者</div>
-                    <div className="font-medium">
-                      {props.participantsCount} 名
-                    </div>
-                  </div>
-                  <div className="text-sm">
-                    <div className="text-muted-foreground">公式サイト</div>
-                    <div className="font-medium">
-                      {props.websiteUrl ? (
-                        <Link
-                          className="underline underline-offset-4"
-                          href={props.websiteUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {props.websiteUrl}
-                        </Link>
-                      ) : (
-                        "未設定"
-                      )}
-                    </div>
-                  </div>
-                </div>
-
                 {props.description && (
                   <>
                     <MarkdownPreview content={props.description} />

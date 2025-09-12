@@ -206,7 +206,7 @@ export default function CreateEventPage() {
       </div>
 
       {/* Main Form */}
-      <div className="animate-in fade-in duration-500 mt-1 lg:mt-2 px-3 mx-auto max-w-3xl w-full">
+      <div className="animate-in fade-in duration-500 mt-1 lg:mt-2 px-3 mx-auto max-w-5xl w-full">
         {/* Banner（フォーム側の見出し用プレビュー） */}
         <ThumbnailPicker
           value={bannerUrl}

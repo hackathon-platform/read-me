@@ -37,7 +37,7 @@ const ProjectContentPreview = React.memo(function ProjectContentPreview({
 }) {
   return (
     <div className={cn("px-4 pb-6", className)}>
-      <div className={cn("grid items-start gap-3 grid-cols-2", className)}>
+      <div className={cn("grid items-start gap-3 md:grid-cols-2", className)}>
         {data.thumbnail_url && (
           <div className="pb-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
