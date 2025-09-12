@@ -42,7 +42,9 @@ export default function ThumbnailPicker({
     if (!file) return;
     if (!file.type.startsWith(mediaType)) {
       setErrMsg(
-        mediaType === "image" ? "画像ファイルを選択してください。" : "動画ファイルを選択してください。"
+        mediaType === "image"
+          ? "画像ファイルを選択してください。"
+          : "動画ファイルを選択してください。",
       );
       return;
     }
@@ -50,7 +52,7 @@ export default function ThumbnailPicker({
       setUploading(true);
       setProgress(10);
       const url = await uploadViaSupabaseBucket(bucketName, file, (p) =>
-        setProgress(Math.max(5, Math.min(99, p)))
+        setProgress(Math.max(5, Math.min(99, p))),
       );
       setProgress(100);
       onChange(url);
@@ -73,7 +75,7 @@ export default function ThumbnailPicker({
     <div
       className={cn(
         "relative group w-full rounded-sm overflow-hidden bg-muted/40 transition-colors border",
-        !hasMedia && "border-dashed aspect-video hover:border-solid"
+        !hasMedia && "border-dashed aspect-video hover:border-solid",
       )}
       onDragEnter={(e) => {
         if (e.dataTransfer?.items?.length) setDragActive(true);
@@ -91,9 +93,17 @@ export default function ThumbnailPicker({
       {hasMedia ? (
         mediaType === "image" ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={value!} alt="thumbnail" className="h-full w-full object-contain bg-black/5" />
+          <img
+            src={value!}
+            alt="thumbnail"
+            className="h-full w-full object-contain bg-black/5"
+          />
         ) : (
-          <video src={value!} controls className="h-full w-full object-contain bg-black/5" />
+          <video
+            src={value!}
+            controls
+            className="h-full w-full object-contain bg-black/5"
+          />
         )
       ) : (
         <button
@@ -109,9 +119,14 @@ export default function ThumbnailPicker({
               <VideoIcon className="mx-auto mb-1 h-7 w-7" />
             )}
             <p className="text-xs">
-              クリックまたはドラッグ＆ドロップで{mediaType === "image" ? "画像" : "動画"}を選択
+              クリックまたはドラッグ＆ドロップで
+              {mediaType === "image" ? "画像" : "動画"}を選択
             </p>
-            {hintText && <p className="mt-1 text-[11px] text-muted-foreground">{hintText}</p>}
+            {hintText && (
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {hintText}
+              </p>
+            )}
           </div>
         </button>
       )}
@@ -165,7 +180,7 @@ export default function ThumbnailPicker({
 async function uploadViaSupabaseBucket(
   bucketName: string,
   f: File,
-  onProg?: (p: number) => void
+  onProg?: (p: number) => void,
 ): Promise<string> {
   onProg?.(5);
   const ext = (f.name.split(".").pop() || "bin").toLowerCase();
@@ -175,15 +190,19 @@ async function uploadViaSupabaseBucket(
       : Math.random().toString(36).slice(2);
   const path = `project-assets/${new Date().toISOString().slice(0, 10)}/${uuid}.${ext}`;
 
-  const { data, error } = await supabase.storage.from(bucketName).upload(path, f, {
-    cacheControl: "3600",
-    upsert: false,
-    contentType: f.type || "application/octet-stream",
-  });
+  const { data, error } = await supabase.storage
+    .from(bucketName)
+    .upload(path, f, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: f.type || "application/octet-stream",
+    });
   if (error) throw new Error(error.message || "Upload failed");
   onProg?.(95);
 
-  const { data: pub, error: pubErr } = supabase.storage.from(bucketName).getPublicUrl(data.path);
+  const { data: pub, error: pubErr } = supabase.storage
+    .from(bucketName)
+    .getPublicUrl(data.path);
   if (pubErr) throw new Error(pubErr.message || "Failed to get public URL");
   onProg?.(100);
 

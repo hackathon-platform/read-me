@@ -156,31 +156,37 @@ export default function MarkdownPreview({ content }: Props) {
               </h3>
             ),
             p: ({ children, ...rest }) => (
-              <p className="leading-7 [&:not(:first-child)]:mt-4" {...rest}>
+              <p
+                className="leading-7 text-sm [&:not(:first-child)]:mt-4"
+                {...rest}
+              >
                 {children}
               </p>
             ),
             blockquote: ({ children, ...rest }) => (
               <blockquote
-                className="mt-6 border-l-2 pl-6 italic text-muted-foreground"
+                className="mt-6 border-l-2 pl-6 italic text-sm text-muted-foreground"
                 {...rest}
               >
                 {children}
               </blockquote>
             ),
             ul: ({ children, ...rest }) => (
-              <ul className="my-4 ml-6 list-disc [&>li]:mt-2" {...rest}>
+              <ul className="text-sm my-4 ml-6 list-disc [&>li]:mt-2" {...rest}>
                 {children}
               </ul>
             ),
             ol: ({ children, ...rest }) => (
-              <ol className="my-4 ml-6 list-decimal [&>li]:mt-2" {...rest}>
+              <ol
+                className="text-sm my-4 ml-6 list-decimal [&>li]:mt-2"
+                {...rest}
+              >
                 {children}
               </ol>
             ),
             table: ({ children, ...rest }) => (
               <div className="overflow-x-auto" {...rest}>
-                <table className="w-full [&_th]:bg-muted/50 [&_th,td]:border [&_th,td]:p-2">
+                <table className="text-sm w-full [&_th]:bg-muted/50 [&_th,td]:border [&_th,td]:p-2">
                   {children}
                 </table>
               </div>

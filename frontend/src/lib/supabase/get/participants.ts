@@ -74,7 +74,7 @@ export async function getParticipantsWithProfiles(
 
     if (!error) {
       return (data ?? []).filter(
-        (r: any) => r.profile
+        (r: any) => r.profile,
       ) as unknown as ParticipantWithProfile[];
     }
     console.warn(`[getParticipantsWithProfiles] try fk=${fk} failed`, error);

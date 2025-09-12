@@ -333,9 +333,13 @@ export default function MarkdownReadmeEditor({
                   {/* upload overlay (progress / error) */}
                   {(uploding || uplErr) && (
                     <div className="absolute inset-x-3 bottom-3 z-10 rounded-md border bg-background/90 p-2 backdrop-blur">
-                      {uploding && <Progress value={uplProg} className="h-1.5" />}
+                      {uploding && (
+                        <Progress value={uplProg} className="h-1.5" />
+                      )}
                       {uplErr && (
-                        <div className="mt-2 text-xs text-destructive">{uplErr}</div>
+                        <div className="mt-2 text-xs text-destructive">
+                          {uplErr}
+                        </div>
                       )}
                     </div>
                   )}

@@ -11,13 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-  ImageIcon,
-  Loader2,
-} from "lucide-react";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import {
   Drawer,
   DrawerTrigger,
@@ -28,12 +22,12 @@ import {
   DrawerClose,
 } from "@/components/ui/drawer";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  createEventWithOwner,
-  isEventSlugTaken,
-} from "@/lib/supabase/insert/event";
+import { createEventWithOwner } from "@/lib/supabase/insert/event";
 import formatJPDate from "@/lib/utils/date";
+import ThumbnailPicker from "@/components/media/ThumbnailPicker";
+import ChecklistBadge from "@/components/common/ChecklistBadge";
 
+const PROJECT_BUCKET = "event"; // Supabase Storage のバケット名
 const isSlugValid = (v: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v);
 
 export default function CreateEventPage() {
@@ -43,11 +37,7 @@ export default function CreateEventPage() {
   const [eventName, setEventName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
-
-  const [bannerUrl, setBannerUrl] = useState(""); // dataURL（即時プレビュー）
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileKey, setFileKey] = useState(0); // <input type=file> のリセット用
-
+  const [bannerUrl, setBannerUrl] = useState<string | null>(null); // dataURL（即時プレビュー）
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [endAt, setEndAt] = useState(""); // "YYYY-MM-DDTHH:mm"
   const [error, setError] = useState("");
@@ -57,6 +47,10 @@ export default function CreateEventPage() {
   const [slugTaken, setSlugTaken] = useState<boolean | null>(null);
 
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  if (isLoading) {
+    return <div className="text-center py-20">読み込み中…</div>;
+  }
 
   // Auth gate
   useEffect(() => {
@@ -87,56 +81,6 @@ export default function CreateEventPage() {
     return () => clearTimeout(id);
   }, [slug]);
 
-  if (isLoading) {
-    return <div className="text-center py-20">読み込み中…</div>;
-  }
-
-  async function uploadImageToSupabase(file: File, userId: string) {
-    const ext = file.name.split(".").pop()?.toLowerCase() || "png";
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const filePath = `${userId}/${slug || "event"}/${filename}`;
-    const { error: uploadError } = await supabase.storage
-      .from("event")
-      .upload(filePath, file, { upsert: false, cacheControl: "0" });
-    if (uploadError) throw new Error(uploadError.message);
-    const { data } = supabase.storage.from("event").getPublicUrl(filePath);
-    return `${data.publicUrl}?v=${Date.now()}`;
-  }
-
-  function readAsDataURL(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) =>
-        e.target?.result
-          ? resolve(e.target.result as string)
-          : reject(new Error("failed to read"));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  // 画像選択 → 即時プレビュー＆保存対象にセット
-  async function handleImage(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size / 1024 / 1024 > 1) {
-      toast.error("画像は1MB以下にしてください。");
-      setFileKey((k) => k + 1);
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (ev) => setBannerUrl(String(ev.target?.result || ""));
-    reader.readAsDataURL(file);
-    setSelectedFile(file);
-  }
-
-  // キャンセル → バナー設定をリセット
-  function cancelBanner() {
-    setBannerUrl("");
-    setSelectedFile(null);
-    setFileKey((k) => k + 1);
-  }
-
   // 公開ロジック（Drawer からもフォーム submit からも使用）
   async function publish() {
     setError("");
@@ -161,16 +105,14 @@ export default function CreateEventPage() {
     setIsSaving(true);
     try {
       const { slug: createdSlug } = await createEventWithOwner({
-        userId: user.id,
         name: eventName,
         slug,
         description,
+        bannerUrl,
         websiteUrl,
-        endAt, // "YYYY-MM-DDTHH:mm" でも OK
-        bannerFile: selectedFile ?? null, // 選択されていればアップロード
-        bucketName: "event", // Storage バケット名。変えたい場合はここを変更
+        createdBy: user.id,
+        endAt,
       });
-
       toast.success("イベントを登録しました。");
       router.replace(`/event/${createdSlug}`);
     } catch (err: any) {
@@ -185,11 +127,15 @@ export default function CreateEventPage() {
     setPreviewOpen(true);
   }
 
-  const required = {
-    eventName: Boolean(eventName.trim()),
-    slug: Boolean(slug.trim()) && isSlugValid(slug) && slugTaken === false,
-  };
-  const allRequiredOk = Object.values(required).every(Boolean);
+  const items = [
+    { key: "eventName", label: "イベント名", ok: Boolean(eventName.trim()) },
+    {
+      key: "slug",
+      label: "URL スラッグ",
+      ok: Boolean(slug.trim()) && isSlugValid(slug) && slugTaken === false,
+    },
+  ];
+  const allRequiredOk = items.map((it) => it.ok).every(Boolean);
 
   return (
     <>
@@ -205,7 +151,7 @@ export default function CreateEventPage() {
         <div className="px-4 py-2 flex items-center gap-2 text-sm">
           <div className="flex-1 min-w-0">
             <ChecklistBadge
-              required={required}
+              items={items}
               slugState={{ slugChecking, slugTaken, value: slug }}
             />
           </div>
@@ -269,59 +215,13 @@ export default function CreateEventPage() {
       </div>
 
       {/* Banner（フォーム側の見出し用プレビュー） */}
-      <div className="animate-in fade-in duration-500 w-full">
-        <div className="relative h-48 bg-gradient-to-br from-pink-400 via-purple-500 via-blue-500 to-cyan-400 overflow-hidden">
-          {bannerUrl ? (
-            <img
-              src={bannerUrl}
-              alt="banner"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="absolute inset-0 grid place-items-center text-white/90 pointer-events-none">
-              <div className="text-center">
-                <ImageIcon className="w-7 h-7 mx-auto mb-1" />
-                <p className="text-xs">バナー画像 – クリックでアップロード</p>
-              </div>
-            </div>
-          )}
-
-          {/* どこでもクリックで選択できるラベル（背面） */}
-          <label
-            htmlFor="banner-upload"
-            className="absolute inset-0 cursor-pointer z-0"
-            aria-label="バナー画像を選択"
-          />
-
-          {/* hidden file input（値リセット用にkeyを使用） */}
-          <Input
-            key={fileKey}
-            id="banner-upload"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImage}
-          />
-
-          {/* キャンセルボタン */}
-          {bannerUrl && (
-            <div className="absolute bottom-2 right-2 z-10">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  cancelBanner();
-                }}
-              >
-                キャンセル
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
+      <ThumbnailPicker
+        value={bannerUrl}
+        onChange={setBannerUrl}
+        bucketName={PROJECT_BUCKET}
+        mediaType="image"
+        hintText="推奨 1170 x 156px / 5MB 以下"
+      />
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="mx-auto max-w-3xl p-4 space-y-6">
@@ -408,58 +308,6 @@ export default function CreateEventPage() {
         </div>
       </form>
     </>
-  );
-}
-
-/* ------------------------------ UI helpers ------------------------------ */
-
-function ChecklistBadge({
-  required,
-  slugState,
-}: {
-  required: { eventName: boolean; slug: boolean };
-  slugState: {
-    slugChecking: boolean;
-    slugTaken: boolean | null;
-    value: string;
-  };
-}) {
-  const items = [
-    { key: "eventName", label: "イベント名", ok: required.eventName },
-    { key: "slug", label: "URL スラッグ", ok: required.slug },
-  ];
-  return (
-    <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pr-1">
-      {items.map((it) => (
-        <Badge
-          variant="outline"
-          key={it.key}
-          className={`rounded-full ${
-            it.ok
-              ? "text-emerald-700 border-emerald-400"
-              : "text-amber-700 border-amber-400"
-          }`}
-          title={it.label}
-        >
-          {it.ok ? (
-            <CheckCircle2 className="w-3.5 h-3.5" />
-          ) : (
-            <AlertCircle className="w-3.5 h-3.5" />
-          )}
-          {it.label}
-        </Badge>
-      ))}
-      {slugState.value && slugState.slugTaken === true && (
-        <Badge
-          variant="outline"
-          key={"slug-taken"}
-          className="rounded-full text-red-700 border-red-400"
-          title="このスラッグは既に使用されています"
-        >
-          <XCircle className="w-3.5 h-3.5" /> スラッグ重複
-        </Badge>
-      )}
-    </div>
   );
 }
 

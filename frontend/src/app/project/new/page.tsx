@@ -89,9 +89,9 @@ export default function CreateProjectPage() {
         ]}
       />
 
-      <div className="mx-auto max-w-5xl space-y-4 p-4">
+      <div className="mx-auto max-w-5xl p-4">
         {/* サムネイル + タイトル（2カラム。狭い幅では1カラム） */}
-        <div className="grid items-start gap-3 md:grid-cols-2">
+        <div className="grid px-4 items-start gap-3 md:grid-cols-2">
           {/* Thumbnail */}
           <div className="w-full">
             <ThumbnailPicker
@@ -118,7 +118,7 @@ export default function CreateProjectPage() {
         </div>
 
         {/* Summary（必須・100字以内） */}
-        <div className="space-y-1">
+        <div className="px-4 mt-4 space-y-1">
           <label className="text-sm font-medium">
             概要（必須・{SUMMARY_LIMIT}字以内）
           </label>
