@@ -11,6 +11,7 @@ import {
 import { ParticipantsPane } from "@/components/event/ParticipantsPane";
 import formatJPDate from "@/lib/utils/date";
 import EventDeliverablesGallery from "@/components/event/EventDeliverablesGallery";
+import MarkdownPreview from "@/components/markdown/MarkdownPreview";
 
 // ISR
 export const revalidate = 120;
@@ -123,8 +124,7 @@ export default async function EventPage({
                   </div>
                   {event.description && (
                     <>
-                      <h2 className="text-muted-foreground mt-2">概要</h2>
-                      <p className="whitespace-pre-wrap">{event.description}</p>
+                      <MarkdownPreview content={event.description} />
                     </>
                   )}
                 </section>
