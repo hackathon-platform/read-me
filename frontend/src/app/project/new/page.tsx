@@ -9,6 +9,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import ChecklistBadge from "@/components/common/ChecklistBadge";
+import {
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerClose,
+} from "@/components/ui/drawer";
+import { Loader2 } from "lucide-react";
+import { ProjectPreview } from "@/components/project/ProjectPreview";
 
 const PROJECT_BUCKET = "project"; // Supabase Storage のバケット名
 const SUMMARY_LIMIT = 100;
@@ -19,12 +31,15 @@ export default function CreateProjectPage() {
   const [eventSlug, setEventSlug] = useState(""); // 任意（event.slug 参照）
   const [thumbUrl, setThumbUrl] = useState<string | null>(null);
   const [markdown, setMarkdown] = useState<string>(""); // content に保存
-  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const summaryLen = summary.length;
   const summaryTooLong = summaryLen > SUMMARY_LIMIT;
   const canSave =
-    !saving && !!title.trim() && !!summary.trim() && !summaryTooLong;
+    !isSaving && !!title.trim() && !!summary.trim() && !summaryTooLong;
 
   async function saveProject() {
     if (!title.trim()) {
@@ -41,7 +56,7 @@ export default function CreateProjectPage() {
     }
 
     try {
-      setSaving(true);
+      setIsSaving(true);
 
       // 認証ユーザーの取得（profile_id 用）
       const { data: userData, error: authErr } = await supabase.auth.getUser();
@@ -49,7 +64,7 @@ export default function CreateProjectPage() {
       const user = userData?.user;
       if (!user?.id) {
         toast.error("ログインが必要です。");
-        setSaving(false);
+        setIsSaving(false);
         return;
       }
 
@@ -74,11 +89,16 @@ export default function CreateProjectPage() {
       // 例: 保存後に詳細ページへ遷移したい場合
       // router.push(`/project/${data.id}`);
     } catch (e: any) {
-      toast.error(e?.message ?? "保存に失敗しました。");
+      setError(e?.message ?? "保存に失敗しました。");
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   }
+
+  const items = [
+    { key: "title", label: "プロジェクト名", ok: Boolean(title.trim()) },
+    { key: "summary", label: "概要", ok: Boolean(summary.trim()) },
+  ];
 
   return (
     <>
@@ -89,20 +109,78 @@ export default function CreateProjectPage() {
         ]}
       />
 
-      <div className="mx-auto max-w-5xl p-4">
+      {/* Sticky Bar */}
+      <div className="sticky top-0 z-30 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+        <div className="px-4 py-2 flex items-center gap-2 text-sm">
+          <div className="flex-1 min-w-0">
+            <ChecklistBadge items={items} />
+          </div>
+
+          {/* プレビューを開く */}
+          <Drawer open={previewOpen} onOpenChange={setPreviewOpen}>
+            <DrawerTrigger asChild>
+              <Button className="h-8 shrink-0" variant="default">
+                プレビュー
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent className="max-h-[90vh]">
+              <DrawerHeader className="max-w-5xl mx-auto w-full">
+                <DrawerTitle>プレビュー</DrawerTitle>
+              </DrawerHeader>
+
+              <div className="overflow-auto px-4 pb-2">
+                <ProjectPreview
+                  data={{
+                    title: title,
+                    summary: summary,
+                    thumbnail_url: thumbUrl,
+                    content: markdown,
+                    updated_at: new Date().toISOString(),
+                  }}
+                />
+              </div>
+
+              <DrawerFooter className="max-w-5xl mx-auto w-full">
+                {/* エラー表示（プレビュー下部にも出す） */}
+                {error && (
+                  <div className="rounded-md border border-destructive/30 bg-destructive/5 text-destructive p-3 text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-2">
+                  <DrawerClose asChild>
+                    <Button variant="outline">戻る</Button>
+                  </DrawerClose>
+                  <Button onClick={saveProject} disabled={!canSave}>
+                    {isSaving ? (
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        公開中…
+                      </span>
+                    ) : (
+                      "公開する"
+                    )}
+                  </Button>
+                </div>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        </div>
+      </div>
+
+      <div className="animate-in fade-in duration-500 mt-1 lg:mt-2 px-3 mx-auto max-w-4xl w-full">
         {/* サムネイル + タイトル（2カラム。狭い幅では1カラム） */}
         <div className="grid items-start gap-3 md:grid-cols-2">
           {/* Thumbnail */}
-          <div className="w-full">
-            <ThumbnailPicker
-              value={thumbUrl}
-              onChange={setThumbUrl}
-              bucketName={PROJECT_BUCKET}
-              mediaType="image"
-              hintText="推奨 16:9 / 5MB 以下"
-              className="aspect-[16/9] w-full"
-            />
-          </div>
+          <ThumbnailPicker
+            value={thumbUrl}
+            onChange={setThumbUrl}
+            bucketName={PROJECT_BUCKET}
+            mediaType="image"
+            hintText="推奨 16:9 / 5MB 以下"
+            className="aspect-[16/9] w-full"
+          />
 
           {/* Title (最大2行で自動折返し) + Event Slug */}
           <div className="min-w-0 mx-2">
@@ -145,13 +223,6 @@ export default function CreateProjectPage() {
           showThumbnail={false}
           onContentChange={setMarkdown}
         />
-
-        {/* Save */}
-        <div className="pt-2">
-          <Button onClick={saveProject} disabled={!canSave}>
-            {saving ? "保存中…" : "保存"}
-          </Button>
-        </div>
       </div>
     </>
   );

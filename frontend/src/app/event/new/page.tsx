@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { toast } from "sonner";
@@ -9,7 +8,6 @@ import PageHeader from "@/components/layout/PageHeader";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import {
   Drawer,
@@ -81,7 +79,7 @@ export default function CreateEventPage() {
   }
 
   // 公開ロジック（Drawer からもフォーム submit からも使用）
-  async function publish() {
+  async function saveEvent() {
     setError("");
 
     if (!eventName.trim() || !slug.trim()) {
@@ -188,7 +186,7 @@ export default function CreateEventPage() {
                     <Button variant="outline">戻る</Button>
                   </DrawerClose>
                   <Button
-                    onClick={publish}
+                    onClick={saveEvent}
                     disabled={isSaving || !allRequiredOk}
                   >
                     {isSaving ? (
@@ -206,6 +204,8 @@ export default function CreateEventPage() {
           </Drawer>
         </div>
       </div>
+
+      {/* Main Form */}
       <div className="animate-in fade-in duration-500 mt-1 lg:mt-2 px-3 mx-auto max-w-3xl w-full">
         {/* Banner（フォーム側の見出し用プレビュー） */}
         <ThumbnailPicker

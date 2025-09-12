@@ -3,10 +3,10 @@ import { Badge } from "../ui/badge";
 
 export default function ChecklistBadge({
   items,
-  slugState,
+  slugState = undefined,
 }: {
   items: { key: string; label: string; ok: boolean }[];
-  slugState: {
+  slugState?: {
     slugChecking: boolean;
     slugTaken: boolean | null;
     value: string;
@@ -33,7 +33,7 @@ export default function ChecklistBadge({
           {it.label}
         </Badge>
       ))}
-      {slugState.value && slugState.slugTaken === true && (
+      {slugState && slugState.value && slugState.slugTaken === true && (
         <Badge
           variant="outline"
           key={"slug-taken"}
