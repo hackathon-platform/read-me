@@ -17,7 +17,6 @@ export default async function EventIndex() {
             {e.name}
           </Link>
         </li>
-        {/* <img src={e.banner_url}></img> */}
         </>
       ))}
     </ul>

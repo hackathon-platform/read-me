@@ -1,10 +1,8 @@
-
-// ★ 'use client' は付けない（Server Component）
 import PageHeader from '@/components/layout/PageHeader';
 import EventsHeroCarousel from '@/components/event/EventsHeroCarousel'; // ← クライアントのカルーセル
 import { supabase } from '@/lib/supabase/supabaseClient';
 import Link from 'next/link';
-
+import { ImageOff } from "lucide-react";
 export const revalidate = 120;
 
 type EventRow = {
@@ -37,7 +35,8 @@ export default async function Page() {
     supabase
       .from('project')
       .select('id, title, summary, thumbnail_url, event_slug, updated_at')
-      .order('updated_at', { ascending: false }),
+      .order('updated_at', { ascending: false })
+      .limit(6),
   ]);
 
   if (eventsError || projectsError) {
@@ -54,24 +53,22 @@ export default async function Page() {
       name: e.name ?? '',
     })) ?? [];
 
-  // 3列×2行＝最大6件のカードデータ
   const projects =
-    (projectRows as ProjectRow[] | null)?.slice(0, 6).map((p) => ({
+    (projectRows as ProjectRow[] | null)?.map((p) => ({
       id: p.id,
       title: p.title ?? '無題プロジェクト',
       subtitle: p.summary ?? '',
       // サムネが無ければプレースホルダー
-      image: p.thumbnail_url || 'https://placehold.co/800x450?text=No+Image',
+      image: p.thumbnail_url,
       // プロジェクト詳細ページのURL（例：/project/:id）
       href: `/project/${p.id}`,
       // イベントページへ飛ばしたいなら: href: `/event/${p.event_slug}`
     })) ?? [];
 
   return (
-    <div className="m-2">
-
+    <div className="animate-in fade-in duration-500 lg:mt-4 mt-2 w-full">
       {/* イベントのカルーセル */}
-      <div className="relative animate-in fade-in duration-500 lg:mt-6 md:mt-2 max-w-7xl mx-auto w-full pb-3">
+      <div className="relative max-w-7xl mx-auto w-full pb-3">
         <h1 className="font-bold md:text-2xl">現在開催中のイベント</h1>
       </div>
       <EventsHeroCarousel
@@ -90,14 +87,19 @@ export default async function Page() {
             <div key={p.id} className="w-full sm:w-1/2 lg:w-1/3 px-3 mb-6">
               <Link href={p.href} className="block h-48 mx-8 md:mx-auto md:h-auto">
                 <article className="h-full flex flex-col rounded-xl border bg-card shadow-sm hover:shadow-md transition">
-                  <div className="aspect-[16/9] overflow-hidden rounded-t-xl">
-                    <img
-                      src={p.image}
-                      alt={p.title}
-                      className="h-full w-full object-cover transition-transform hover:scale-105"
-                    />
-                  </div>
-
+                    {p.image?(
+                      <div className="aspect-[16/9] overflow-hidden rounded-t-xl">
+                        <img
+                          src={p.image}
+                          alt={p.title}
+                          className="h-full w-full object-cover transition-transform hover:scale-105"
+                        />
+                      </div>
+                    ):(
+                      <div className="h-full w-full place-items-center text-muted-foreground">
+                        <ImageOff className="w-6 h-6" />
+                      </div>
+                    )}
                   <div className="p-3 flex-1 flex flex-col">
                     <h3 className="font-semibold leading-tight">{p.title}</h3>
                     {p.subtitle && (

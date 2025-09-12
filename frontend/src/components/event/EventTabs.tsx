@@ -30,25 +30,6 @@ function TabsList({
     />
   );
 }
-
-// function TabsList({
-//   className,
-//   ...props
-// }: React.ComponentProps<typeof TabsPrimitive.List>) {
-//   return (
-//     <TabsPrimitive.List
-//       data-slot="tabs-list"
-//       className={cn(
-//         // sticky, scrollable, clear baseline
-//         "sticky top-0 z-20 -mb-px flex items-end overflow-x-auto border-b bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/40 no-scrollbar",
-//         "gap-1 px-2", // comfy hit area
-//         className,
-//       )}
-//       {...props}
-//     />
-//   );
-// }
-
 function TabsTrigger({
   className,
   ...props
