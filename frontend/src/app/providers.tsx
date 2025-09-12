@@ -18,7 +18,6 @@ export default function Providers({ children }: ProvidersProps) {
       <AuthProvider>
         <ThemeProvider attribute="class" defaultTheme="system">
           <Header />
-          <Toaster />
           <PageLayout>{children}</PageLayout>
           <Toaster richColors closeButton />
         </ThemeProvider>
