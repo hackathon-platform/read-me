@@ -1,5 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { FollowCounts } from "@/components/follow/FollowCounts";
 import { Github, Linkedin, Instagram, Facebook, Link } from "lucide-react";
 import { Profile, Social } from "@/lib/types";
 interface BasicDisplayProps {
@@ -63,6 +64,10 @@ export default function BasicDisplay({ profile }: BasicDisplayProps) {
             </div>
           </div>
         </div>
+      </div>
+      {/* フォロー / フォロワー カウント（クリックでポップアップ） */}
+      <div className="mt-2 px-1">
+        <FollowCounts profileId={profile.id} />
       </div>
       {profile.description && (
         <p className="mt-2 px-1 text-sm whitespace-pre-wrap">

@@ -9,11 +9,15 @@ import { QualificationSection } from "./section/QualificationSection";
 import { ResumeSection } from "./ResumeSection";
 import type { Profile } from "@/lib/types";
 import ProjectGallery from "@/components/me/section/ProjectGallery";
+import { FollowRail } from "@/components/follow/FollowRail";
 
 export function ProfileContent({ profile }: { profile: Profile }) {
   return (
     <div className="space-y-4">
       <BasicSection profile={profile} />
+      <div className="block lg:hidden mx-2">
+        <FollowRail />
+      </div>
 
       <Tabs defaultValue="projects" className="w-full pb-2">
         <TabsList className="grid w-full grid-cols-2">
