@@ -10,6 +10,7 @@ import {
 } from "@/lib/supabase/get/participants";
 import { ParticipantsPane } from "@/components/event/ParticipantsPane";
 import formatJPDate from "@/lib/utils/date";
+import EventDeliverablesGallery from "@/components/event/EventDeliverablesGallery";
 
 // ISR
 export const revalidate = 120;
@@ -136,7 +137,10 @@ export default async function EventPage({
 
             <TabsContent value="gallery" className="p-4">
               <div className="text-sm text-muted-foreground">
-                ギャラリーは準備中です。
+                <EventDeliverablesGallery
+                  eventId={event.id}
+                  eventSlug={event.slug}
+                />
               </div>
               {/* TODO: gallery */}
             </TabsContent>
