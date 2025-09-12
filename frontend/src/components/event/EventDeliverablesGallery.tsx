@@ -319,7 +319,7 @@ export default function EventDeliverablesGallery({
                   value="participants"
                   className="m-0 flex-1 overflow-auto p-4"
                 >
-                  <ParticipantsList participants={participants} />
+                  {/* TODO: ここにプロダクトの貢献者リストを表示 */}
                 </TabsContent>
               )}
             </Tabs>

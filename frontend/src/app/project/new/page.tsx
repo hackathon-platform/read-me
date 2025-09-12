@@ -69,15 +69,17 @@ export default function CreateProjectPage() {
         setIsSaving(false);
         return;
       }
-      
+
       const { data: prof, error: profErr } = await supabase
         .from("profile")
         .select("id")
         .eq("auth_id", user.id)
         .single();
-        if (profErr || !prof?.id) {
-          throw new Error("プロフィールが見つかりません。初期登録を完了してください。");
-        }
+      if (profErr || !prof?.id) {
+        throw new Error(
+          "プロフィールが見つかりません。初期登録を完了してください。",
+        );
+      }
 
       const payload = {
         profile_id: prof.id,
