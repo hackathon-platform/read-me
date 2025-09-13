@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,7 +26,6 @@ export function FollowList({
   pageSize?: number;
   enabled?: boolean; // ← 追加
 }) {
-  const router = useRouter();
   const [items, setItems] = useState<Row[]>([]);
   const [page, setPage] = useState(0);
   const [done, setDone] = useState(false);
@@ -141,10 +139,6 @@ export function FollowList({
     if (kind === "following" && !nowFollowing) {
       setItems((prev) => prev.filter((x) => x.id !== id));
     }
-  };
-
-  const goProfile = (username: string) => {
-    router.push(`/me/${username}`);
   };
 
   const initialLoading = !everLoaded && loading;

@@ -1,4 +1,3 @@
-// src/app/profile/setup/page.tsx
 "use client";
 
 import { useEffect } from "react";

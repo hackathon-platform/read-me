@@ -3,11 +3,9 @@
 import * as React from "react";
 import {
   User,
-  CalendarCheck,
   Megaphone,
   LifeBuoy,
   MessageSquare,
-  Briefcase,
   Home,
   SquarePlus,
 } from "lucide-react";
