@@ -1,12 +1,111 @@
 "use client";
+
+import React from "react";
 import Link from "next/link";
+import { useSupabase } from "@/components/supabase-provider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Rocket, Users, Eye, ArrowRight } from "lucide-react";
 
+/* ---------- memoized subcomponents to avoid churn ---------- */
+
+const StartNowButton = React.memo(function StartNowButton() {
+  return (
+    <Button asChild size="lg">
+      <Link href="/auth/signin" className="inline-flex items-center">
+        今すぐはじめる
+        <ArrowRight className="ml-1.5 h-4 w-4" />
+      </Link>
+    </Button>
+  );
+});
+
+const HeroCTA = React.memo(function HeroCTA() {
+  return (
+    <div className="mt-6 flex flex-wrap items-center gap-3">
+      <StartNowButton />
+      <div className="text-sm text-muted-foreground">
+        登録は無料・数分で公開できます
+      </div>
+    </div>
+  );
+});
+
+const HowItWorksCTA = React.memo(function HowItWorksCTA() {
+  return (
+    <section className="relative border-t">
+      <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
+        <div className="grid items-center gap-8 md:grid-cols-2">
+          <div>
+            <Badge variant="secondary">3ステップで公開</Badge>
+            <h2 className="mt-3 text-2xl font-bold md:text-3xl">
+              かんたんセットアップ
+            </h2>
+            <ol className="mt-4 space-y-3 text-sm text-muted-foreground md:text-base">
+              <li>
+                <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  1
+                </span>
+                アカウント作成（メール認証）
+              </li>
+              <li>
+                <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  2
+                </span>
+                プロフィールを整える（SNS/経歴の登録）
+              </li>
+              <li>
+                <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  3
+                </span>
+                プロジェクトを投稿（サムネ・概要・README）
+              </li>
+            </ol>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <StartNowButton />
+            </div>
+
+            {/* Optional: simple email capture (non-functional) */}
+            <form
+              className="mt-6 flex max-w-md gap-2"
+              onSubmit={(e) => e.preventDefault()}
+            >
+              <Input
+                type="email"
+                placeholder="最新情報をメールで受け取る（任意）"
+                className="bg-background"
+                aria-label="メールアドレス"
+              />
+              <Button type="submit" variant="secondary">
+                登録
+              </Button>
+            </form>
+          </div>
+
+          <div className="relative">
+            <div className="aspect-video w-full rounded-xl border bg-gradient-to-br from-primary/10 via-transparent to-emerald-200/20 p-1">
+              <div className="flex h-full items-center justify-center rounded-lg bg-background/60 text-sm text-muted-foreground">
+                デモ領域（スクリーンショットを配置可）
+              </div>
+            </div>
+            <div className="pointer-events-none absolute -right-3 -bottom-3 h-24 w-24 rounded-full bg-gradient-to-br from-primary/20 to-cyan-200/20 blur-2xl" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+});
+
+/* ------------------------ page ------------------------ */
+
 export default function Page() {
+  const { user, loading } = useSupabase();
+  // Show public CTAs only after auth resolves and user is not present
+  const showPublic = !loading && !user;
+
   return (
     <div className="relative">
       {/* ===== Background ornaments ===== */}
@@ -40,19 +139,9 @@ export default function Page() {
             あなたの「つくる」を、もっと広く。
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg">
-              <Link href="/auth/signin" className="inline-flex items-center">
-                今すぐはじめる
-                <ArrowRight className="ml-1.5 h-4 w-4" />
-              </Link>
-            </Button>
-            {/* <Button asChild variant="outline" size="lg">
-              <Link href="/events">作品を探す</Link>
-            </Button> */}
-            <div className="text-sm text-muted-foreground">
-              登録は無料・数分で公開できます
-            </div>
+          {/* Always mounted, hidden until we know user is logged out */}
+          <div hidden={!showPublic} aria-hidden={!showPublic}>
+            <HeroCTA />
           </div>
         </div>
       </section>
@@ -112,69 +201,9 @@ export default function Page() {
       </section>
 
       {/* ===== How it works / CTA ===== */}
-      <section className="relative border-t">
-        <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
-          <div className="grid items-center gap-8 md:grid-cols-2">
-            <div>
-              <Badge variant="secondary">3ステップで公開</Badge>
-              <h2 className="mt-3 text-2xl font-bold md:text-3xl">
-                かんたんセットアップ
-              </h2>
-              <ol className="mt-4 space-y-3 text-sm text-muted-foreground md:text-base">
-                <li>
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    1
-                  </span>
-                  アカウント作成（メール認証）
-                </li>
-                <li>
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    2
-                  </span>
-                  プロフィールを整える（SNS/経歴の登録）
-                </li>
-                <li>
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    3
-                  </span>
-                  プロジェクトを投稿（サムネ・概要・README）
-                </li>
-              </ol>
-
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Button asChild>
-                  <Link href="/auth/signin">無料で始める</Link>
-                </Button>
-              </div>
-
-              {/* Optional: simple email capture (non-functional) */}
-              <form
-                className="mt-6 flex max-w-md gap-2"
-                onSubmit={(e) => e.preventDefault()}
-              >
-                <Input
-                  type="email"
-                  placeholder="最新情報をメールで受け取る（任意）"
-                  className="bg-background"
-                  aria-label="メールアドレス"
-                />
-                <Button type="submit" variant="secondary">
-                  登録
-                </Button>
-              </form>
-            </div>
-
-            <div className="relative">
-              <div className="aspect-video w-full rounded-xl border bg-gradient-to-br from-primary/10 via-transparent to-emerald-200/20 p-1">
-                <div className="flex h-full items-center justify-center rounded-lg bg-background/60 text-sm text-muted-foreground">
-                  デモ領域（スクリーンショットを配置可）
-                </div>
-              </div>
-              <div className="pointer-events-none absolute -right-3 -bottom-3 h-24 w-24 rounded-full bg-gradient-to-br from-primary/20 to-cyan-200/20 blur-2xl" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <div hidden={!showPublic} aria-hidden={!showPublic}>
+        <HowItWorksCTA />
+      </div>
 
       {/* ===== Footer ===== */}
       <footer className="border-t">

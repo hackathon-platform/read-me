@@ -57,8 +57,6 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // const { user, signOut, loading } = useSupabase();
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
