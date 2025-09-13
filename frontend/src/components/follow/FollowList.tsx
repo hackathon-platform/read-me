@@ -76,9 +76,9 @@ export function FollowList({
     const ids = Array.from(
       new Set(
         (edges ?? []).map((e) =>
-          kind === "followers" ? e.follower_id : e.followee_id
-        )
-      )
+          kind === "followers" ? e.follower_id : e.followee_id,
+        ),
+      ),
     );
 
     if (ids.length === 0) {
@@ -112,7 +112,7 @@ export function FollowList({
           last_name: p.last_name,
           image_url: p.image_url,
         } as Row,
-      ])
+      ]),
     );
 
     const merged = ids.map((id) => byId.get(id)).filter(Boolean) as Row[];
@@ -201,7 +201,10 @@ function RailSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between gap-3 rounded-md border p-2">
+        <div
+          key={i}
+          className="flex items-center justify-between gap-3 rounded-md border p-2"
+        >
           <div className="flex items-center gap-3 min-w-0">
             <Skeleton className="h-9 w-9 rounded-full" />
             <div className="space-y-1">

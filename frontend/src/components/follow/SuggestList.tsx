@@ -56,7 +56,7 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
       .order("created_at", { ascending: false })
       .range(
         pageIndex * pageSize,
-        pageIndex * pageSize + pageSize * moreFactor - 1
+        pageIndex * pageSize + pageSize * moreFactor - 1,
       );
 
     const filtered = (profiles ?? [])
@@ -71,7 +71,10 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
       }));
 
     setItems((prev) => (replace ? filtered : [...prev, ...filtered]));
-    if ((profiles?.length ?? 0) < pageSize * moreFactor || filtered.length < pageSize) {
+    if (
+      (profiles?.length ?? 0) < pageSize * moreFactor ||
+      filtered.length < pageSize
+    ) {
       setDone(true);
     }
     setLoading(false);
@@ -153,7 +156,7 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
       className={cn(
         "overflow-x-auto pb-1",
         "[scrollbar-width:none] [-ms-overflow-style:none]",
-        "[&::-webkit-scrollbar]:hidden"
+        "[&::-webkit-scrollbar]:hidden",
       )}
       aria-busy={loading}
     >
@@ -204,7 +207,9 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
       </div>
 
       {items.length === 0 && done && !initialLoading && (
-        <p className="text-sm text-muted-foreground py-2">おすすめがありません</p>
+        <p className="text-sm text-muted-foreground py-2">
+          おすすめがありません
+        </p>
       )}
     </div>
   );
@@ -216,7 +221,10 @@ function RailSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between gap-3 rounded-md border p-2">
+        <div
+          key={i}
+          className="flex items-center justify-between gap-3 rounded-md border p-2"
+        >
           <div className="flex items-center gap-3 min-w-0">
             <Skeleton className="h-9 w-9 rounded-full" />
             <div className="space-y-1">

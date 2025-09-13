@@ -2,10 +2,6 @@
 
 import * as React from "react";
 import {
-  getProjectsByProfileId,
-  type DbProject,
-} from "@/lib/supabase/get/project-by-profile";
-import {
   Drawer,
   DrawerContent,
   DrawerHeader,
@@ -16,40 +12,23 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import formatJPDate from "@/lib/utils/date";
 import { X } from "lucide-react";
-import ProjectContentPreview from "@/components/project/ProjectPreview";
+import ProjectPreview from "@/components/project/ProjectPreview";
+import type { Project } from "@/lib/types";
 
 type Props = {
-  profileId: string;
+  projects: Project[];
 };
 
-export default function ProjectGallery({ profileId }: Props) {
-  const [items, setItems] = React.useState<DbProject[]>([]);
-  const [loading, setLoading] = React.useState(false);
+export default function ProjectGallery({ projects }: Props) {
   const [open, setOpen] = React.useState(false);
-  const [current, setCurrent] = React.useState<DbProject | null>(null);
+  const [current, setCurrent] = React.useState<Project | null>(null);
 
-  React.useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      const { data } = await getProjectsByProfileId(profileId);
-      if (mounted) setItems(data);
-      setLoading(false);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [profileId]);
-
-  const onClickCard = (p: DbProject) => {
+  const onClickCard = (p: Project) => {
     setCurrent(p);
     setOpen(true);
   };
 
-  if (loading && items.length === 0) {
-    return <div className="text-sm text-muted-foreground">読み込み中…</div>;
-  }
-  if (!loading && items.length === 0) {
+  if (projects.length === 0) {
     return (
       <div className="text-sm text-muted-foreground">
         プロジェクトはまだありません。
@@ -60,7 +39,7 @@ export default function ProjectGallery({ profileId }: Props) {
   return (
     <>
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-        {items.map((p) => (
+        {projects.map((p) => (
           <GalleryCard key={p.id} project={p} onClick={() => onClickCard(p)} />
         ))}
       </div>
@@ -69,11 +48,11 @@ export default function ProjectGallery({ profileId }: Props) {
         <DrawerContent className="p-0">
           {current && (
             <div className="mx-auto w-full max-w-5xl h-[85vh] max-h-[90vh] flex flex-col">
-              {/* 固定ヘッダー */}
               <DrawerHeader className="sticky top-0 z-10 pr-12">
                 <DrawerTitle className="text-xl">{current.title}</DrawerTitle>
                 <p className="text-xs text-muted-foreground">
-                  更新日: {formatJPDate(current.updated_at)}
+                  更新日:{" "}
+                  {formatJPDate(current.updatedAt || current.createdAt || "")}
                 </p>
                 <DrawerClose asChild>
                   <Button
@@ -86,10 +65,18 @@ export default function ProjectGallery({ profileId }: Props) {
                   </Button>
                 </DrawerClose>
               </DrawerHeader>
-              {/* スクロールコンテンツ */}
+
               <div className="flex-1 min-h-0 overflow-y-auto">
-                {/* Media + Summary */}
-                <ProjectContentPreview data={current} />
+                {/* ProjectPreview expects snake_case keys; map as needed */}
+                <ProjectPreview
+                  data={{
+                    title: current.title,
+                    summary: current.summary,
+                    thumbnail_url: current.thumbnailUrl ?? null,
+                    content: current.content ?? null,
+                    updated_at: current.updatedAt ?? current.createdAt ?? "",
+                  }}
+                />
               </div>
             </div>
           )}
@@ -103,7 +90,7 @@ function GalleryCard({
   project,
   onClick,
 }: {
-  project: DbProject;
+  project: Project;
   onClick: () => void;
 }) {
   return (
@@ -115,10 +102,10 @@ function GalleryCard({
       )}
     >
       <div className="relative h-40 w-full bg-muted/40">
-        {project.thumbnail_url ? (
+        {project.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={project.thumbnail_url}
+            src={project.thumbnailUrl}
             alt={project.title}
             className="h-full w-full object-contain bg-black/5"
           />
@@ -128,7 +115,6 @@ function GalleryCard({
           </div>
         )}
 
-        {/* Hover summary overlay */}
         {project.summary && (
           <div
             className={cn(
@@ -136,7 +122,7 @@ function GalleryCard({
               "opacity-0 group-hover:opacity-100 transition-opacity",
             )}
           >
-            <div className="absolute top-0 p-3 text-white text-sm">
+            <div className="absolute top-0 p-3 text-white text-sm line-clamp-3">
               {project.summary}
             </div>
           </div>
@@ -146,7 +132,7 @@ function GalleryCard({
       <div className="p-3">
         <div className="font-medium line-clamp-2">{project.title}</div>
         <div className="text-xs text-muted-foreground mt-1">
-          更新日: {formatJPDate(project.updated_at)}
+          更新日: {formatJPDate(project.updatedAt || project.createdAt || "")}
         </div>
       </div>
     </button>
