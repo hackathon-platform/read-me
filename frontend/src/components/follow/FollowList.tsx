@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { FollowButton } from "./FollowButton";
+import Link from "next/link";
 
 type Row = {
   id: string;
@@ -153,37 +154,55 @@ export function FollowList({
       {/* 初回スケルトン */}
       {initialLoading && <RailSkeleton rows={5} />}
 
-      {items.map((u) => (
-        <button
-          key={`${kind}-${u.id}`}
-          onClick={() => goProfile(u.username!)}
-          className="flex w-full items-center justify-between gap-3 rounded-md border p-2"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="h-9 w-9">
-              <AvatarImage src={u.image_url || undefined} />
-              <AvatarFallback>{u.last_name?.[0] ?? "?"}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <div className="font-medium leading-tight truncate">
-                {u.last_name} {u.first_name}
-              </div>
-              <div className="text-xs text-muted-foreground truncate">
-                @{u.username ?? "unknown"}
-              </div>
-            </div>
-          </div>
-          <div
-            onClick={(e) => e.stopPropagation()} // ← prevent bubble
-            onKeyDown={(e) => e.stopPropagation()} // ← keyboard too
+      <ul className="space-y-2" aria-busy={loading}>
+        {items.map((u) => (
+          <li
+            key={`${kind}-${u.id}`}
+            className="flex items-center justify-between gap-3 rounded-md border p-2"
           >
+            {u.username ? (
+              <Link
+                href={`/me/${u.username}`}
+                className="flex items-center gap-3 min-w-0"
+                aria-label={`${u.last_name} ${u.first_name} のプロフィールへ`}
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={u.image_url || undefined} />
+                  <AvatarFallback>{u.last_name?.[0] ?? "?"}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="font-medium leading-tight truncate">
+                    {u.last_name} {u.first_name}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    @{u.username}
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-3 min-w-0 opacity-70">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={u.image_url || undefined} />
+                  <AvatarFallback>{u.last_name?.[0] ?? "?"}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="font-medium leading-tight truncate">
+                    {u.last_name} {u.first_name}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    @unknown
+                  </div>
+                </div>
+              </div>
+            )}
+
             <FollowButton
               targetProfileId={u.id}
               onChanged={(now) => onRelationChange(now, u.id)}
             />
-          </div>
-        </button>
-      ))}
+          </li>
+        ))}
+      </ul>
 
       {/* 追加読み込み中のスケルトン */}
       {everLoaded && loading && items.length > 0 && <RailSkeleton rows={2} />}
