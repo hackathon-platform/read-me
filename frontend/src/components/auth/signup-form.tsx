@@ -1,4 +1,3 @@
-// src/components/auth/signup-form.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -108,9 +107,9 @@ export function SignupForm({
             </Button>
 
             {/* Or sign up with Google */}
-            <div className="pt-2">
+            {/* <div className="pt-2">
               <GoogleLoginButton />
-            </div>
+            </div> */}
 
             <p className="mt-4 text-center text-sm">
               <a href="/auth/login" className="underline">

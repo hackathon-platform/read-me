@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import { supabase } from "@/lib/supabase/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +23,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import formatJPDate from "@/lib/utils/date";
 import { ProfileLoader } from "@/components/me/ProfileLoader";
 
 type ProfileRow = {
@@ -43,6 +40,7 @@ export type ParticipantWithProfile = {
   profile: ProfileRow;
 };
 
+/* -------- role helpers -------- */
 function getRoleBadgeVariant(
   role?: string | null,
 ): "default" | "secondary" | "destructive" | "outline" {
@@ -72,69 +70,134 @@ function getRoleDisplay(role?: string | null) {
   return role ?? "未設定";
 }
 
-type Props = {
+/* -------- small utils -------- */
+function fullName(p: ProfileRow) {
+  const name = `${p.last_name ?? ""} ${p.first_name ?? ""}`.trim();
+  return name || p.username || "User";
+}
+function initials(p: ProfileRow) {
+  const a = p.last_name?.[0] ?? "";
+  const b = p.first_name?.[0] ?? "";
+  return a + b || "U";
+}
+
+/* -------- reusable table -------- */
+function ParticipantsTable({
+  participants,
+  onSelect,
+}: {
   participants: ParticipantWithProfile[];
-};
+  onSelect: (row: ParticipantWithProfile) => void;
+}) {
+  return (
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[56px]" />
+            <TableHead>名前 / ユーザー名</TableHead>
+            <TableHead>役割</TableHead>
+            <TableHead className="w-[70px] text-center whitespace-nowrap">
+              詳細
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {participants.map((row) => {
+            const p = row.profile;
+            return (
+              <TableRow
+                key={p.id}
+                className="cursor-pointer"
+                onClick={() => onSelect(row)}
+              >
+                <TableCell>
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage
+                      src={p.image_url ?? undefined}
+                      alt={p.username ?? ""}
+                    />
+                    <AvatarFallback>{initials(p)}</AvatarFallback>
+                  </Avatar>
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex flex-col">
+                    <div className="font-medium">{fullName(p)}</div>
+                    {p.username && (
+                      <div className="text-xs text-muted-foreground">
+                        @{p.username}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <Badge variant={getRoleBadgeVariant(row.role)}>
+                    {getRoleDisplay(row.role)}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="w-[64px] justify-center"
+                    onClick={(e) => {
+                      e.stopPropagation(); // 行クリックと分離
+                      onSelect(row);
+                    }}
+                  >
+                    表示
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+/* -------- right pane -------- */
+function RightPane({ selected }: { selected: ParticipantWithProfile | null }) {
+  if (!selected) {
+    return (
+      <div className="p-6 text-sm text-muted-foreground">
+        左のリストからプロフィールを選択してください。
+      </div>
+    );
+  }
+  const username = selected.profile.username;
+  if (!username) {
+    return (
+      <div className="p-6 text-sm text-muted-foreground">
+        このユーザーはユーザー名が未設定です。
+      </div>
+    );
+  }
+  return (
+    <div className="h-full overflow-auto px-6">
+      <ProfileLoader username={username} />
+    </div>
+  );
+}
+
+/* -------- main component -------- */
+type Props = { participants: ParticipantWithProfile[] };
 
 export function ParticipantsPane({ participants }: Props) {
   const [selected, setSelected] = React.useState<ParticipantWithProfile | null>(
     null,
   );
-  const [detail, setDetail] = React.useState<any | null>(null);
-  const [loading, setLoading] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
-  // 詳細を lazy 取得（選択時）
-  React.useEffect(() => {
-    let active = true;
-    const run = async () => {
-      if (!selected?.profile?.id) {
-        setDetail(null);
-        return;
-      }
-      setLoading(true);
-      try {
-        const { data: profile } = await supabase
-          .from("profile")
-          .select("*")
-          .eq("id", selected.profile.id)
-          .maybeSingle();
-        if (!active) return;
-        setDetail(profile ?? null);
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-    run();
-    return () => {
-      active = false;
-    };
-  }, [selected?.profile?.id]);
-
-  // lg+ 用
-  const handleSelectDesktop = (row: ParticipantWithProfile) => {
-    setSelected(row);
-  };
-
-  // モバイル用（Drawer を開く）
-  const handleSelectMobile = (row: ParticipantWithProfile) => {
+  const selectDesktop = (row: ParticipantWithProfile) => setSelected(row);
+  const selectMobile = (row: ParticipantWithProfile) => {
     setSelected(row);
     setDrawerOpen(true);
   };
-
-  const RightPane = (
-    <div className="h-full overflow-auto">
-      {!selected ? (
-        <div className="p-6 text-sm text-muted-foreground">
-          左のリストからプロフィールを選択してください。
-        </div>
-      ) : (
-        <div className="px-6">
-          <ProfileLoader profileId={selected.profile.id} />
-        </div>
-      )}
-    </div>
-  );
 
   return (
     <>
@@ -145,162 +208,35 @@ export function ParticipantsPane({ participants }: Props) {
           className="w-full overflow-hidden"
         >
           <ResizablePanel defaultSize={58} minSize={30}>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[56px]" />
-                    <TableHead>名前 / ユーザー名</TableHead>
-                    <TableHead>役割</TableHead>
-                    <TableHead className="w-[70px] text-center whitespace-nowrap">
-                      詳細
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {participants.map((row) => {
-                    const p = row.profile;
-                    const name =
-                      `${p.last_name ?? ""} ${p.first_name ?? ""}`.trim() ||
-                      (p.username ?? "User");
-                    const initials =
-                      (p.last_name?.[0] ?? "") + (p.first_name?.[0] ?? "");
-                    const isActive = selected?.profile?.id === p.id;
-                    return (
-                      <TableRow
-                        key={p.id}
-                        className={isActive ? "bg-accent/50" : "cursor-pointer"}
-                        onClick={() => handleSelectDesktop(row)}
-                      >
-                        <TableCell>
-                          <Avatar className="h-9 w-9">
-                            <AvatarImage
-                              src={p.image_url ?? undefined}
-                              alt={p.username ?? ""}
-                            />
-                            <AvatarFallback>{initials || "U"}</AvatarFallback>
-                          </Avatar>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <div className="font-medium">{name}</div>
-                            {p.username && (
-                              <div className="text-xs text-muted-foreground">
-                                @{p.username}
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getRoleBadgeVariant(row.role)}>
-                            {getRoleDisplay(row.role)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="w-[64px] justify-center"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSelectDesktop(row);
-                            }}
-                          >
-                            表示
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+            <ParticipantsTable
+              participants={participants}
+              onSelect={selectDesktop}
+            />
           </ResizablePanel>
+
           <ResizableHandle withHandle />
+
           <ResizablePanel defaultSize={42} minSize={56}>
-            {RightPane}
+            <div className="h-full">
+              <RightPane selected={selected} />
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
 
-      {/* Mobile (<lg): Drawer に切替 */}
+      {/* Mobile (<lg): Drawer */}
       <div className="lg:hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[56px]"> </TableHead>
-                <TableHead>名前 / ユーザー名</TableHead>
-                <TableHead>役割</TableHead>
-                <TableHead className="w-[70px] text-center whitespace-nowrap">
-                  詳細
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {participants.map((row) => {
-                const p = row.profile;
-                const name =
-                  `${p.last_name ?? ""} ${p.first_name ?? ""}`.trim() ||
-                  (p.username ?? "User");
-                const initials =
-                  (p.last_name?.[0] ?? "") + (p.first_name?.[0] ?? "");
-                return (
-                  <TableRow
-                    key={p.id}
-                    className="cursor-pointer"
-                    onClick={() => handleSelectMobile(row)}
-                  >
-                    <TableCell>
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage
-                          src={p.image_url ?? undefined}
-                          alt={p.username ?? ""}
-                        />
-                        <AvatarFallback>{initials || "U"}</AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <div className="font-medium">{name}</div>
-                        {p.username && (
-                          <div className="text-xs text-muted-foreground">
-                            @{p.username}
-                          </div>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getRoleBadgeVariant(row.role)}>
-                        {getRoleDisplay(row.role)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="w-[64px] justify-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSelectMobile(row);
-                        }}
-                      >
-                        表示
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+        <ParticipantsTable
+          participants={participants}
+          onSelect={selectMobile}
+        />
 
         <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
           <DrawerContent>
             <DrawerHeader>
               <DrawerTitle>プロフィール</DrawerTitle>
             </DrawerHeader>
-            {RightPane}
+            <RightPane selected={selected} />
           </DrawerContent>
         </Drawer>
       </div>

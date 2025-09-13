@@ -22,14 +22,22 @@ export function FollowCounts({ profileId }: { profileId: string }) {
 
   const fetchCounts = useCallback(async () => {
     const [{ count: c1 }, { count: c2 }] = await Promise.all([
-      supabase.from("follow").select("*", { count: "exact", head: true }).eq("followee_id", profileId),
-      supabase.from("follow").select("*", { count: "exact", head: true }).eq("follower_id", profileId),
+      supabase
+        .from("follow")
+        .select("*", { count: "exact", head: true })
+        .eq("followee_id", profileId),
+      supabase
+        .from("follow")
+        .select("*", { count: "exact", head: true })
+        .eq("follower_id", profileId),
     ]);
     setFollowers(c1 ?? 0);
     setFollowing(c2 ?? 0);
   }, [profileId]);
 
-  useEffect(() => { void fetchCounts(); }, [fetchCounts]);
+  useEffect(() => {
+    void fetchCounts();
+  }, [fetchCounts]);
 
   const openDialog = (kind: Kind) => {
     setActiveKind(kind);
@@ -64,9 +72,11 @@ export function FollowCounts({ profileId }: { profileId: string }) {
         }}
       >
         {/* ← ポイント: forceMount でアンマウントしない */}
-        <DialogContent className="max-w-lg" forceMount>
+        <DialogContent className="mx-auto" forceMount>
           <DialogHeader>
-            <DialogTitle>{activeKind === "followers" ? "フォロワー" : "フォロー中"}</DialogTitle>
+            <DialogTitle>
+              {activeKind === "followers" ? "フォロワー" : "フォロー中"}
+            </DialogTitle>
             <DialogDescription className="sr-only">
               {activeKind === "followers"
                 ? "あなたをフォローしているユーザーの一覧です。"

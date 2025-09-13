@@ -55,25 +55,17 @@ export interface Skill {
   type: "language" | "framework" | "tool" | "other";
 }
 
-export interface ProjectMedia {
-  id?: string;
-  type: "image" | "video";
-  url: string;
-  caption?: string;
-  thumbnailUrl?: string;
-}
-
 export interface Project {
   id: string;
   profileId: string;
   title: string;
-  description: string;
-  imageUrl?: string; // Deprecated - use media instead
-  url?: string;
-  media: ProjectMedia[];
-  skills?: Skill[];
+  summary: string;
+  thumbnailUrl?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  eventSlug?: string | null;
+  content?: string | null;
+  slug?: string;
 }
 
 export interface Event {
@@ -120,23 +112,4 @@ export interface Organizer {
   organizationId: string;
   role: "owner" | "admin" | "member" | "guest";
   joinedAt: string;
-}
-
-export interface FeedPost {
-  id: string;
-  profileId: string;
-  type: "project" | "activity";
-  title: string;
-  description: string;
-  media: ProjectMedia[];
-  profile?: {
-    username: string;
-    firstName: string;
-    lastName: string;
-    imageUrl: string;
-  };
-  likes?: number;
-  comments?: number;
-  createdAt: string;
-  updatedAt: string;
 }

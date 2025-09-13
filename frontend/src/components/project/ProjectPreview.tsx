@@ -1,12 +1,9 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import MarkdownPreview from "../markdown/MarkdownPreview";
 import formatJPDate from "@/lib/utils/date";
-import { ExternalLink } from "lucide-react";
-import { Button } from "../ui/button";
 
 export type ProjectPreviewData = {
   title: string;

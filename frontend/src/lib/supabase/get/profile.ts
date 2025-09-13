@@ -49,7 +49,7 @@ export async function getProfileByUsername(username: string): Promise<{
     supabase
       .from("project")
       .select(
-        "id, profile_id, title, summary, thumbnail_url, content, event_slug, created_at, updated_at",
+        "id, slug, profile_id, title, summary, thumbnail_url, content, event_slug, created_at, updated_at",
       )
       .eq("profile_id", profileRow.id)
       .order("created_at", { ascending: false }),
@@ -127,7 +127,7 @@ export async function getProfileByUsername(username: string): Promise<{
       id: proj.id,
       profileId: proj.profile_id,
       title: proj.title,
-      description: proj.summary ?? "", // keep UI compatibility
+      summary: proj.summary ?? "", // keep UI compatibility
       url: null, // not in schema
       media: [], // not in schema
       skills: [], // not in schema
@@ -136,6 +136,7 @@ export async function getProfileByUsername(username: string): Promise<{
       thumbnailUrl: proj.thumbnail_url ?? null,
       content: proj.content ?? null,
       eventSlug: proj.event_slug ?? null,
+      slug: proj.slug,
     })),
 
     qualifications: (qualificationData ?? []).map((q: any) => ({

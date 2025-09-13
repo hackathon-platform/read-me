@@ -1,6 +1,11 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { SuggestList } from "./SuggestList";
 
 export function FollowRail() {
@@ -18,7 +23,9 @@ export function FollowRail() {
       <div className="lg:hidden">
         <Accordion type="single" collapsible>
           <AccordionItem value="suggest">
-            <AccordionTrigger className="pt-0">おすすめユーザー</AccordionTrigger>
+            <AccordionTrigger className="pt-0">
+              おすすめユーザー
+            </AccordionTrigger>
             <AccordionContent>
               <SuggestList variant="carousel" />
             </AccordionContent>

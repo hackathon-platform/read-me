@@ -1,4 +1,3 @@
-// src/app/profile/page.tsx - Optimized Version
 "use client";
 
 import { useEffect, useState } from "react";

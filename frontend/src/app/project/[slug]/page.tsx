@@ -24,15 +24,17 @@ export default async function ProjectPage({
           { label: data.title, current: true },
         ]}
       />
-      <ProjectPreview
-        data={{
-          title: data.title,
-          summary: data.summary,
-          thumbnail_url: data.thumbnail_url,
-          content: data.content,
-          updated_at: data.updated_at,
-        }}
-      />
+      <div className="animate-in fade-in duration-500 mt-4 lg:mt-4 px-3 md:px-5 w-full">
+        <ProjectPreview
+          data={{
+            title: data.title,
+            summary: data.summary,
+            thumbnail_url: data.thumbnail_url,
+            content: data.content,
+            updated_at: data.updated_at,
+          }}
+        />
+      </div>
     </>
   );
 }

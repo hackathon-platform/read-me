@@ -31,7 +31,7 @@ export function LoginForm({
       return;
     }
 
-    router.replace("/");
+    router.replace("/me");
   };
 
   return (
@@ -66,7 +66,7 @@ export function LoginForm({
             <Button type="submit" className="w-full">
               ログイン
             </Button>
-            <GoogleLoginButton />
+            {/* <GoogleLoginButton /> */}
             <p className="mt-4 text-center text-sm">
               <a href="/auth/signup" className="underline">
                 新規登録はこちら

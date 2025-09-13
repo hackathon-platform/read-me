@@ -27,7 +27,7 @@ export function ProfileContent({ profile }: { profile: Profile }) {
 
         <TabsContent value="projects">
           <div className="pt-2 space-y-4">
-            <ProjectGallery profileId={profile.id} />
+            <ProjectGallery projects={profile.projects} />
           </div>
         </TabsContent>
 

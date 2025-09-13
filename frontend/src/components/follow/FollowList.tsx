@@ -1,4 +1,3 @@
-// frontend/src/components/follow/FollowList.tsx
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { FollowButton } from "./FollowButton";
+import Link from "next/link";
 
 type Row = {
   id: string;
@@ -76,9 +76,9 @@ export function FollowList({
     const ids = Array.from(
       new Set(
         (edges ?? []).map((e) =>
-          kind === "followers" ? e.follower_id : e.followee_id
-        )
-      )
+          kind === "followers" ? e.follower_id : e.followee_id,
+        ),
+      ),
     );
 
     if (ids.length === 0) {
@@ -112,7 +112,7 @@ export function FollowList({
           last_name: p.last_name,
           image_url: p.image_url,
         } as Row,
-      ])
+      ]),
     );
 
     const merged = ids.map((id) => byId.get(id)).filter(Boolean) as Row[];
@@ -136,7 +136,6 @@ export function FollowList({
   };
 
   const onRelationChange = (nowFollowing: boolean, id: string) => {
-    // 「フォロー中」一覧でアンフォローしたら行を削除
     if (kind === "following" && !nowFollowing) {
       setItems((prev) => prev.filter((x) => x.id !== id));
     }
@@ -149,31 +148,55 @@ export function FollowList({
       {/* 初回スケルトン */}
       {initialLoading && <RailSkeleton rows={5} />}
 
-      {items.map((u) => (
-        <div
-          key={`${kind}-${u.id}`}
-          className="flex items-center justify-between gap-3 rounded-md border p-2"
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <Avatar className="h-9 w-9">
-              <AvatarImage src={u.image_url || undefined} />
-              <AvatarFallback>{u.last_name?.[0] ?? "?"}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <div className="font-medium leading-tight truncate">
-                {u.last_name} {u.first_name}
+      <ul className="space-y-2" aria-busy={loading}>
+        {items.map((u) => (
+          <li
+            key={`${kind}-${u.id}`}
+            className="flex items-center justify-between gap-3 rounded-md border p-2"
+          >
+            {u.username ? (
+              <Link
+                href={`/me/${u.username}`}
+                className="flex items-center gap-3 min-w-0"
+                aria-label={`${u.last_name} ${u.first_name} のプロフィールへ`}
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={u.image_url || undefined} />
+                  <AvatarFallback>{u.last_name?.[0] ?? "?"}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="font-medium leading-tight truncate">
+                    {u.last_name} {u.first_name}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    @{u.username}
+                  </div>
+                </div>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-3 min-w-0 opacity-70">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={u.image_url || undefined} />
+                  <AvatarFallback>{u.last_name?.[0] ?? "?"}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="font-medium leading-tight truncate">
+                    {u.last_name} {u.first_name}
+                  </div>
+                  <div className="text-xs text-muted-foreground truncate">
+                    @unknown
+                  </div>
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground truncate">
-                @{u.username ?? "unknown"}
-              </div>
-            </div>
-          </div>
-          <FollowButton
-            targetProfileId={u.id}
-            onChanged={(now) => onRelationChange(now, u.id)}
-          />
-        </div>
-      ))}
+            )}
+
+            <FollowButton
+              targetProfileId={u.id}
+              onChanged={(now) => onRelationChange(now, u.id)}
+            />
+          </li>
+        ))}
+      </ul>
 
       {/* 追加読み込み中のスケルトン */}
       {everLoaded && loading && items.length > 0 && <RailSkeleton rows={2} />}
@@ -201,7 +224,10 @@ function RailSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between gap-3 rounded-md border p-2">
+        <div
+          key={i}
+          className="flex items-center justify-between gap-3 rounded-md border p-2"
+        >
           <div className="flex items-center gap-3 min-w-0">
             <Skeleton className="h-9 w-9 rounded-full" />
             <div className="space-y-1">

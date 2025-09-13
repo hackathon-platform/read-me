@@ -7,7 +7,6 @@ import { useSupabase } from "@/components/supabase-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,

@@ -3,11 +3,9 @@
 import * as React from "react";
 import {
   User,
-  CalendarCheck,
   Megaphone,
   LifeBuoy,
   MessageSquare,
-  Briefcase,
   Home,
   SquarePlus,
 } from "lucide-react";
@@ -59,8 +57,6 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // const { user, signOut, loading } = useSupabase();
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
