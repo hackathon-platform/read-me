@@ -130,7 +130,7 @@ export function ParticipantsPane({ participants }: Props) {
         </div>
       ) : (
         <div className="px-6">
-          <ProfileLoader profileId={selected.profile.id} />
+          <ProfileLoader username={selected.profile.username!} />
         </div>
       )}
     </div>
