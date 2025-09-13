@@ -114,6 +114,9 @@ export function ExperienceEdit({
         id={formId}
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 pt-2"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
       >
         {fields.length === 0 ? (
           <Card>
