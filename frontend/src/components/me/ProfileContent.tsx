@@ -1,7 +1,7 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/me/ui/ProfileTabs";
 import { BasicSection } from "./section/BasicSection";
 import { EducationSection } from "./section/EducationSection";
 import { ExperienceSection } from "./section/ExperienceSection";
