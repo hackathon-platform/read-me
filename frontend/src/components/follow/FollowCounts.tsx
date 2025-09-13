@@ -72,7 +72,7 @@ export function FollowCounts({ profileId }: { profileId: string }) {
         }}
       >
         {/* ← ポイント: forceMount でアンマウントしない */}
-        <DialogContent className="max-w-lg" forceMount>
+        <DialogContent className="mx-auto" forceMount>
           <DialogHeader>
             <DialogTitle>
               {activeKind === "followers" ? "フォロワー" : "フォロー中"}

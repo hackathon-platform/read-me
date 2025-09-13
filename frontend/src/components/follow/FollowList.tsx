@@ -1,6 +1,6 @@
-// frontend/src/components/follow/FollowList.tsx
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,6 +26,7 @@ export function FollowList({
   pageSize?: number;
   enabled?: boolean; // ← 追加
 }) {
+  const router = useRouter();
   const [items, setItems] = useState<Row[]>([]);
   const [page, setPage] = useState(0);
   const [done, setDone] = useState(false);
@@ -136,10 +137,13 @@ export function FollowList({
   };
 
   const onRelationChange = (nowFollowing: boolean, id: string) => {
-    // 「フォロー中」一覧でアンフォローしたら行を削除
     if (kind === "following" && !nowFollowing) {
       setItems((prev) => prev.filter((x) => x.id !== id));
     }
+  };
+
+  const goProfile = (username: string) => {
+    router.push(`/me/${username}`);
   };
 
   const initialLoading = !everLoaded && loading;
@@ -150,9 +154,10 @@ export function FollowList({
       {initialLoading && <RailSkeleton rows={5} />}
 
       {items.map((u) => (
-        <div
+        <button
           key={`${kind}-${u.id}`}
-          className="flex items-center justify-between gap-3 rounded-md border p-2"
+          onClick={() => goProfile(u.username!)}
+          className="flex w-full items-center justify-between gap-3 rounded-md border p-2"
         >
           <div className="flex items-center gap-3 min-w-0">
             <Avatar className="h-9 w-9">
@@ -168,11 +173,16 @@ export function FollowList({
               </div>
             </div>
           </div>
-          <FollowButton
-            targetProfileId={u.id}
-            onChanged={(now) => onRelationChange(now, u.id)}
-          />
-        </div>
+          <div
+            onClick={(e) => e.stopPropagation()} // ← prevent bubble
+            onKeyDown={(e) => e.stopPropagation()} // ← keyboard too
+          >
+            <FollowButton
+              targetProfileId={u.id}
+              onChanged={(now) => onRelationChange(now, u.id)}
+            />
+          </div>
+        </button>
       ))}
 
       {/* 追加読み込み中のスケルトン */}

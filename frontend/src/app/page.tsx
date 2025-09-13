@@ -35,7 +35,7 @@ export default function Page() {
           </h1>
 
           <p className="mt-4 max-w-3xl text-pretty text-base text-muted-foreground md:text-lg">
-            ReadMEは、個人やイベントでの成果物を通じて、あなたのキャリアを支援します。
+            ReadMEは、個人やイベントでの成果物を通じて、キャリアを支援します。
             <br />
             あなたの「つくる」を、もっと広く。
           </p>
@@ -54,23 +54,6 @@ export default function Page() {
               登録は無料・数分で公開できます
             </div>
           </div>
-
-          {/* Hero showcase */}
-          {/* <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="overflow-hidden border-muted/60">
-                <div className="aspect-video w-full bg-[linear-gradient(135deg,rgba(99,102,241,.22),rgba(16,185,129,.15))] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]" />
-                <CardHeader className="pb-2">
-                  <CardTitle className="line-clamp-1">
-                    サンプルプロジェクト {i + 1}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 text-sm text-muted-foreground">
-                  16:9 サムネイルで美しく表示。Markdownで詳細もリッチに。
-                </CardContent>
-              </Card>
-            ))}
-          </div> */}
         </div>
       </section>
 
