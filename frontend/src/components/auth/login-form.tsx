@@ -68,7 +68,7 @@ export function LoginForm({
             </Button>
             {/* <GoogleLoginButton /> */}
             <p className="mt-4 text-center text-sm">
-              <a href="/auth/signup" className="underline">
+              <a href="/auth/signin" className="underline">
                 新規登録はこちら
               </a>
             </p>

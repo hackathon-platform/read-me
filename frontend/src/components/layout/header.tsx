@@ -26,27 +26,6 @@ import {
 export default function Header() {
   const { user, signOut, loading } = useSupabase();
 
-  const navItems = [
-    {
-      name: "Discover",
-      href: "/events",
-      icon: <Search className="mr-2 h-4 w-4" />,
-    },
-    {
-      name: "Create Event",
-      href: "/events/create",
-      icon: <Plus className="mr-2 h-4 w-4" />,
-    },
-  ];
-
-  if (user) {
-    navItems.push({
-      name: "登録済みイベント",
-      href: "/events/registered",
-      icon: <CalendarDays className="mr-2 h-4 w-4" />,
-    });
-  }
-
   const headerClasses = `
     sticky top-0 z-50 w-full transition-all duration-300 bg-transparent border-b
   `;
@@ -113,10 +92,10 @@ export default function Header() {
                         </DropdownMenuItem>
                       </Link>
 
-                      <Link href="/events/registered">
+                      <Link href="/event">
                         <DropdownMenuItem>
                           <CalendarDays className="h-4 w-4 mr-2" />
-                          <span>登録済みイベント</span>
+                          <span>イベント（開発中）</span>
                         </DropdownMenuItem>
                       </Link>
                       <ThemeToggle />
