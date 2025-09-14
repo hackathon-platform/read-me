@@ -129,10 +129,9 @@ export default function MarkdownReadmeEditor({
     if (error) throw error;
     onProgress?.(95);
 
-    const { data: pub, error: pubErr } = supabase.storage
+    const { data: pub } = supabase.storage
       .from(mediaBucketName)
       .getPublicUrl(data.path);
-    if (pubErr) throw pubErr as any;
 
     onProgress?.(100);
     return pub.publicUrl;

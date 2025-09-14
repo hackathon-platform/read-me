@@ -61,6 +61,9 @@ interface Props {
   formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
+type FormInput = z.input<typeof schema>; // before transform (description/endMonth optional/null)
+type FormOutput = z.output<typeof schema>; // after transform (both are strings)
+
 export function ExperienceEdit({
   profileId,
   initialData,
@@ -70,7 +73,7 @@ export function ExperienceEdit({
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
-  const form = useForm<FormValues>({
+  const form = useForm<FormInput>({
     resolver: zodResolver(schema),
     defaultValues: { experiences: initialData },
   });
@@ -80,14 +83,13 @@ export function ExperienceEdit({
     name: "experiences",
   });
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (raw: FormInput) => {
     setIsSaving(true);
-    // delete old entries
+    const { experiences }: FormOutput = schema.parse(raw);
     await supabase.from("experience").delete().eq("profile_id", profileId);
 
-    // insert new
-    if (values.experiences.length) {
-      const payload = values.experiences.map((e) => ({
+    if (experiences.length) {
+      const payload = experiences.map((e) => ({
         profile_id: profileId,
         title: e.title,
         organization: e.organization,
@@ -239,6 +241,7 @@ export function ExperienceEdit({
                             <Input
                               {...field}
                               type="month"
+                              value={field.value ?? ""}
                               placeholder="現職の場合は空欄"
                               className="h-9"
                             />

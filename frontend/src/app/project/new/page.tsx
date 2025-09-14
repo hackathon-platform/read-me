@@ -103,8 +103,8 @@ export default function CreateProjectPage() {
       if (created?.slug) {
         router.push(`/project/${created.slug}`);
       }
-    } catch (e: any) {
-      setError(e?.message ?? "保存に失敗しました。");
+    } catch {
+      setError("保存に失敗しました。");
     } finally {
       setIsSaving(false);
     }

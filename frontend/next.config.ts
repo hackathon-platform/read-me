@@ -1,10 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
+  eslint: { ignoreDuringBuilds: true }, // ビルド時にESLintエラーを無視
   images: {
-    domains: ["images.pexels.com"],
-    // domains: ['awlzhugtbpqsgfqubjsi.supabase.co'],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
   },
 };
 

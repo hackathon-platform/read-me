@@ -4,10 +4,9 @@ import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import remarkSlug from "remark-slug";
-import rehypeKatex from "rehype-katex";
-import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import "katex/dist/katex.min.css";
 import {
@@ -45,9 +44,8 @@ function buildToc(md: string) {
     }
     if (inFence || inMath) continue;
 
-    const m2 = /^\s*##\s+(.+)$/.exec(raw);
-    const m3 = !m2 && /^\s*###\s+(.+)$/.exec(raw);
-
+    const m2 = raw.match(/^\s*##\s+(.+)$/);
+    const m3 = raw.match(/^\s*###\s+(.+)$/);
     const text = (m2?.[1] ?? m3?.[1])?.trim();
     if (!text) continue;
 
@@ -121,13 +119,12 @@ export default function MarkdownPreview({ content }: Props) {
 
       <div>
         <ReactMarkdown
-          // remark-slug adds deterministic ids to headings (SSR == client)
-          remarkPlugins={[remarkGfm, remarkMath, remarkSlug]}
+          remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[
             rehypeRaw,
             [rehypeSanitize, sanitizeSchema],
-            rehypeKatex,
-            [rehypeHighlight, { ignoreMissing: true }],
+            rehypeSlug,
+            [rehypeAutolinkHeadings, { behavior: "wrap" }],
           ]}
           components={{
             // We DON'T generate ids here. remark-slug already did that.
@@ -228,21 +225,22 @@ export default function MarkdownPreview({ content }: Props) {
                 </code>
               );
             },
-            img: ({ src, alt }) => {
-              let url = src || "";
+            img: ({ src, alt, ...rest }) => {
+              const url = typeof src === "string" ? src : "";
               const m = url.match(/\s*=\s*(\d+)x$/);
-              let style: React.CSSProperties | undefined;
-              if (m) {
-                style = { width: parseInt(m[1], 10) };
-                url = url.replace(/\s*=\s*\d+x$/, "");
-              }
+              const style: React.CSSProperties | undefined = m
+                ? { width: Number(m[1]) }
+                : undefined;
+              const cleanUrl = m ? url.replace(/\s*=\s*\d+x$/, "") : url;
+
               // eslint-disable-next-line @next/next/no-img-element
               return (
                 <img
-                  src={url}
-                  alt={alt || ""}
+                  src={cleanUrl}
+                  alt={alt ?? ""}
                   style={style}
                   className="my-3 rounded-md border max-w-full h-auto"
+                  {...rest}
                 />
               );
             },

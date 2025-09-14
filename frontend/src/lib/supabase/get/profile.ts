@@ -105,8 +105,8 @@ export async function getProfileByUsername(username: string): Promise<{
       id: edu.id,
       institution: edu.institution,
       fieldOfStudy: edu.field_of_study,
-      startMonth: safeYYYYMM(edu.start_month),
-      endMonth: safeYYYYMM(edu.end_month),
+      startMonth: safeYYYYMM(edu.start_month) ?? "",
+      endMonth: safeYYYYMM(edu.end_month) ?? undefined,
       description: edu.description,
     })),
 
@@ -114,7 +114,7 @@ export async function getProfileByUsername(username: string): Promise<{
       id: exp.id,
       title: exp.title,
       organization: exp.organization,
-      startMonth: safeYYYYMM(exp.start_month),
+      startMonth: safeYYYYMM(exp.start_month) ?? "",
       endMonth: safeYYYYMM(exp.end_month) ?? "現在",
       description: exp.description,
       iconUrl: exp.icon_url,
@@ -142,7 +142,7 @@ export async function getProfileByUsername(username: string): Promise<{
     qualifications: (qualificationData ?? []).map((q: any) => ({
       id: q.id,
       name: q.name,
-      acquisitionDate: safeYYYYMM(q.acquisition_date),
+      acquisitionDate: safeYYYYMM(q.acquisition_date) ?? "",
     })),
   };
 
