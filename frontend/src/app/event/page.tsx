@@ -4,14 +4,9 @@ import { supabase } from "@/lib/supabase/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Calendar, Plus, ArrowUpDown } from "lucide-react";
+import { Calendar, Plus } from "lucide-react";
 
 export const revalidate = 120;
-
-type SearchParams = {
-  q?: string;
-  sort?: "new" | "name";
-};
 
 type EventRow = {
   id: string;
@@ -21,25 +16,12 @@ type EventRow = {
   banner_url?: string | null;
 };
 
-export default async function EventIndex({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
-  const q = (searchParams?.q ?? "").trim();
-  const sort = (searchParams?.sort as SearchParams["sort"]) || "new";
-
-  let query = supabase
+export default async function EventIndex() {
+  const { data: events, count } = await supabase
     .from("event")
-    .select("id,name,slug,created_at,banner_url", { count: "exact" });
-
-  if (q) query = query.ilike("name", `%${q}%`);
-  query =
-    sort === "name"
-      ? query.order("name", { ascending: true, nullsFirst: false })
-      : query.order("created_at", { ascending: false, nullsFirst: false });
-
-  const { data: events, count } = await query.returns<EventRow[]>();
+    .select("id,name,slug,created_at,banner_url", { count: "exact" })
+    .order("created_at", { ascending: false, nullsFirst: false })
+    .returns<EventRow[]>();
 
   return (
     <div className="mx-auto w-full max-w-6xl px-3 py-6">
@@ -78,7 +60,6 @@ export default async function EventIndex({
               >
                 {/* Header: image if exists, else gradient */}
                 <div className="relative h-28 overflow-hidden">
-                  {/* Fallback gradient layer (also shows while image loads) */}
                   <div
                     className="absolute inset-0"
                     style={{ background: gradientFor(e.slug || e.name) }}
@@ -94,7 +75,6 @@ export default async function EventIndex({
                       priority={false}
                     />
                   ) : null}
-                  {/* Soft scrim for text/badge legibility */}
                   <div className="absolute inset-0 bg-[radial-gradient(transparent,rgba(0,0,0,0.12))]" />
                   <div className="absolute right-3 top-3">
                     <Badge variant="secondary" className="rounded-full">
@@ -131,7 +111,7 @@ export default async function EventIndex({
           ))}
         </ul>
       ) : (
-        <EmptyState q={q} />
+        <EmptyState />
       )}
     </div>
   );
@@ -162,14 +142,16 @@ function formatJPDate(iso?: string | null) {
   if (!iso) return null;
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
-  return new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "2-digit" }).format(d);
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  }).format(d);
 }
-function EmptyState({ q }: { q: string }) {
+function EmptyState() {
   return (
     <div className="mt-10 rounded-xl border p-10 text-center">
-      <p className="text-sm text-muted-foreground">
-        {q ? <>「<span className="font-medium text-foreground">{q}</span>」に一致するイベントは見つかりませんでした。</> : <>まだイベントがありません。</>}
-      </p>
+      <p className="text-sm text-muted-foreground">まだイベントがありません。</p>
       <div className="mt-4">
         <Link href="/event/new">
           <Button>
