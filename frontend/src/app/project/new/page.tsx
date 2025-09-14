@@ -22,12 +22,15 @@ import {
 } from "@/components/ui/drawer";
 import { Loader2 } from "lucide-react";
 import { ProjectPreview } from "@/components/project/ProjectPreview";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import Loading from "@/components/common/Loading";
 
 const PROJECT_BUCKET = "project"; // Supabase Storage のバケット名
 const SUMMARY_LIMIT = 100;
 
 export default function CreateProjectPage() {
   const router = useRouter();
+  const { user, isLoading } = useSupabaseAuth();
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState(""); // 必須（100字以内）
   const [eventSlug, setEventSlug] = useState(""); // 任意（event.slug 参照）
@@ -37,6 +40,13 @@ export default function CreateProjectPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  // Immediate redirect if no user
+  useEffect(() => {
+    if (!user) {
+      router.replace("/auth/login");
+    }
+  }, [user, isLoading, router]);
 
   const summaryLen = summary.length;
   const summaryTooLong = summaryLen > SUMMARY_LIMIT;
@@ -114,6 +124,12 @@ export default function CreateProjectPage() {
     { key: "title", label: "プロジェクト名", ok: Boolean(title.trim()) },
     { key: "summary", label: "概要", ok: Boolean(summary.trim()) },
   ];
+
+  if (isLoading) {
+    return <Loading />;
+  } else if (!user) {
+    return null;
+  }
 
   return (
     <>
