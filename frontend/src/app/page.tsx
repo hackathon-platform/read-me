@@ -125,7 +125,7 @@ export default function Page() {
             </Badge>
           </div>
 
-          <h1 className="text-balance text-4xl font-bold leading-tight md:text-6xl">
+          <h1 className="text-balance text-3xl font-bold leading-tight md:text-4xl lg:text-6xl">
             <span className="bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
               あなたの「つくる」が、
               <br />
