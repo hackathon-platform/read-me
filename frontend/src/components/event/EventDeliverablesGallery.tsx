@@ -298,7 +298,7 @@ export default function EventDeliverablesGallery({
 
               <TabsContent
                 value="preview"
-                className="m-0 flex-1 overflow-auto p-4"
+                className="m-0 min-h-0 flex-1 overflow-y-auto p-4"
               >
                 {!selected ? (
                   <div className="flex h-full items-center justify-center">
@@ -335,28 +335,31 @@ export default function EventDeliverablesGallery({
         ) : (
           <GalleryGrid items={filtered} onClick={openPreview} />
         )}
+
         <Drawer open={openDrawer} onOpenChange={setOpenDrawer}>
-          <DrawerContent className="max-h-[85vh] overflow-auto p-0">
-            <DrawerHeader className="px-4 pt-4">
-              <DrawerTitle>プレビュー</DrawerTitle>
-              <DrawerClose asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="閉じる"
-                  className={cn("absolute top-2.5 right-2.5")}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </DrawerClose>
-            </DrawerHeader>
-            <div className="px-4 pb-4">
-              {selected && (
-                <ProjectAtEventPreview
-                  data={selected}
-                  owner={selected.owner || undefined}
-                />
-              )}
+          <DrawerContent className="p-0">
+            <div className="mx-auto w-full max-w-5xl h-[85vh] max-h-[90vh] flex flex-col">
+              <DrawerHeader className="px-4 pt-4">
+                <DrawerTitle>プレビュー</DrawerTitle>
+                <DrawerClose asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="閉じる"
+                    className={cn("absolute top-2.5 right-2.5")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DrawerClose>
+              </DrawerHeader>
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                {selected && (
+                  <ProjectAtEventPreview
+                    data={selected}
+                    owner={selected.owner || undefined}
+                  />
+                )}
+              </div>
             </div>
           </DrawerContent>
         </Drawer>

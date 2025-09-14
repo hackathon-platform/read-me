@@ -29,7 +29,9 @@ export default async function EventIndex() {
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">イベント一覧</h1>
-          <p className="text-sm text-muted-foreground">全てのイベントを確認できます。</p>
+          <p className="text-sm text-muted-foreground">
+            全てのイベントを確認できます。
+          </p>
         </div>
         <div className="flex gap-2">
           <Link href="/event/new">
@@ -55,7 +57,7 @@ export default async function EventIndex() {
                 href={`/event/${e.slug}`}
                 className={cn(
                   "group block overflow-hidden rounded-xl border bg-card transition-all",
-                  "hover:shadow-md hover:border-foreground/20"
+                  "hover:shadow-md hover:border-foreground/20",
                 )}
               >
                 {/* Header: image if exists, else gradient */}
@@ -89,7 +91,9 @@ export default async function EventIndex() {
                     <h2 className="line-clamp-2 text-base font-semibold leading-snug">
                       {e.name}
                     </h2>
-                    {isNew(e.created_at) && <Badge className="shrink-0">NEW</Badge>}
+                    {isNew(e.created_at) && (
+                      <Badge className="shrink-0">NEW</Badge>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -103,7 +107,12 @@ export default async function EventIndex() {
 
                   <div className="flex items-center justify-between pt-1 text-sm">
                     <span className="text-muted-foreground">詳細ページへ</span>
-                    <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
+                    <span
+                      aria-hidden
+                      className="transition-transform group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -120,7 +129,7 @@ export default async function EventIndex() {
 /* ---------------- helpers ---------------- */
 
 function gradientFor(seed: string) {
-  const h1 = (hashCode(seed) % 360 + 360) % 360;
+  const h1 = ((hashCode(seed) % 360) + 360) % 360;
   const h2 = (h1 + 40) % 360;
   return `linear-gradient(135deg, hsl(${h1} 70% 60%) 0%, hsl(${h2} 70% 55%) 100%)`;
 }
@@ -151,7 +160,9 @@ function formatJPDate(iso?: string | null) {
 function EmptyState() {
   return (
     <div className="mt-10 rounded-xl border p-10 text-center">
-      <p className="text-sm text-muted-foreground">まだイベントがありません。</p>
+      <p className="text-sm text-muted-foreground">
+        まだイベントがありません。
+      </p>
       <div className="mt-4">
         <Link href="/event/new">
           <Button>

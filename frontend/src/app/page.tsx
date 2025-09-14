@@ -170,7 +170,7 @@ export default function Page() {
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
                 サムネ・要約・READMEで魅力を伝達。
-                <br/>
+                <br />
                 自動でポートフォリオに追加。
               </CardContent>
             </Card>
@@ -198,7 +198,6 @@ export default function Page() {
                 企業の選考情報から逆検索。あなたの「つくる」を評価する企業とつながる。
               </CardContent>
             </Card>
-
           </div>
         </div>
       </section>
