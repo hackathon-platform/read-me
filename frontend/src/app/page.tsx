@@ -127,7 +127,7 @@ export default function Page() {
 
           <h1 className="text-balance text-4xl font-bold leading-tight md:text-6xl">
             <span className="bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent">
-              つくったものが、
+              あなたの「つくる」が、
               <br />
               ちゃんと見つかる。
             </span>
@@ -136,7 +136,7 @@ export default function Page() {
           <p className="mt-4 max-w-3xl text-pretty text-base text-muted-foreground md:text-lg">
             ReadMEは、個人やイベントでの成果物を通じて、キャリアを支援します。
             <br />
-            あなたの「つくる」を、もっと広く。
+            あなたの「つくる」を、もっと価値あるものに。
           </p>
 
           {/* Always mounted, hidden until we know user is logged out */}
@@ -169,7 +169,9 @@ export default function Page() {
                 <CardTitle>作品を美しく公開</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                サムネ・要約・READMEで魅力を伝達。6桁スラッグによるシンプルなURLでシェアも簡単。
+                サムネ・要約・READMEで魅力を伝達。
+                <br/>
+                自動でポートフォリオに追加。
               </CardContent>
             </Card>
 
@@ -178,10 +180,10 @@ export default function Page() {
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                   <Users className="h-5 w-5 text-primary" />
                 </div>
-                <CardTitle>フォローでつながる</CardTitle>
+                <CardTitle>イベントで発見される</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                気になるクリエイターをフォロー。更新やイベント参加をキャッチアップ。
+                オンライン/オフラインのイベントに紐づけて展示。見てもらう機会を最大化。
               </CardContent>
             </Card>
 
@@ -190,12 +192,13 @@ export default function Page() {
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                   <Eye className="h-5 w-5 text-primary" />
                 </div>
-                <CardTitle>イベントで発見される</CardTitle>
+                <CardTitle>全く新しい「実績採用」</CardTitle>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
-                オンライン/オフラインのイベントに紐づけて展示。見てもらう機会を最大化。
+                企業の選考情報から逆検索。あなたの「つくる」を評価する企業とつながる。
               </CardContent>
             </Card>
+
           </div>
         </div>
       </section>
