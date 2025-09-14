@@ -42,11 +42,11 @@ export default function CreateProjectPage() {
   const [previewOpen, setPreviewOpen] = useState(false);
 
   // Immediate redirect if no user
-  useEffect(() => {
-    if (!user) {
-      router.replace("/auth/login");
-    }
-  }, [user, isLoading, router]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     router.replace("/auth/login");
+  //   }
+  // }, [user, isLoading, router]);
 
   const summaryLen = summary.length;
   const summaryTooLong = summaryLen > SUMMARY_LIMIT;
@@ -127,8 +127,6 @@ export default function CreateProjectPage() {
 
   if (isLoading) {
     return <Loading />;
-  } else if (!user) {
-    return null;
   }
 
   return (
