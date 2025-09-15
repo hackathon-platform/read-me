@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { FollowButton } from "./FollowButton";
 import { useMyProfileId } from "@/hooks/useMyProfileId";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type Row = {
@@ -103,9 +104,11 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
         {initialLoading && <RailSkeleton rows={5} />}
 
         {items.map((u) => (
-          <div
+          <Link
             key={u.id}
+            href={`/me/${u.username}`}
             className="flex items-center justify-between gap-3 rounded-md border p-2"
+            aria-label={`${u.last_name} ${u.first_name} のプロフィールへ`}
           >
             <div className="flex items-center gap-3 min-w-0">
               <Avatar className="h-9 w-9">
@@ -125,7 +128,7 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
               targetProfileId={u.id}
               onChanged={(now) => now && onFollowed(u.id)}
             />
-          </div>
+          </Link>
         ))}
 
         {loadingMore && <RailSkeleton rows={2} />}
@@ -164,9 +167,11 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
         {initialLoading && <CarouselSkeleton cards={4} />}
 
         {items.map((u) => (
-          <div
+          <Link
             key={u.id}
+            href={`/me/${u.username}`}
             className="snap-start shrink-0 w-36 sm:w-40 rounded-md border p-3 flex flex-col items-center text-center"
+            aria-label={`${u.last_name} ${u.first_name} のプロフィールへ`}
           >
             <Avatar className="h-14 w-14 mb-2">
               <AvatarImage src={u.image_url || undefined} />
@@ -190,7 +195,7 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
                 onChanged={(now) => now && onFollowed(u.id)}
               />
             </div>
-          </div>
+          </Link>
         ))}
 
         {loadingMore && <CarouselSkeleton cards={1} />}
