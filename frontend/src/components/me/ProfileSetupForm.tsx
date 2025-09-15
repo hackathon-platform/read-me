@@ -63,8 +63,8 @@ export function ProfileSetupForm() {
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size / 1024 / 1024 > 1) {
-        toast.error("画像は1MB以下にしてください。");
+      if (file.size / 1024 / 1024 > 10) {
+        toast.error("画像は10MB以下にしてください。");
         return;
       }
       handleFile(file, setImageUrl);
