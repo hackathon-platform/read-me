@@ -22,7 +22,7 @@ export default async function ProfilePage({
           { label: username, current: true },
         ]}
       />
-      <div className="animate-in fade-in duration-500 mt-2 lg:mt-4 px-3 md:px-5 w-full">
+      <div className="animate-in fade-in duration-500 mt-2 lg:mt-4 md:mb-10 px-3 md:px-5 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
             <ProfileContent profile={profile} />

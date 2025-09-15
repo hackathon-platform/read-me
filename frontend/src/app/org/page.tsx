@@ -57,7 +57,7 @@ export default function OrganizationsPage() {
         breadcrumbs={[{ label: "運営", href: "/org", current: true }]}
       />
 
-      <div className="animate-in fade-in duration-500 mx-auto w-full px-4 py-4">
+      <div className="animate-in fade-in duration-500 mt-2 lg:mt-4 md:mb-10 px-3 md:px-5 w-full">
         {/* Heading */}
         <div className="mb-4 flex items-center justify-between gap-2">
           <h3 className="text-2xl md:text-3xl font-bold">運営中のイベント</h3>
