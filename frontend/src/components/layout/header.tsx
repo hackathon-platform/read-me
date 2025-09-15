@@ -40,6 +40,7 @@ export default function Header() {
   const lastName = user?.last_name ?? "";
   const fullName = firstName && lastName ? `${lastName} ${firstName} ` : "";
   const avatarUrl = user?.image_url ?? "";
+  const userEmail = user?.email ?? "";
   return (
     <div>
       <header className={headerClasses}>
@@ -69,19 +70,18 @@ export default function Header() {
                             </AvatarFallback>
                           )}
                         </Avatar>
-                        <div className="grid flex-1 text-left text-sm leading-tight">
-                          <span className="truncate font-semibold">
-                            {fullName || "ユーザー"}
-                          </span>
-                          <span className="truncate text-xs">{user.email}</span>
-                        </div>
                         <ChevronDown className="ml-auto size-4" />
                       </Button>
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel className="font-medium">
-                        {fullName || "ユーザー"}
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-semibold">
+                            {fullName || "ユーザー"}
+                          </span>
+                          <span className="truncate text-xs">{userEmail}</span>
+                        </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
 
