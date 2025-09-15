@@ -3,7 +3,7 @@
 import { useState } from "react";
 import BasicDisplay from "../display/BasicDisplay";
 import { ProfileEdit } from "../edit/ProfileEdit";
-import { Profile } from "@/lib/types";
+import { Basic } from "@/lib/types";
 import { EditIcon } from "lucide-react";
 import {
   Drawer,
@@ -19,17 +19,18 @@ import { Button } from "@/components/ui/button";
 import { useCanEditProfile } from "@/hooks/useCanEdit";
 
 interface BasicSectionProps {
-  profile: Profile;
+  profileId: string;
+  basic: Basic;
 }
 
-export function BasicSection({ profile }: BasicSectionProps) {
+export function BasicSection({ profileId, basic }: BasicSectionProps) {
   const [open, setOpen] = useState(false);
   const formId = "profile-edit-form";
-  const canEdit = useCanEditProfile(profile.id);
+  const canEdit = useCanEditProfile(profileId);
 
   return (
     <div className="relative">
-      <BasicDisplay profile={profile} />
+      <BasicDisplay profileId={profileId} basic={basic} />
       {canEdit && (
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
@@ -49,10 +50,10 @@ export function BasicSection({ profile }: BasicSectionProps) {
             {/* フォーム本体（スクロール領域） */}
             <div className="overflow-y-auto px-4 pb-2 max-h-[calc(90vh-120px)]">
               <ProfileEdit
-                initialData={profile}
+                profileId={profileId}
+                initialData={basic}
                 onSave={() => setOpen(false)}
                 onCancel={() => setOpen(false)}
-                formId={formId}
                 key={open ? "open" : "closed"} // 閉じたら初期値に戻したい場合に再マウント
               />
             </div>

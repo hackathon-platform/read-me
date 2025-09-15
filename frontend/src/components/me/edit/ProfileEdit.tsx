@@ -27,14 +27,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
-
-const platformEnum = [
-  "github",
-  "linkedin",
-  "instagram",
-  "facebook",
-  "other",
-] as const;
+import { platformEnum } from "@/components/common/SocialIcon";
+import { Basic } from "@/lib/types";
 
 const schema = z.object({
   username: z
@@ -59,28 +53,19 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 interface Props {
-  initialData: {
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    firstNameKana: string;
-    lastNameKana: string;
-    imageUrl: string;
-    description?: string;
-    social?: { platform: string; url: string }[];
-  };
+  profileId: string;
+  initialData: Basic;
   onCancel: () => void;
   onSave: () => void; // 保存成功時にDrawerを閉じる
-  formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
 export function ProfileEdit({
+  profileId,
   initialData,
   onCancel,
   onSave,
-  formId = "profile-edit-form",
 }: Props) {
+  const formId = "profile-edit-form";
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialData.imageUrl);
@@ -97,7 +82,7 @@ export function ProfileEdit({
       lastNameKana: initialData.lastNameKana,
       description: initialData.description ?? "",
       social:
-        initialData.social?.map((s) => ({
+        initialData.socials?.map((s) => ({
           platform: platformEnum.includes(s.platform as any)
             ? (s.platform as (typeof platformEnum)[number])
             : "other",
@@ -149,10 +134,7 @@ export function ProfileEdit({
 
     if (selectedFile) {
       try {
-        uploadedImageUrl = await uploadImageToSupabase(
-          selectedFile,
-          initialData.id,
-        );
+        uploadedImageUrl = await uploadImageToSupabase(selectedFile, profileId);
       } catch (err: any) {
         toast.error(`画像アップロードに失敗しました: ${err.message}`);
         setIsSaving(false);
@@ -171,7 +153,7 @@ export function ProfileEdit({
         image_url: uploadedImageUrl || null,
         description: values.description,
       })
-      .eq("id", initialData.id);
+      .eq("id", profileId);
 
     if (profileError) {
       toast.error(profileError.message);
@@ -179,11 +161,11 @@ export function ProfileEdit({
       return;
     }
 
-    await supabase.from("social").delete().eq("profile_id", initialData.id);
+    await supabase.from("social").delete().eq("profile_id", profileId);
 
     if (values.social && values.social.length) {
       const payload = values.social.map((s) => ({
-        profile_id: initialData.id,
+        profile_id: profileId,
         platform: s.platform,
         url: s.url,
       }));

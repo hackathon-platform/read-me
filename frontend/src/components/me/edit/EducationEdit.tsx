@@ -51,15 +51,10 @@ interface Props {
   initialData: Education[];
   onCancel: () => void;
   onSave: () => void;
-  formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
-export function EducationEdit({
-  profileId,
-  initialData,
-  onSave,
-  formId = "education-edit-form",
-}: Props) {
+export function EducationEdit({ profileId, initialData, onSave }: Props) {
+  const formId = "education-edit-form";
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 

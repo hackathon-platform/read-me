@@ -90,16 +90,18 @@ export async function getProfileByUsername(username: string): Promise<{
   // 4) Shape into your UI Profile type
   const profile: Profile = {
     id: profileRow.id,
-    username: profileRow.username,
-    firstName: profileRow.first_name,
-    lastName: profileRow.last_name,
-    firstNameKana: profileRow.first_name_kana,
-    lastNameKana: profileRow.last_name_kana,
-    imageUrl: profileRow.image_url ?? "",
-    description: profileRow.description,
-    resumeUrl: profileRow.resume_url ?? "",
 
-    socials: socialData ?? [],
+    basic: {
+      username: profileRow.username,
+      firstName: profileRow.first_name,
+      lastName: profileRow.last_name,
+      firstNameKana: profileRow.first_name_kana,
+      lastNameKana: profileRow.last_name_kana,
+      imageUrl: profileRow.image_url ?? "",
+      description: profileRow.description,
+      resumeUrl: profileRow.resume_url ?? "",
+      socials: socialData ?? [],
+    },
 
     education: (educationData ?? []).map((edu: any) => ({
       id: edu.id,

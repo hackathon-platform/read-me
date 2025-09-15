@@ -53,7 +53,6 @@ export function QualificationSection({ profileId, qualifications }: Props) {
                 initialData={qualifications}
                 onSave={() => setOpen(false)}
                 onCancel={() => setOpen(false)}
-                formId={formId}
               />
             </div>
 

@@ -1,5 +1,13 @@
 export interface Profile {
   id: string;
+  basic: Basic;
+  education: Education[];
+  experiences: Experience[];
+  qualifications: Qualification[];
+  projects: Project[];
+}
+
+export interface Basic {
   username: string;
   firstName: string;
   lastName: string;
@@ -9,10 +17,6 @@ export interface Profile {
   description: string;
   resumeUrl: string;
   socials: Social[];
-  education: Education[];
-  experiences: Experience[];
-  qualifications: Qualification[];
-  projects: Project[];
 }
 
 export interface Social {

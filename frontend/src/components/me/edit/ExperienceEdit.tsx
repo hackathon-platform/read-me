@@ -51,25 +51,18 @@ const schema = z.object({
   experiences: z.array(expSchema),
 });
 
-type FormValues = z.infer<typeof schema>;
-
 interface Props {
   profileId: string;
   initialData: Experience[];
   onCancel: () => void; // （今回はフッターから呼ぶ想定だがシグネチャは保持）
   onSave: () => void; // 保存成功時にDrawerを閉じる
-  formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
 type FormInput = z.input<typeof schema>; // before transform (description/endMonth optional/null)
 type FormOutput = z.output<typeof schema>; // after transform (both are strings)
 
-export function ExperienceEdit({
-  profileId,
-  initialData,
-  onSave,
-  formId = "experience-edit-form",
-}: Props) {
+export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
+  const formId = "experience-edit-form";
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 

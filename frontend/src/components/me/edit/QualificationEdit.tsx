@@ -40,15 +40,10 @@ interface Props {
   initialData: Qualification[];
   onCancel: () => void;
   onSave: () => void; // 保存成功時にDrawerを閉じる
-  formId?: string; // 追加：外部フッターからsubmitするためのID
 }
 
-export function QualificationEdit({
-  profileId,
-  initialData,
-  onSave,
-  formId = "qualification-edit-form",
-}: Props) {
+export function QualificationEdit({ profileId, initialData, onSave }: Props) {
+  const formId = "qualification-edit-form";
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 

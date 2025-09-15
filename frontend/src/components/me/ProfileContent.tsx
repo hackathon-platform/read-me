@@ -1,20 +1,21 @@
 "use client";
-
-import { Separator } from "@/components/ui/separator";
+import { notFound } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BasicSection } from "./section/BasicSection";
 import { EducationSection } from "./section/EducationSection";
 import { ExperienceSection } from "./section/ExperienceSection";
 import { QualificationSection } from "./section/QualificationSection";
-import { ResumeSection } from "./ResumeSection";
-import type { Profile } from "@/lib/types";
+import { getProfileByUsername } from "@/lib/supabase/get/profile";
 import ProjectGallery from "@/components/me/section/ProjectGallery";
 import { FollowRail } from "@/components/follow/FollowRail";
 
-export function ProfileContent({ profile }: { profile: Profile }) {
+export async function ProfileContent({ username }: { username: string }) {
+  const { data: profile } = await getProfileByUsername(username);
+  if (!profile) return notFound();
+
   return (
     <div className="space-y-4">
-      <BasicSection profile={profile} />
+      <BasicSection profileId={profile.id} basic={profile.basic} />
       <div className="block lg:hidden mx-2">
         <FollowRail />
       </div>
@@ -45,12 +46,6 @@ export function ProfileContent({ profile }: { profile: Profile }) {
               profileId={profile.id}
               qualifications={profile.qualifications}
             />
-            {profile.resumeUrl && (
-              <>
-                <Separator className="my-6" />
-                <ResumeSection resumeUrl={profile.resumeUrl} />
-              </>
-            )}
           </div>
         </TabsContent>
       </Tabs>
