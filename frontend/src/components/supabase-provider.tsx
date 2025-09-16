@@ -1,5 +1,6 @@
 "use client";
-
+import { useMemo } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/browserClient";
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { toast } from "sonner";
@@ -21,11 +22,7 @@ export const SupabaseProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [supabase] = useState(() => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-    return createClient<Database>(supabaseUrl, supabaseKey);
-  });
+  const supabase = useMemo(getSupabaseBrowserClient, []);
 
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);

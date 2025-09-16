@@ -5,12 +5,11 @@ import { BasicSection } from "./section/BasicSection";
 import { EducationSection } from "./section/EducationSection";
 import { ExperienceSection } from "./section/ExperienceSection";
 import { QualificationSection } from "./section/QualificationSection";
-import { getProfileByUsername } from "@/lib/supabase/get/profile";
 import ProjectGallery from "@/components/me/section/ProjectGallery";
 import { FollowRail } from "@/components/follow/FollowRail";
+import { Profile } from "@/lib/types";
 
-export async function ProfileContent({ username }: { username: string }) {
-  const { data: profile } = await getProfileByUsername(username);
+export function ProfileContent({ profile }: { profile: Profile }) {
   if (!profile) return notFound();
 
   return (

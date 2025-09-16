@@ -74,46 +74,33 @@ export interface Project {
 
 export interface Event {
   id: string;
-  title: string;
-  titleJa: string;
-  description: string;
-  theme: string;
-  themeJa: string;
-  startDate: string;
-  endDate: string;
-  location: "online" | "in-person";
-  locationDetails?: string;
-  url?: string;
-  image: string;
-  status: "upcoming" | "open" | "ended";
-  participants: {
-    current: number;
-    max: number;
-  };
-  tags: string[];
-  organizationId: string;
-  organizerJa: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Organization {
-  id: string;
   name: string;
   slug: string;
-  description: string;
-  bannerUrl?: string;
-  iconUrl?: string;
-  website?: string;
-  email?: string;
-  createdAt: string;
-  createdBy: string;
+  description: string | null;
+  bannerUrl: string | null;
+  websiteUrl: string | null;
+  endAt: string | null;
 }
 
-export interface Organizer {
+export type ParticipantWithProfile = {
   id: string;
-  profileId: string;
-  organizationId: string;
   role: "owner" | "admin" | "member" | "guest";
   joinedAt: string;
-}
+  profile: {
+    id: string;
+    username: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    imageUrl: string | null;
+  };
+};
+
+export type ProfileMini = { id: string } & Pick<
+  Basic,
+  "username" | "firstName" | "lastName" | "imageUrl"
+>;
+
+export type ProjectWithPeople = Project & {
+  owner?: ProfileMini | null;
+  members?: Array<{ profile: ProfileMini }> | null;
+};
