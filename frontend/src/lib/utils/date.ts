@@ -7,6 +7,8 @@ export default function formatJPDateLocal(s?: string | null) {
       year: "numeric",
       month: "short",
       day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
     return s;
