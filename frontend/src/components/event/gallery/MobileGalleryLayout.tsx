@@ -1,6 +1,12 @@
 "use client";
 
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -55,7 +61,10 @@ export default function MobileGalleryLayout({
             </DrawerHeader>
             <div className="min-h-0 flex-1 overflow-y-auto">
               {selected && (
-                <ProjectAtEventPreview data={selected} owner={selected.owner || undefined} />
+                <ProjectAtEventPreview
+                  data={selected}
+                  owner={selected.owner || undefined}
+                />
               )}
             </div>
           </div>

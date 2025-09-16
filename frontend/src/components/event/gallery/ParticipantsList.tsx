@@ -24,7 +24,8 @@ export default function ParticipantsList({
           prof.username ||
           `${prof.firstName ?? ""} ${prof.lastName ?? ""}`.trim() ||
           "匿名";
-        const initials = (prof.lastName?.[0] ?? "") + (prof.firstName?.[0] ?? "");
+        const initials =
+          (prof.lastName?.[0] ?? "") + (prof.firstName?.[0] ?? "");
         return (
           <div
             key={p.id}
@@ -45,7 +46,9 @@ export default function ParticipantsList({
             </div>
             <Button variant="ghost" size="icon" asChild>
               <Link
-                href={prof.username ? `/u/${prof.username}` : `/profiles/${prof.id}`}
+                href={
+                  prof.username ? `/u/${prof.username}` : `/profiles/${prof.id}`
+                }
                 aria-label={`${name}を開く`}
               >
                 <ExternalLink className="h-4 w-4" />

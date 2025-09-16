@@ -28,7 +28,10 @@ import {
   deleteProjectCascade,
   SUMMARY_LIMIT,
 } from "@/lib/supabase/insert/project";
-import { MemberPicker, type ProfileMini } from "@/components/project/MemberPicker";
+import {
+  MemberPicker,
+  type ProfileMini,
+} from "@/components/project/MemberPicker";
 import TwoLineTitle from "@/components/project/TwoLineTitle";
 
 const PROJECT_BUCKET = "project";
@@ -118,7 +121,8 @@ export default function CreateProjectPage() {
           // ★ ロールバック実行
           await deleteProjectCascade(supabase, createdProjectId);
 
-          const msg = "メンバー追加に失敗したため、作成したプロジェクトを取り消しました。";
+          const msg =
+            "メンバー追加に失敗したため、作成したプロジェクトを取り消しました。";
           console.warn("[CreateProjectPage] addProjectMembers failed:", addErr);
           setError(msg);
           toast.error(msg);

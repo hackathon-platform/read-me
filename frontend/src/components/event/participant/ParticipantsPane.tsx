@@ -35,7 +35,7 @@ function fullName(p: ParticipantWithProfile["profile"]) {
 function initials(p: ParticipantWithProfile["profile"]) {
   const a = p.lastName?.[0] ?? "";
   const b = p.firstName?.[0] ?? "";
-  return (a + b) || (p.username?.slice(0, 2).toUpperCase() ?? "U");
+  return a + b || (p.username?.slice(0, 2).toUpperCase() ?? "U");
 }
 
 /* ---------- row ---------- */
@@ -204,7 +204,10 @@ export function ParticipantsPane({ participants }: ParticipantsPaneProps) {
 
       {/* Mobile (<lg): Drawer */}
       <div className="lg:hidden">
-        <ParticipantsTable participants={participants} onSelect={selectMobile} />
+        <ParticipantsTable
+          participants={participants}
+          onSelect={selectMobile}
+        />
         <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
           <DrawerContent>
             <DrawerHeader>

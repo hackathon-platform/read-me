@@ -17,10 +17,10 @@ export type ProfileMini = {
 };
 
 type Props = {
-  excludeIds?: string[];               // 例: 自分の profile_id を渡して候補から除外
-  selected: ProfileMini[];             // 選択済み
-  onAdd: (p: ProfileMini) => void;     // 追加コールバック
-  onRemove: (id: string) => void;      // 削除コールバック
+  excludeIds?: string[]; // 例: 自分の profile_id を渡して候補から除外
+  selected: ProfileMini[]; // 選択済み
+  onAdd: (p: ProfileMini) => void; // 追加コールバック
+  onRemove: (id: string) => void; // 削除コールバック
   className?: string;
 };
 
@@ -66,13 +66,10 @@ export function MemberPicker({
 
       if (error) throw error;
 
-      const exclude = new Set([
-        ...excludeIds,
-        ...selected.map((s) => s.id),
-      ]);
+      const exclude = new Set([...excludeIds, ...selected.map((s) => s.id)]);
 
       const filtered = (data ?? [])
-        .filter((p) => p.username)          // username を持つものだけ表示
+        .filter((p) => p.username) // username を持つものだけ表示
         .filter((p) => !exclude.has(p.id)); // 除外
 
       setResults(filtered);
@@ -150,8 +147,11 @@ export function MemberPicker({
                         alt={p.username ?? ""}
                       />
                       <AvatarFallback>
-                        {(p.last_name?.[0] ?? p.username?.[0] ?? "U")
-                          .toUpperCase()}
+                        {(
+                          p.last_name?.[0] ??
+                          p.username?.[0] ??
+                          "U"
+                        ).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">

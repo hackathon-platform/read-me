@@ -15,8 +15,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   CalendarDays,
-  Plus,
-  Search,
   User,
   LogOut,
   Code2,

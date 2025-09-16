@@ -4,10 +4,10 @@ export const SUMMARY_LIMIT = 100;
 
 export type CreateProjectInput = {
   title: string;
-  summary: string;              // <= SUMMARY_LIMIT chars
-  eventSlug?: string | null;    // nullable, pass '' as null
+  summary: string; // <= SUMMARY_LIMIT chars
+  eventSlug?: string | null; // nullable, pass '' as null
   thumbnailUrl?: string | null; // nullable
-  content?: string | null;      // nullable
+  content?: string | null; // nullable
 };
 
 export type CreateProjectResult = {
@@ -18,7 +18,9 @@ export type CreateProjectResult = {
 type Result<T> = { data: T | null; error?: string };
 
 /** 現在ログイン中ユーザーの profile.id を取得 */
-async function getCurrentProfileId(sb: SupabaseClient): Promise<Result<string>> {
+async function getCurrentProfileId(
+  sb: SupabaseClient,
+): Promise<Result<string>> {
   const { data: userData, error: authErr } = await sb.auth.getUser();
   if (authErr) return { data: null, error: authErr.message };
 
@@ -74,19 +76,20 @@ export async function createProjectWithOwner(
     .single();
 
   if (insertErr || !created?.id || created.slug === undefined) {
-    return { data: null, error: insertErr?.message ?? "プロジェクトの保存に失敗しました。" };
+    return {
+      data: null,
+      error: insertErr?.message ?? "プロジェクトの保存に失敗しました。",
+    };
   }
 
   // 3) owner を project_member に登録（失敗したらロールバック = project を削除）
-  const { error: memberError } = await sb
-    .from("project_member")
-    .insert({
-      project_id: created.id,
-      profile_id: profileId,
-      role: "owner",
-    });
+  const { error: memberError } = await sb.from("project_member").insert({
+    project_id: created.id,
+    profile_id: profileId,
+    role: "owner",
+  });
 
-    console.log("memberError", memberError);
+  console.log("memberError", memberError);
 
   if (memberError) {
     // 失敗したので作った project を削除（副作用の後始末）
@@ -116,7 +119,10 @@ export async function deleteProjectCascade(
   // 他にぶら下がりがあればここで削除（例: deliverables 等）
 
   // 2) 親テーブル
-  const { error: projErr } = await sb.from("project").delete().eq("id", projectId);
+  const { error: projErr } = await sb
+    .from("project")
+    .delete()
+    .eq("id", projectId);
   if (projErr) return { data: null, error: projErr.message };
 
   return { data: null };
@@ -133,7 +139,8 @@ export async function addProjectMembers(
   role: "maintainer" | "contributor" | "viewer" = "contributor",
 ): Promise<Result<null>> {
   if (!projectId) return { data: null, error: "projectId が必要です。" };
-  if (!profileIds.length) return { data: null, error: "追加するユーザーがありません。" };
+  if (!profileIds.length)
+    return { data: null, error: "追加するユーザーがありません。" };
 
   const rows = profileIds.map((pid) => ({
     project_id: projectId,

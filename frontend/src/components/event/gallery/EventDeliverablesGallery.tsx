@@ -21,17 +21,22 @@ export default function EventDeliverablesGallery({
 }) {
   const isMobile = useIsMobile();
 
-  const [resolved, setResolved] = React.useState<{ id?: string; slug?: string }>(
-    { id: eventId, slug: eventSlug },
-  );
+  const [resolved, setResolved] = React.useState<{
+    id?: string;
+    slug?: string;
+  }>({ id: eventId, slug: eventSlug });
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [items, setItems] = React.useState<ProjectWithPeople[]>([]);
-  const [participants, setParticipants] = React.useState<ParticipantWithProfile[]>([]);
+  const [participants, setParticipants] = React.useState<
+    ParticipantWithProfile[]
+  >([]);
 
   const [query, setQuery] = React.useState("");
-  const [selected, setSelected] = React.useState<ProjectWithPeople | null>(null);
+  const [selected, setSelected] = React.useState<ProjectWithPeople | null>(
+    null,
+  );
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const [tab, setTab] = React.useState<"preview" | "participants">("preview");
   const [page, setPage] = React.useState(1);
@@ -42,11 +47,19 @@ export default function EventDeliverablesGallery({
     (async () => {
       try {
         if (!resolved.slug && resolved.id) {
-          const { data, error } = await supabase.from("event").select("slug").eq("id", resolved.id).single();
+          const { data, error } = await supabase
+            .from("event")
+            .select("slug")
+            .eq("id", resolved.id)
+            .single();
           if (error) throw error;
           if (!cancelled) setResolved((r) => ({ ...r, slug: data?.slug }));
         } else if (!resolved.id && resolved.slug) {
-          const { data, error } = await supabase.from("event").select("id").eq("slug", resolved.slug).single();
+          const { data, error } = await supabase
+            .from("event")
+            .select("id")
+            .eq("slug", resolved.slug)
+            .single();
           if (error) throw error;
           if (!cancelled) setResolved((r) => ({ ...r, id: data?.id }));
         }
@@ -104,7 +117,8 @@ export default function EventDeliverablesGallery({
           .order("created_at", { ascending: false });
 
         if (pErr) throw pErr;
-        if (!cancelled) setItems((projects as unknown as ProjectWithPeople[]) ?? []);
+        if (!cancelled)
+          setItems((projects as unknown as ProjectWithPeople[]) ?? []);
 
         if (resolved.id) {
           const { data: parts, error: partsErr } = await supabase
@@ -128,7 +142,9 @@ export default function EventDeliverablesGallery({
 
           if (partsErr) throw partsErr;
           if (!cancelled)
-            setParticipants((parts as unknown as ParticipantWithProfile[]) ?? []);
+            setParticipants(
+              (parts as unknown as ParticipantWithProfile[]) ?? [],
+            );
         }
       } catch (e: any) {
         console.error(e);
@@ -175,7 +191,9 @@ export default function EventDeliverablesGallery({
   if (!resolved.slug && !resolved.id && !eventId && !eventSlug) {
     return (
       <Card className="p-6">
-        <p className="text-sm text-muted-foreground">eventId もしくは eventSlug を指定してください。</p>
+        <p className="text-sm text-muted-foreground">
+          eventId もしくは eventSlug を指定してください。
+        </p>
       </Card>
     );
   }

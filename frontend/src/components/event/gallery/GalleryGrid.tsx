@@ -15,7 +15,9 @@ export default function GalleryGrid({
   if (items.length === 0) {
     return (
       <Card className="p-10 text-center">
-        <p className="text-sm text-muted-foreground">提出された成果物はまだありません。</p>
+        <p className="text-sm text-muted-foreground">
+          提出された成果物はまだありません。
+        </p>
       </Card>
     );
   }

@@ -1,6 +1,10 @@
 "use client";
 
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import GalleryGrid from "./GalleryGrid";
@@ -37,7 +41,10 @@ export default function DesktopGalleryLayout({
   participants: ParticipantWithProfile[];
 }) {
   return (
-    <ResizablePanelGroup direction="horizontal" className="rounded-lg border bg-card">
+    <ResizablePanelGroup
+      direction="horizontal"
+      className="rounded-lg border bg-card"
+    >
       <ResizablePanel defaultSize={40} minSize={30} className="p-4">
         {loading ? (
           <GallerySkeleton />
@@ -74,26 +81,45 @@ export default function DesktopGalleryLayout({
 
       <ResizableHandle withHandle />
 
-      <ResizablePanel defaultSize={60} minSize={50} className="border-l bg-background">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} className="flex h-full flex-col">
+      <ResizablePanel
+        defaultSize={60}
+        minSize={50}
+        className="border-l bg-background"
+      >
+        <Tabs
+          value={tab}
+          onValueChange={(v) => setTab(v as typeof tab)}
+          className="flex h-full flex-col"
+        >
           <TabsList className="sticky top-0 z-10 -mb-px w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <TabsTrigger value="preview">プレビュー</TabsTrigger>
             <TabsTrigger value="participants">開発メンバー</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="preview" className="m-0 min-h-0 flex-1 overflow-y-auto p-4">
+          <TabsContent
+            value="preview"
+            className="m-0 min-h-0 flex-1 overflow-y-auto p-4"
+          >
             {!selected ? (
               <div className="flex h-full items-center justify-center">
-                <p className="text-sm text-muted-foreground">左のギャラリーからアイテムを選択してください</p>
+                <p className="text-sm text-muted-foreground">
+                  左のギャラリーからアイテムを選択してください
+                </p>
               </div>
             ) : (
-              <ProjectAtEventPreview data={selected} owner={selected.owner || undefined} />
+              <ProjectAtEventPreview
+                data={selected}
+                owner={selected.owner || undefined}
+              />
             )}
           </TabsContent>
 
-            <TabsContent value="participants" className="m-0 flex-1 overflow-auto p-4">
-              <ParticipantsList participants={participants} />
-            </TabsContent>
+          <TabsContent
+            value="participants"
+            className="m-0 flex-1 overflow-auto p-4"
+          >
+            <ParticipantsList participants={participants} />
+          </TabsContent>
         </Tabs>
       </ResizablePanel>
     </ResizablePanelGroup>
