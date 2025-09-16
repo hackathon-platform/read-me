@@ -10,6 +10,9 @@ export default async function ProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
+  const { data: profile } = await getProfileByUsername(username);
+  if (!profile) return notFound();
+
   return (
     <>
       <PageHeader
@@ -21,7 +24,7 @@ export default async function ProfilePage({
       <div className="animate-in fade-in duration-500 mt-2 lg:mt-4 md:mb-10 px-3 md:px-5 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2">
-            <ProfileContent username={username} />
+            <ProfileContent profile={profile} />
           </div>
           <div className="hidden lg:block">
             <FollowRail />
