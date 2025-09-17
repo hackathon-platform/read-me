@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { Experience } from "@/lib/types";
 import { toast } from "sonner";
+import TechMultiSelect from "@/components/tech/TechMultiSelect";
 
 const expSchema = z.object({
   title: z.string().min(1, "役割を入力してください"),
@@ -45,6 +46,7 @@ const expSchema = z.object({
     .nullable()
     .optional()
     .transform((val) => val || ""),
+  techKeys: z.array(z.string()).default([]),
 });
 
 const schema = z.object({
@@ -54,21 +56,33 @@ const schema = z.object({
 interface Props {
   profileId: string;
   initialData: Experience[];
-  onCancel: () => void; // （今回はフッターから呼ぶ想定だがシグネチャは保持）
-  onSave: () => void; // 保存成功時にDrawerを閉じる
+  onCancel: () => void;
+  onSave: () => void;
 }
 
-type FormInput = z.input<typeof schema>; // before transform (description/endMonth optional/null)
-type FormOutput = z.output<typeof schema>; // after transform (both are strings)
+type FormInput = z.input<typeof schema>;
+type FormOutput = z.output<typeof schema>;
 
 export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
   const formId = "experience-edit-form";
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
 
+  // 初期 techIds へ変換
+  const defaults: FormInput = {
+    experiences: initialData.map((e) => ({
+      title: e.title ?? "",
+      organization: e.organization ?? "",
+      startMonth: e.startMonth ?? "",
+      endMonth: e.endMonth ?? "",
+      description: e.description ?? "",
+      techKeys: e.techKeys ?? [],
+    })),
+  };
+
   const form = useForm<FormInput>({
     resolver: zodResolver(schema),
-    defaultValues: { experiences: initialData },
+    defaultValues: defaults,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -78,30 +92,75 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
 
   const onSubmit = async (raw: FormInput) => {
     setIsSaving(true);
-    const { experiences }: FormOutput = schema.parse(raw);
-    await supabase.from("experience").delete().eq("profile_id", profileId);
+    try {
+      const { experiences }: FormOutput = schema.parse(raw);
 
-    if (experiences.length) {
-      const payload = experiences.map((e) => ({
-        profile_id: profileId,
-        title: e.title,
-        organization: e.organization,
-        start_month: `${e.startMonth}-01`,
-        end_month: e.endMonth ? `${e.endMonth}-01` : null,
-        description: e.description || null,
-      }));
-      const { error } = await supabase.from("experience").insert(payload);
-      if (error) {
-        toast.error(error.message);
-        setIsSaving(false);
-        return;
+      // 1) get existing experience ids BEFORE deleting
+      const { data: existingEx, error: exFetchErr } = await supabase
+        .from("experience")
+        .select("id")
+        .eq("profile_id", profileId);
+      if (exFetchErr) throw exFetchErr;
+
+      const oldIds = (existingEx ?? []).map((r) => r.id);
+
+      // 2) delete tech mappings first (safe if none)
+      if (oldIds.length) {
+        const delTech = await supabase
+          .from("tech")
+          .delete()
+          .eq("kind", "experience")
+          .in("ref", oldIds);
+        if (delTech.error) throw delTech.error;
       }
-    }
 
-    toast.success("職歴を更新しました");
-    onSave();
-    router.refresh();
+      // 3) delete experiences
+      const { error: delExErr } = await supabase
+        .from("experience")
+        .delete()
+        .eq("profile_id", profileId);
+      if (delExErr) throw delExErr;
+
+      // 4) insert new experiences + their tech keys
+      for (const e of experiences) {
+        const { data: insData, error: insErr } = await supabase
+          .from("experience")
+          .insert({
+            profile_id: profileId,
+            title: e.title,
+            organization: e.organization,
+            start_month: `${e.startMonth}-01`,
+            end_month: e.endMonth ? `${e.endMonth}-01` : null,
+            description: e.description || null,
+          })
+          .select("id")
+          .single();
+        if (insErr) throw insErr;
+
+        if ((e.techKeys ?? []).length) {
+          const { error: techInsErr } = await supabase.from("tech").insert(
+            e.techKeys.map((key) => ({
+              kind: "experience",
+              key,
+              ref: insData.id,
+            })),
+          );
+          if (techInsErr) throw techInsErr;
+        }
+      }
+
+      toast.success("職歴を更新しました");
+      onSave();
+      router.refresh();
+    } catch (e: any) {
+      toast.error(e.message ?? "保存に失敗しました");
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  console.log("fields", fields);
 
   return (
     <Form {...form}>
@@ -131,6 +190,7 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                     startMonth: "",
                     endMonth: "",
                     description: "",
+                    techKeys: [],
                   })
                 }
                 disabled={isSaving}
@@ -144,17 +204,14 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
         ) : (
           <div className="space-y-4">
             {fields.map((field, idx) => (
-              <Card
-                key={field.id}
-                className="group rounded-none relative border border-border/40 hover:border-border/80 transition-all duration-200"
-              >
+              <Card key={field.id} className="group relative border">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => remove(idx)}
                   disabled={isSaving}
-                  className="absolute -top-2 -left-2 h-6 w-6 p-0 rounded-full bg-background border border-border/60 text-muted-foreground hover:text-destructive-foreground hover:border-destructive shadow-sm transition-all duration-200 z-10"
+                  className="absolute -top-2 -left-2 h-6 w-6 p-0 rounded-full bg-background border"
                   title="この職歴を削除"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -166,9 +223,8 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                       name={`experiences.${idx}.organization` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-sm">
-                            <Building2 className="h-3.5 w-3.5" />
-                            会社・組織名
+                          <FormLabel className="text-sm flex items-center gap-2">
+                            <Building2 className="h-3.5 w-3.5" /> 会社・組織名
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -181,15 +237,13 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name={`experiences.${idx}.title` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-sm">
-                            <User className="h-3.5 w-3.5" />
-                            役職・役割
+                          <FormLabel className="text-sm flex items-center gap-2">
+                            <User className="h-3.5 w-3.5" /> 役職・役割
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -210,9 +264,8 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                       name={`experiences.${idx}.startMonth` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-sm">
-                            <Calendar className="h-3.5 w-3.5" />
-                            開始月
+                          <FormLabel className="text-sm flex items-center gap-2">
+                            <Calendar className="h-3.5 w-3.5" /> 開始月
                           </FormLabel>
                           <FormControl>
                             <Input {...field} type="month" className="h-9" />
@@ -226,9 +279,8 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                       name={`experiences.${idx}.endMonth` as const}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-2 text-sm">
-                            <Calendar className="h-3.5 w-3.5" />
-                            終了月
+                          <FormLabel className="text-sm flex items-center gap-2">
+                            <Calendar className="h-3.5 w-3.5" /> 終了月
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -250,20 +302,35 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                     name={`experiences.${idx}.description` as const}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center gap-2 text-sm">
-                          <FileText className="h-3.5 w-3.5" />
-                          職務内容・実績
+                        <FormLabel className="text-sm flex items-center gap-2">
+                          <FileText className="h-3.5 w-3.5" /> 職務内容・実績
                         </FormLabel>
                         <FormDescription className="text-xs">
-                          箇条書きの場合は各行の先頭に「•」「-」「*」のいずれかを付けてください
+                          箇条書きは各行頭に「•」「-」「*」などを付けてください
                         </FormDescription>
                         <FormControl>
                           <Textarea
                             {...field}
                             value={field.value ?? ""}
                             rows={3}
-                            placeholder="例：&#10;• Reactを使用したWebアプリケーション開発&#10;• チームリーダーとして5名のメンバーをマネジメント&#10;• 売上20%向上に貢献"
                             className="text-sm resize-none"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`experiences.${idx}.techKeys` as const}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">使用技術</FormLabel>
+                        <FormControl>
+                          <TechMultiSelect
+                            value={field.value ?? []}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -278,7 +345,7 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
               type="button"
               variant="outline"
               size="sm"
-              className="w-full border-dashed border-2 h-12 text-muted-foreground hover:text-foreground hover:border-solid transition-all"
+              className="w-full border-dashed border-2 h-12"
               onClick={() =>
                 append({
                   title: "",
@@ -286,6 +353,7 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                   startMonth: "",
                   endMonth: "",
                   description: "",
+                  techKeys: [],
                 })
               }
               disabled={isSaving}
@@ -295,7 +363,6 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
             </Button>
           </div>
         )}
-        {/* 足元ボタンはDrawerFooter側で制御 */}
       </form>
     </Form>
   );

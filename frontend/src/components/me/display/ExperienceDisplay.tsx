@@ -17,6 +17,7 @@ export function ExperienceDisplay({
       getStart={(w) => w.startMonth}
       getEnd={(w) => w.endMonth}
       getDescription={(w) => w.description}
+      getTechs={(w) => w.techKeys}
     />
   );
 }

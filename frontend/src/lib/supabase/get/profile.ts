@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase/supabaseClient";
-import type { Profile, Skill } from "@/lib/types";
+import type { Profile } from "@/lib/types";
 
 export async function getProfileByUsername(username: string): Promise<{
   data: Profile | null;
@@ -18,7 +18,7 @@ export async function getProfileByUsername(username: string): Promise<{
     return { data: null, error: profileErr?.message ?? "profile not found" };
   }
 
-  // 2) Related tables in parallel (no fragile joins)
+  // 2) Related tables in parallel
   const [
     { data: socialData, error: socialErr },
     { data: educationData, error: eduErr },
@@ -41,7 +41,7 @@ export async function getProfileByUsername(username: string): Promise<{
     supabase
       .from("experience")
       .select(
-        "id, profile_id, title, organization, start_month, end_month, description, icon_url, url",
+        "id, profile_id, title, organization, start_month, end_month, description, icon_url, url, updated_at",
       )
       .eq("profile_id", profileRow.id)
       .order("start_month", { ascending: false }),
@@ -61,33 +61,51 @@ export async function getProfileByUsername(username: string): Promise<{
       .order("acquisition_date", { ascending: false }),
   ]);
 
-  // Log non-critical errors to help with debugging
   logIfError("[getProfileByUsername] social", socialErr);
   logIfError("[getProfileByUsername] education", eduErr);
   logIfError("[getProfileByUsername] experience", expErr);
   logIfError("[getProfileByUsername] project", projErr);
   logIfError("[getProfileByUsername] qualification", qualErr);
 
-  // 3) Fetch experience skills via IN (...) for robustness
-  let expSkillRows: any[] = [];
-  const expIds = (experienceData ?? []).map((e) => e.id);
-  if (expIds.length) {
-    const { data: skillsData, error: skillsErr } = await supabase
-      .from("experience_skill")
-      .select("id, experience_id, name, type, created_at")
-      .in("experience_id", expIds);
+  const expIds = (experienceData ?? []).map((e: any) => e.id);
+  const projIds = (projectData ?? []).map((p: any) => p.id);
 
-    logIfError("[getProfileByUsername] experience_skill", skillsErr);
-    expSkillRows = skillsData ?? [];
+  const [
+    { data: expTags, error: expTagsErr },
+    { data: projTags, error: projTagsErr },
+  ] = await Promise.all([
+    expIds.length
+      ? supabase
+          .from("tech")
+          .select("ref, key")
+          .eq("kind", "experience")
+          .in("ref", expIds)
+      : Promise.resolve({ data: [], error: null } as any),
+    projIds.length
+      ? supabase
+          .from("tech")
+          .select("ref, key")
+          .eq("kind", "project")
+          .in("ref", projIds)
+      : Promise.resolve({ data: [], error: null } as any),
+  ]);
+
+  logIfError("[getProfileByUsername] tech(exp)", expTagsErr);
+  logIfError("[getProfileByUsername] tech(proj)", projTagsErr);
+
+  // ref → key[] へまとめる（重複除去）
+  function toKeyMap(rows: Array<{ ref: string; key: string }>) {
+    const map: Record<string, string[]> = {};
+    for (const r of rows ?? []) {
+      const arr = (map[r.ref] ??= []);
+      if (!arr.includes(r.key)) arr.push(r.key);
+    }
+    return map;
   }
 
-  const skillsByExp: Record<string, Skill[]> = {};
-  for (const row of expSkillRows) {
-    if (!skillsByExp[row.experience_id]) skillsByExp[row.experience_id] = [];
-    skillsByExp[row.experience_id].push({ name: row.name, type: row.type });
-  }
+  const expTechKeysByRef = toKeyMap(expTags ?? []);
+  const projTechKeysByRef = toKeyMap(projTags ?? []);
 
-  // 4) Shape into your UI Profile type
   const profile: Profile = {
     id: profileRow.id,
 
@@ -121,24 +139,23 @@ export async function getProfileByUsername(username: string): Promise<{
       description: exp.description,
       iconUrl: exp.icon_url,
       url: exp.url,
-      skills: skillsByExp[exp.id] ?? [],
+      techKeys: expTechKeysByRef[exp.id] ?? [],
     })),
 
-    // Projects: your schema has summary/thumbnail_url/content/event_slug
     projects: (projectData ?? []).map((proj: any) => ({
       id: proj.id,
       profileId: proj.profile_id,
       title: proj.title,
-      summary: proj.summary ?? "", // keep UI compatibility
-      url: null, // not in schema
-      media: [], // not in schema
-      skills: [], // not in schema
+      summary: proj.summary ?? "",
+      url: null,
+      media: [],
       createdAt: proj.created_at,
       updatedAt: proj.updated_at,
       thumbnailUrl: proj.thumbnail_url ?? null,
       content: proj.content ?? null,
       eventSlug: proj.event_slug ?? null,
       slug: proj.slug,
+      techKeys: projTechKeysByRef[proj.id] ?? [],
     })),
 
     qualifications: (qualificationData ?? []).map((q: any) => ({
@@ -156,7 +173,6 @@ export async function getProfileByUsername(username: string): Promise<{
 function safeYYYYMM(v?: string | null): string | undefined {
   if (!v) return undefined;
   try {
-    // v might be date or string; slice is safe if it's a string
     const s = typeof v === "string" ? v : new Date(v).toISOString();
     return s.slice(0, 7);
   } catch {

@@ -33,7 +33,7 @@ export interface Education {
   fieldOfStudy?: string;
   startMonth: string; // YYYY-MM
   endMonth?: string; // YYYY-MM
-  description?: string; // make this like a list of string
+  description?: string;
 }
 
 export interface Experience {
@@ -45,18 +45,13 @@ export interface Experience {
   description?: string;
   iconUrl?: string;
   url?: string;
-  skills: Skill[];
+  techKeys?: string[];
 }
 
 export interface Qualification {
   id: string;
   name: string;
   acquisitionDate: string; // YYYY-MM
-}
-
-export interface Skill {
-  name: string;
-  type: "language" | "framework" | "tool" | "other";
 }
 
 export interface Project {
@@ -70,6 +65,7 @@ export interface Project {
   eventSlug?: string | null;
   content?: string | null;
   slug?: string;
+  techKeys?: string[];
 }
 
 export interface Event {
@@ -104,3 +100,20 @@ export type ProjectWithPeople = Project & {
   owner?: ProfileMini | null;
   members?: Array<{ profile: ProfileMini }> | null;
 };
+
+// --- Tech taxonomy -----------------------------------------------------------
+export type TechKind =
+  | "language"
+  | "framework"
+  | "tool"
+  | "database"
+  | "cloud"
+  | "ml"
+  | "other";
+
+export interface Tech {
+  id: string; // UUID
+  kind: TechKind; // experience or project
+  key: string; // 識別用の短いキー（例: "react", "python", "docker"）
+  ref: string; // UUID
+}

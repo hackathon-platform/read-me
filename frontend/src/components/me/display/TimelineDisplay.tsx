@@ -1,6 +1,8 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "lucide-react";
+import TechChips from "@/components/tech/TechChips";
+import { TECH_BY_KEY, TechDisplay } from "@/lib/tech/catalog";
 
 /**
  * Generic display for timeline-like data (e.g. education, work)
@@ -14,6 +16,7 @@ export interface TimelineDisplayProps<T> {
   getStart: (item: T) => string;
   getEnd: (item: T) => string | undefined;
   getDescription?: (item: T) => string | null | undefined;
+  getTechs?: (item: T) => string[] | undefined;
 }
 
 export function TimelineDisplay<T>({
@@ -25,6 +28,7 @@ export function TimelineDisplay<T>({
   getStart,
   getEnd,
   getDescription,
+  getTechs = () => [],
 }: TimelineDisplayProps<T>) {
   // Parse bullet-style text into array, else return null
   const parseDescription = (description: string) => {
@@ -80,6 +84,10 @@ export function TimelineDisplay<T>({
             const rawDesc = getDescription?.(item) ?? null;
             const bulletPoints = rawDesc ? parseDescription(rawDesc) : null;
             const subtitle = getSubtitle?.(item);
+            const techKeys = getTechs?.(item) ?? [];
+            const techs: TechDisplay[] = techKeys
+              .map((key) => TECH_BY_KEY[key])
+              .filter((t): t is TechDisplay => !!t);
 
             return (
               <div
@@ -125,6 +133,11 @@ export function TimelineDisplay<T>({
                           {rawDesc}
                         </p>
                       )}
+                    </div>
+                  )}
+                  {techs && techs.length > 0 && (
+                    <div className="mt-3">
+                      <TechChips techs={techs} />
                     </div>
                   )}
                 </div>
