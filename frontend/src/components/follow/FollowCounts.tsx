@@ -1,5 +1,6 @@
 // frontend/src/components/follow/FollowCounts.tsx
 "use client";
+
 import { useEffect, useState, useCallback } from "react";
 import {
   Dialog,
@@ -14,6 +15,48 @@ import { FollowList } from "./FollowList";
 
 type Kind = "followers" | "following";
 
+/* ---------- helpers ---------- */
+function formatCount(n: number) {
+  // Use compact for big numbers (ja-JP shows 1.2万 etc.)
+  const opts =
+    n >= 10000
+      ? ({ notation: "compact", compactDisplay: "short" } as const)
+      : ({ notation: "standard" } as const);
+  return new Intl.NumberFormat("ja-JP", opts).format(n);
+}
+
+function CountButton({
+  count,
+  label,
+  onClick,
+  ariaLabel,
+  className,
+}: {
+  count: number;
+  label: string;
+  onClick: () => void;
+  ariaLabel: string;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={`${ariaLabel}（${count}）`}
+      className={cn(
+        "group inline-flex items-baseline gap-1 rounded-md py-0.5",
+        "focus:outline-none focus:ring-2 focus:ring-ring",
+        className,
+      )}
+    >
+      <span className="tabular-nums text-sm font-semibold tracking-tight group-hover:underline underline-offset-4">
+        {formatCount(count)}
+      </span>
+      <span className="text-xs text-muted-foreground">{label}</span>
+    </button>
+  );
+}
+
+/* ---------- main ---------- */
 export function FollowCounts({ profileId }: { profileId: string }) {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
@@ -21,7 +64,7 @@ export function FollowCounts({ profileId }: { profileId: string }) {
   const [activeKind, setActiveKind] = useState<Kind>("followers");
 
   const fetchCounts = useCallback(async () => {
-    const [{ count: c1 }, { count: c2 }] = await Promise.all([
+    const [qFollowers, qFollowing] = await Promise.all([
       supabase
         .from("follow")
         .select("*", { count: "exact", head: true })
@@ -31,8 +74,8 @@ export function FollowCounts({ profileId }: { profileId: string }) {
         .select("*", { count: "exact", head: true })
         .eq("follower_id", profileId),
     ]);
-    setFollowers(c1 ?? 0);
-    setFollowing(c2 ?? 0);
+    setFollowers(qFollowers.count ?? 0);
+    setFollowing(qFollowing.count ?? 0);
   }, [profileId]);
 
   useEffect(() => {
@@ -46,22 +89,22 @@ export function FollowCounts({ profileId }: { profileId: string }) {
 
   return (
     <>
-      <div className="flex items-center gap-4 text-sm">
-        <button
-          className={cn("hover:underline underline-offset-4")}
+      <div className="flex items-center gap-3">
+        <CountButton
+          count={followers}
+          label="フォロワー"
           onClick={() => openDialog("followers")}
-          aria-label="フォロワー一覧を表示"
-        >
-          <span className="font-semibold">{followers}</span> フォロワー
-        </button>
+          ariaLabel="フォロワー一覧を表示"
+        />
 
-        <button
-          className={cn("hover:underline underline-offset-4")}
+        <span aria-hidden className="h-3 w-px bg-border" />
+
+        <CountButton
+          count={following}
+          label="フォロー中"
           onClick={() => openDialog("following")}
-          aria-label="フォロー中の一覧を表示"
-        >
-          <span className="font-semibold">{following}</span> フォロー中
-        </button>
+          ariaLabel="フォロー中の一覧を表示"
+        />
       </div>
 
       <Dialog
@@ -71,8 +114,7 @@ export function FollowCounts({ profileId }: { profileId: string }) {
           if (!v) await fetchCounts(); // 閉じたら数を更新
         }}
       >
-        {/* ← ポイント: forceMount でアンマウントしない */}
-        <DialogContent className="mx-auto" forceMount>
+        <DialogContent className="mx-auto">
           <DialogHeader>
             <DialogTitle>
               {activeKind === "followers" ? "フォロワー" : "フォロー中"}
@@ -85,7 +127,6 @@ export function FollowCounts({ profileId }: { profileId: string }) {
           </DialogHeader>
 
           <div className="pt-2">
-            {/* ← ポイント: enabled と key で安定制御 */}
             <FollowList
               key={`${activeKind}-${profileId}`}
               kind={activeKind}

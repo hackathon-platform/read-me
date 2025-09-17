@@ -22,7 +22,6 @@ function TabsList({
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        // Devpost-like: a simple bar with a bottom border; tabs sit on it
         "sticky top-0 z-20 -mb-px flex flex-row overflow-x-auto bg-background/70 items-end",
         className,
       )}
@@ -30,24 +29,6 @@ function TabsList({
     />
   );
 }
-
-// function TabsList({
-//   className,
-//   ...props
-// }: React.ComponentProps<typeof TabsPrimitive.List>) {
-//   return (
-//     <TabsPrimitive.List
-//       data-slot="tabs-list"
-//       className={cn(
-//         // sticky, scrollable, clear baseline
-//         "sticky top-0 z-20 -mb-px flex items-end overflow-x-auto border-b bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/40 no-scrollbar",
-//         "gap-1 px-2", // comfy hit area
-//         className,
-//       )}
-//       {...props}
-//     />
-//   );
-// }
 
 function TabsTrigger({
   className,
@@ -58,13 +39,13 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         // pill-ish top with its own border (except bottom), lifted 1px to merge with panel
-        "inline-flex items-center px-3 py-2 text-sm font-medium",
+        "inline-flex items-center px-4 py-2 text-sm font-medium",
         // default (inactive)
         "bg-background text-muted-foreground border-transparent",
         // hover
         "hover:bg-background/60 hover:text-foreground hover:border-border hover:underline hover:underline-offset-4",
         // active state connects visually to panel
-        "data-[state=active]:bg-popover data-[state=active]:text-foreground data-[state=active]:border-border",
+        "data-[state=active]:bg-popover data-[state=active]:text-foreground data-[state=active]:border-t-1 data-[state=active]:border-blue-500",
         // a11y focus
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
         "disabled:pointer-events-none disabled:opacity-50",

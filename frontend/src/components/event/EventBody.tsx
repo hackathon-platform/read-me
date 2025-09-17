@@ -12,7 +12,7 @@ type EventBodyProps = {
 export default function EventBody({ event, participants }: EventBodyProps) {
   return (
     <Tabs defaultValue="about" className="w-full">
-      <TabsList className="z-20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b rounded-none w-full justify-start px-2">
+      <TabsList className="z-20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 rounded-none w-full justify-start">
         <TabsTrigger value="about">概要</TabsTrigger>
         <TabsTrigger value="gallery">成果物ギャラリー</TabsTrigger>
         <TabsTrigger value="participant">参加者</TabsTrigger>

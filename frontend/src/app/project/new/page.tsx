@@ -262,7 +262,7 @@ export default function CreateProjectPage() {
         </div>
 
         {/* Member picker (コンパクト) — 概要の直下に配置 */}
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
             メンバー（ユーザー名で検索・任意）
           </label>
@@ -278,7 +278,7 @@ export default function CreateProjectPage() {
               setMembers((prev) => prev.filter((m) => m.id !== id))
             }
           />
-        </div>
+        </div> */}
 
         {/* Editor */}
         <div className="mt-6">

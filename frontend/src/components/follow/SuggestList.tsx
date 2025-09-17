@@ -19,7 +19,6 @@ type Row = {
 
 type Props = {
   pageSize?: number;
-  /** md+ = "rail" (vertical), <md = "carousel" (horizontal) */
   variant?: "rail" | "carousel";
 };
 
@@ -170,7 +169,7 @@ export function SuggestList({ pageSize = 10, variant = "rail" }: Props) {
           <Link
             key={u.id}
             href={`/me/${u.username}`}
-            className="snap-start shrink-0 w-36 sm:w-40 rounded-md border p-3 flex flex-col items-center text-center"
+            className="snap-start shrink-0 rounded-md border p-3 flex flex-col items-center text-center"
             aria-label={`${u.last_name} ${u.first_name} のプロフィールへ`}
           >
             <Avatar className="h-14 w-14 mb-2">

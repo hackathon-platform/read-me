@@ -11,7 +11,7 @@ import { SuggestList } from "./SuggestList";
 export function FollowRail() {
   return (
     <>
-      {/* md+ : right rail (vertical list) */}
+      {/* lg+ : right rail (vertical list) */}
       <div className="hidden lg:block space-y-4">
         <section>
           <h3 className="text-sm font-semibold mb-2">おすすめユーザー</h3>
@@ -19,11 +19,11 @@ export function FollowRail() {
         </section>
       </div>
 
-      {/* < md : accordion (horizontal carousel) */}
+      {/* < lg : accordion (horizontal carousel) */}
       <div className="lg:hidden">
         <Accordion type="single" collapsible>
           <AccordionItem value="suggest">
-            <AccordionTrigger className="pt-0">
+            <AccordionTrigger className="pt-1">
               おすすめユーザー
             </AccordionTrigger>
             <AccordionContent>

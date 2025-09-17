@@ -45,9 +45,9 @@ export default function ProjectGallery({ projects }: Props) {
       </div>
 
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent className="p-0">
+        <DrawerContent className="">
           {current && (
-            <div className="mx-auto w-full max-w-5xl h-[85vh] max-h-[90vh] flex flex-col">
+            <div className="mx-auto w-full max-w-5xl  flex flex-col">
               <DrawerHeader className="sticky top-0 z-10 pr-12">
                 <DrawerTitle className="text-xl">{current.title}</DrawerTitle>
                 <p className="text-xs text-muted-foreground">
