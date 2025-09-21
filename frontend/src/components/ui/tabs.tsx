@@ -45,7 +45,7 @@ function TabsTrigger({
         // hover
         "hover:bg-background/60 hover:text-foreground hover:border-border hover:underline hover:underline-offset-4",
         // active state connects visually to panel
-        "data-[state=active]:bg-popover data-[state=active]:text-foreground data-[state=active]:border-t-1 data-[state=active]:border-blue-500",
+        "data-[state=active]:bg-popover data-[state=active]:text-foreground data-[state=active]:border-t-2 data-[state=active]:border-blue-500",
         // a11y focus
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
         "disabled:pointer-events-none disabled:opacity-50",

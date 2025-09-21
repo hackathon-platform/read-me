@@ -28,7 +28,7 @@ export default function PageLayout({ children }: Props) {
     >
       <SidebarProvider>
         {sidebar}
-        <SidebarInset className="h-[calc(100vh-3.5rem)] overflow-y-auto">
+        <SidebarInset className="h-[calc(100vh-3.5rem)] z-0 overflow-y-auto">
           <main>{children}</main>
         </SidebarInset>
       </SidebarProvider>
