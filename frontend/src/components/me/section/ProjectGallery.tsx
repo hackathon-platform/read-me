@@ -1,4 +1,3 @@
-// frontend/src/components/me/section/ProjectGallery.tsx
 "use client";
 
 import * as React from "react";
@@ -51,7 +50,7 @@ export default function ProjectGallery({ projects }: Props) {
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent className="">
           {current && (
-            <div className="mx-auto w-full max-w-5xl  flex flex-col">
+            <div className="h-[85vh] max-h-[90vh] mx-auto w-full max-w-5xl flex flex-col">
               <DrawerHeader className="sticky top-0 z-10 pr-12">
                 <DrawerTitle className="text-xl">{current.title}</DrawerTitle>
                 <p className="text-xs text-muted-foreground">
@@ -70,7 +69,7 @@ export default function ProjectGallery({ projects }: Props) {
                 </DrawerClose>
               </DrawerHeader>
 
-              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="min-h-0 overflow-y-auto">
                 {/* ProjectPreview expects snake_case keys; map as needed */}
                 <ProjectPreview
                   data={{
@@ -107,11 +106,11 @@ const TechChips = React.memo(function TechChips({
   if (!techs.length) return null;
 
   return (
-    <div className={cn("mt-2 flex flex-wrap gap-2", className)}>
+    <div className={cn("py-2 flex flex-wrap gap-1", className)}>
       {techs.map((t) => (
-        <Badge key={t.key} variant="secondary" className="gap-1">
+        <Badge key={t.key} variant="secondary">
           <TechIcon kind={t.kind} keyName={t.key} alt={t.label} size={12} />
-          <span className="text-[12px] leading-none">{t.label}</span>
+          <span className="text-xs leading-none">{t.label}</span>
         </Badge>
       ))}
     </div>
