@@ -4,6 +4,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import MarkdownPreview from "../markdown/MarkdownPreview";
 import formatJPDate from "@/lib/utils/date";
+import { Badge } from "@/components/ui/badge";
+import { TECH_BY_KEY, type TechDisplay } from "@/lib/tech/catalog";
+import { TechIcon } from "@/components/tech/TechChips";
 
 export type ProjectPreviewData = {
   title: string;
@@ -11,6 +14,7 @@ export type ProjectPreviewData = {
   thumbnail_url?: string | null;
   content?: string | null;
   updated_at?: string;
+  techKeys?: string[]; // ← added
 };
 
 export type OwnerLite = {
@@ -20,6 +24,35 @@ export type OwnerLite = {
   first_name?: string | null;
   last_name?: string | null;
 } | null;
+
+const TechChips = React.memo(function TechChips({
+  keys,
+  className,
+}: {
+  keys?: string[];
+  className?: string;
+}) {
+  const techs = React.useMemo(
+    () =>
+      (keys ?? [])
+        .map((k) => TECH_BY_KEY[k])
+        .filter(Boolean) as TechDisplay[],
+    [keys],
+  );
+
+  if (!techs.length) return null;
+
+  return (
+    <div className={cn("mt-2 flex flex-wrap gap-2", className)}>
+      {techs.map((t) => (
+        <Badge key={t.key} variant="secondary" className="gap-1">
+          <TechIcon kind={t.kind} keyName={t.key} alt={t.label} />
+          <span className="text-[12px] leading-none">{t.label}</span>
+        </Badge>
+      ))}
+    </div>
+  );
+});
 
 const ProjectContentPreview = React.memo(function ProjectContentPreview({
   data,
@@ -53,8 +86,11 @@ const ProjectContentPreview = React.memo(function ProjectContentPreview({
         )}
         <div className="pb-2 text-sm text-muted-foreground whitespace-pre-wrap">
           {data.summary ? data.summary : "ここに概要が入ります"}
+          {/* Chips under the summary on narrow screens */}
+          <TechChips keys={data.techKeys} className="mt-3 " />
         </div>
       </div>
+
 
       {data.content && <MarkdownPreview content={data.content} />}
     </div>
@@ -89,6 +125,8 @@ export const ProjectPreview = React.memo(function ProjectPreviewSection({
             更新日: {formatJPDate(data.updated_at)}
           </p>
         )}
+        {/* Chips under title on very wide headers if desired */}
+        <TechChips keys={data.techKeys} className="mt-2 hidden" />
       </header>
 
       <ProjectContentPreview data={data} className={cn(contentClassName)} />
@@ -124,16 +162,10 @@ export const ProjectAtEventPreview = React.memo(
               {ownerName}
             </div>
           </div>
-
-          {/* {owner?.id && (
-          <Button asChild size="sm" variant="secondary">
-            <Link href={`/u/${owner.id}`}>
-              <ExternalLink className="mr-1 h-4 w-4" />
-              View profile
-            </Link>
-          </Button>
-        )} */}
         </div>
+
+        {/* Show chips for event card as well */}
+        <TechChips keys={data.techKeys} className="mb-2" />
 
         <ProjectContentPreview
           data={data}

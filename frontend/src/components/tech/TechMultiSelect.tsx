@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
-import type { TechKind } from "@/lib/types";
 import { TECH_GROUPS, TECH_BY_KEY, TechDisplay } from "@/lib/tech/catalog";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TechIcon } from "@/components/tech/TechChips";
 
 type Props = {
   /** selected keys, e.g. ["c", "react"] */
@@ -212,28 +211,4 @@ export default function TechMultiSelect({
   );
 }
 
-function TechIcon({
-  kind,
-  keyName,
-  alt,
-  size = 18,
-}: {
-  kind: TechKind;
-  keyName: string;
-  alt: string;
-  size?: number;
-}) {
-  const src = `/skill/${kind}/${keyName}.svg`;
-  const [img, setImg] = React.useState(src);
-  return (
-    <Image
-      src={img}
-      alt={alt}
-      width={size}
-      height={size}
-      className="inline-block"
-      loading="lazy"
-      onError={() => setImg("/skill/_fallback.svg")}
-    />
-  );
-}
+

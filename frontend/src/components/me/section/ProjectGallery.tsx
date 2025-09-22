@@ -1,3 +1,4 @@
+// frontend/src/components/me/section/ProjectGallery.tsx
 "use client";
 
 import * as React from "react";
@@ -14,6 +15,10 @@ import formatJPDate from "@/lib/utils/date";
 import { X } from "lucide-react";
 import ProjectPreview from "@/components/project/ProjectPreview";
 import type { Project } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import { TECH_BY_KEY, type TechDisplay } from "@/lib/tech/catalog";
+import { TechIcon } from "@/components/tech/TechChips";
+
 
 type Props = {
   projects: Project[];
@@ -75,6 +80,7 @@ export default function ProjectGallery({ projects }: Props) {
                     thumbnail_url: current.thumbnailUrl ?? null,
                     content: current.content ?? null,
                     updated_at: current.updatedAt ?? current.createdAt ?? "",
+                    techKeys: current.techKeys ?? [], // ← pass chips to preview
                   }}
                 />
               </div>
@@ -86,6 +92,35 @@ export default function ProjectGallery({ projects }: Props) {
   );
 }
 
+const TechChips = React.memo(function TechChips({
+  keys,
+  className,
+}: {
+  keys?: string[];
+  className?: string;
+}) {
+  const techs = React.useMemo(
+    () =>
+      (keys ?? [])
+        .map((k) => TECH_BY_KEY[k])
+        .filter(Boolean) as TechDisplay[],
+    [keys],
+  );
+
+  if (!techs.length) return null;
+
+  return (
+    <div className={cn("mt-2 flex flex-wrap gap-2", className)}>
+      {techs.map((t) => (
+        <Badge key={t.key} variant="secondary" className="gap-1">
+          <TechIcon kind={t.kind} keyName={t.key} alt={t.label} size={12}/>
+          <span className="text-[12px] leading-none">{t.label}</span>
+        </Badge>
+      ))}
+    </div>
+  );
+});
+
 function GalleryCard({
   project,
   onClick,
@@ -93,6 +128,8 @@ function GalleryCard({
   project: Project;
   onClick: () => void;
 }) {
+  const isTouch = typeof window !== "undefined" && matchMedia("(pointer: coarse)").matches;
+
   return (
     <button
       onClick={onClick}
@@ -115,14 +152,17 @@ function GalleryCard({
           </div>
         )}
 
-        {project.summary && (
+        {project.summary && !isTouch && (
           <div
             className={cn(
-              "pointer-events-none absolute inset-0 bg-gradient-to-b from-black via-black/80 to-transparent",
-              "opacity-0 group-hover:opacity-100 transition-opacity",
+              "pointer-events-none absolute inset-0",
+              "opacity-0 group-hover:opacity-100 transition-opacity duration-200",
+              "bg-gradient-to-b from-black/70 via-black/60 to-transparent",
+              "backdrop-blur-[1px]",
             )}
           >
-            <div className="absolute top-0 p-3 text-white text-sm line-clamp-3">
+            <div className="absolute inset-x-0 top-0 p-3 text-white text-sm leading-relaxed
+            line-clamp-3 break-words">
               {project.summary}
             </div>
           </div>
@@ -134,7 +174,17 @@ function GalleryCard({
         <div className="text-xs text-muted-foreground mt-1">
           更新日: {formatJPDate(project.updatedAt || project.createdAt || "")}
         </div>
+
+        {/* touch devices: inline snippet instead of hover */}
+        {project.summary && isTouch && (
+          <div className="mt-2 text-sm text-muted-foreground line-clamp-2 break-words">
+            {project.summary}
+          </div>
+        )}
+
+        <TechChips keys={project.techKeys} className="mt-2" />
       </div>
     </button>
   );
 }
+

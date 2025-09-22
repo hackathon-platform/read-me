@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { supabase } from "@/lib/supabase/supabaseClient";
 import PageHeader from "@/components/layout/PageHeader";
 import { ProjectPreview } from "@/components/project/ProjectPreview";
+import { getExperienceBySlug } from "@/lib/supabase/get/project";
 
 export default async function ProjectPage({
   params,
@@ -9,13 +9,10 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { data, error } = await supabase
-    .from("project")
-    .select("*")
-    .eq("slug", slug)
-    .single();
 
+  const { data, error } = await getExperienceBySlug(slug);
   if (error || !data) return notFound();
+
   return (
     <>
       <PageHeader
@@ -32,6 +29,7 @@ export default async function ProjectPage({
             thumbnail_url: data.thumbnail_url,
             content: data.content,
             updated_at: data.updated_at,
+            techKeys: data.techKeys ?? [], // ← chips appear
           }}
         />
       </div>

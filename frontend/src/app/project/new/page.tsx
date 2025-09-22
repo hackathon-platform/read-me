@@ -1,12 +1,24 @@
+// frontend/src/app/project/new/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import ThumbnailPicker from "@/components/media/ThumbnailPicker";
 import MarkdownReadmeEditor from "@/components/markdown/MarkdownReadmeEditor";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+  FormLabel,
+} from "@/components/ui/form";
 import {
   Drawer,
   DrawerTrigger,
@@ -29,12 +41,27 @@ import {
   SUMMARY_LIMIT,
 } from "@/lib/supabase/insert/project";
 import {
-  MemberPicker,
+  // MemberPicker, // (UI optional; currently not shown)
   type ProfileMini,
 } from "@/components/project/MemberPicker";
 import TwoLineTitle from "@/components/project/TwoLineTitle";
+import TechMultiSelect from "@/components/tech/TechMultiSelect";
 
 const PROJECT_BUCKET = "project";
+
+const schema = z.object({
+  title: z.string().min(1, "タイトルは必須です").max(100, "タイトルは100文字以内です"),
+  summary: z
+    .string()
+    .min(1, "概要は必須です")
+    .max(SUMMARY_LIMIT, `概要は${SUMMARY_LIMIT}文字以内です`),
+  eventSlug: z.string().max(100, "イベントスラッグは100文字以内です").optional().or(z.literal("")),
+  thumbnailUrl: z.string().url().nullable().optional(),
+  markdown: z.string().optional(),
+  techKeys: z.array(z.string()).optional(), // ← プロジェクト用に単一配列
+});
+
+type FormInput = z.input<typeof schema>;
 
 export default function CreateProjectPage() {
   const router = useRouter();
@@ -48,7 +75,22 @@ export default function CreateProjectPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [myProfileId, setMyProfileId] = useState<string | null>(null);
-  const [members, setMembers] = useState<ProfileMini[]>([]);
+  const [members, setMembers] = useState<ProfileMini[]>([]); // UIは任意
+
+  const defaults: FormInput = {
+    title: "",
+    summary: "",
+    eventSlug: "",
+    thumbnailUrl: null,
+    markdown: "",
+    techKeys: [],
+  };
+
+  const form = useForm<FormInput>({
+    resolver: zodResolver(schema),
+    defaultValues: defaults,
+    mode: "onChange",
+  });
 
   useEffect(() => {
     (async () => {
@@ -104,7 +146,30 @@ export default function CreateProjectPage() {
 
       const createdProjectId = data.id;
 
-      // 2) 選択メンバー追加（失敗したらロールバック＝project 削除）
+      // 2) Insert selected tech keys for this project (kind = "project")
+      const techKeys = (form.getValues("techKeys") as string[] | undefined) ?? [];
+      if (techKeys.length) {
+        const { error: techInsErr } = await supabase
+          .from("tech")
+          .insert(
+            techKeys.map((key) => ({
+              kind: "project",
+              key,
+              ref: createdProjectId,
+            })),
+          );
+        if (techInsErr) {
+          await deleteProjectCascade(supabase, createdProjectId);
+          const msg =
+            "使用技術の保存に失敗したため、作成したプロジェクトを取り消しました。";
+          console.warn("[CreateProjectPage] tech insert failed:", techInsErr);
+          setError(msg);
+          toast.error(msg);
+          return;
+        }
+      }
+
+      // 3) 選択メンバー追加（失敗したらロールバック＝project 削除）
       const memberIds = members
         .map((m) => m.id)
         .filter((id) => id && id !== myProfileId);
@@ -147,7 +212,7 @@ export default function CreateProjectPage() {
   ];
 
   return (
-    <>
+    <Form {...form}>
       <PageHeader
         breadcrumbs={[
           { label: "プロジェクト", href: "/project" },
@@ -183,6 +248,7 @@ export default function CreateProjectPage() {
                       thumbnail_url: thumbnailUrl,
                       content: markdown,
                       updated_at: new Date().toISOString(),
+                      techKeys: form.watch("techKeys") ?? [],
                     }}
                   />
                 </div>
@@ -228,7 +294,25 @@ export default function CreateProjectPage() {
         <div className="grid items-start gap-3 md:grid-cols-2">
           <div className="mx-2 min-w-0">
             <TwoLineTitle value={title} onChange={setTitle} />
+
+            {/* 使用技術（プロジェクト単位の単一配列） */}
+            <FormField
+              control={form.control}
+              name={"techKeys"}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <TechMultiSelect
+                      value={(field.value as string[] | undefined) ?? []}
+                      onChange={(v) => field.onChange(v)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
+
           <ThumbnailPicker
             value={thumbnailUrl}
             onChange={setThumbnailUrl}
@@ -261,8 +345,9 @@ export default function CreateProjectPage() {
           </div>
         </div>
 
-        {/* Member picker (コンパクト) — 概要の直下に配置 */}
-        {/* <div className="mt-4">
+        {/* Member picker (任意 UI) */}
+        {/*
+        <div className="mt-4">
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
             メンバー（ユーザー名で検索・任意）
           </label>
@@ -278,7 +363,8 @@ export default function CreateProjectPage() {
               setMembers((prev) => prev.filter((m) => m.id !== id))
             }
           />
-        </div> */}
+        </div>
+        */}
 
         {/* Editor */}
         <div className="mt-6">
@@ -288,6 +374,6 @@ export default function CreateProjectPage() {
           />
         </div>
       </div>
-    </>
+    </Form>
   );
 }
