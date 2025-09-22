@@ -12,12 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import formatJPDate from "@/lib/utils/date";
-import { X } from "lucide-react";
 import ProjectPreview from "@/components/project/ProjectPreview";
 import type { Project } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { TECH_BY_KEY, type TechDisplay } from "@/lib/tech/catalog";
 import { TechIcon } from "@/components/tech/TechChips";
+import { X, Image as ImageIcon } from "lucide-react";
 
 type Props = {
   projects: Project[];
@@ -133,21 +133,22 @@ function GalleryCard({
       onClick={onClick}
       className={cn(
         "group text-left rounded-md border bg-card overflow-hidden",
+        // ↓ make the whole card a vertical flex container
+        "flex h-full flex-col",
         "transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
       )}
     >
-      <div className="relative h-40 w-full bg-muted/40">
+      {/* media stays at the very top */}
+      <div className="relative w-full aspect-[16/9] bg-muted/40">
         {project.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={project.thumbnailUrl}
             alt={project.title}
-            className="h-full w-full object-contain bg-black/5"
+            className="absolute inset-0 h-full w-full object-contain object-top bg-black/5"
           />
         ) : (
-          <div className="absolute inset-0 grid place-items-center text-muted-foreground text-xs">
-            No thumbnail
-          </div>
+          <NoThumb />
         )}
 
         {project.summary && !isTouch && (
@@ -155,26 +156,20 @@ function GalleryCard({
             className={cn(
               "pointer-events-none absolute inset-0",
               "opacity-0 group-hover:opacity-100 transition-opacity duration-200",
-              "bg-gradient-to-b from-black/70 via-black/60 to-transparent",
+              "bg-gradient-to-b from-black/90 via-black/80 to-black/60",
               "backdrop-blur-[1px]",
             )}
           >
-            <div
-              className="absolute inset-x-0 top-0 p-3 text-white text-sm leading-relaxed
-            line-clamp-3 break-words"
-            >
+            <div className="absolute h-full p-3 text-white text-sm leading-relaxed">
               {project.summary}
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-3">
+      {/* content grows and any leftover space sits beneath it */}
+      <div className="p-3 flex-1 flex flex-col">
         <div className="font-medium line-clamp-2">{project.title}</div>
-        <div className="text-xs text-muted-foreground mt-1">
-          更新日: {formatJPDate(project.updatedAt || project.createdAt || "")}
-        </div>
-
         {/* touch devices: inline snippet instead of hover */}
         {project.summary && isTouch && (
           <div className="mt-2 text-sm text-muted-foreground line-clamp-2 break-words">
@@ -182,8 +177,31 @@ function GalleryCard({
           </div>
         )}
 
-        <TechChips keys={project.techKeys} className="mt-2" />
+        {/* put chips near the bottom; mt-auto pushes them down if there's extra height */}
+        <TechChips keys={project.techKeys} className="mt-2 md:mt-auto" />
+
+        <div className="text-xs text-muted-foreground mt-1">
+          更新日: {formatJPDate(project.updatedAt || project.createdAt || "")}
+        </div>
       </div>
     </button>
+  );
+}
+
+// 3) add this helper component (below GalleryCard in the same file is fine)
+function NoThumb() {
+  return (
+    <div
+      className={cn(
+        "absolute inset-0 grid place-items-center rounded-none",
+        "bg-gradient-to-b from-muted/60 to-muted",
+      )}
+      aria-label="No thumbnail"
+    >
+      <div className="flex items-center gap-2 text-muted-foreground/80">
+        <ImageIcon className="h-4 w-4" />
+        <span className="text-xs">No thumbnail</span>
+      </div>
+    </div>
   );
 }
