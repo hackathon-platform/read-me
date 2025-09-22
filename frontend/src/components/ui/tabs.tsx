@@ -39,11 +39,11 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       className={cn(
         // pill-ish top with its own border (except bottom), lifted 1px to merge with panel
-        "inline-flex items-center px-4 py-2 text-sm font-medium",
+        "inline-flex items-center px-4 py-2 border-t-2 border-t-background text-sm font-medium",
         // default (inactive)
-        "bg-background text-muted-foreground border-transparent",
+        "bg-background text-muted-foreground ",
         // hover
-        "hover:bg-background/60 hover:text-foreground hover:border-border hover:underline hover:underline-offset-4",
+        "hover:text-foreground hover:underline hover:underline-offset-4",
         // active state connects visually to panel
         "data-[state=active]:bg-popover data-[state=active]:text-foreground data-[state=active]:border-t-2 data-[state=active]:border-blue-500",
         // a11y focus
