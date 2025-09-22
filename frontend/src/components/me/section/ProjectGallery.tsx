@@ -19,7 +19,6 @@ import { Badge } from "@/components/ui/badge";
 import { TECH_BY_KEY, type TechDisplay } from "@/lib/tech/catalog";
 import { TechIcon } from "@/components/tech/TechChips";
 
-
 type Props = {
   projects: Project[];
 };
@@ -101,9 +100,7 @@ const TechChips = React.memo(function TechChips({
 }) {
   const techs = React.useMemo(
     () =>
-      (keys ?? [])
-        .map((k) => TECH_BY_KEY[k])
-        .filter(Boolean) as TechDisplay[],
+      (keys ?? []).map((k) => TECH_BY_KEY[k]).filter(Boolean) as TechDisplay[],
     [keys],
   );
 
@@ -113,7 +110,7 @@ const TechChips = React.memo(function TechChips({
     <div className={cn("mt-2 flex flex-wrap gap-2", className)}>
       {techs.map((t) => (
         <Badge key={t.key} variant="secondary" className="gap-1">
-          <TechIcon kind={t.kind} keyName={t.key} alt={t.label} size={12}/>
+          <TechIcon kind={t.kind} keyName={t.key} alt={t.label} size={12} />
           <span className="text-[12px] leading-none">{t.label}</span>
         </Badge>
       ))}
@@ -128,7 +125,8 @@ function GalleryCard({
   project: Project;
   onClick: () => void;
 }) {
-  const isTouch = typeof window !== "undefined" && matchMedia("(pointer: coarse)").matches;
+  const isTouch =
+    typeof window !== "undefined" && matchMedia("(pointer: coarse)").matches;
 
   return (
     <button
@@ -161,8 +159,10 @@ function GalleryCard({
               "backdrop-blur-[1px]",
             )}
           >
-            <div className="absolute inset-x-0 top-0 p-3 text-white text-sm leading-relaxed
-            line-clamp-3 break-words">
+            <div
+              className="absolute inset-x-0 top-0 p-3 text-white text-sm leading-relaxed
+            line-clamp-3 break-words"
+            >
               {project.summary}
             </div>
           </div>
@@ -187,4 +187,3 @@ function GalleryCard({
     </button>
   );
 }
-

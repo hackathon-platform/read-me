@@ -34,9 +34,7 @@ const TechChips = React.memo(function TechChips({
 }) {
   const techs = React.useMemo(
     () =>
-      (keys ?? [])
-        .map((k) => TECH_BY_KEY[k])
-        .filter(Boolean) as TechDisplay[],
+      (keys ?? []).map((k) => TECH_BY_KEY[k]).filter(Boolean) as TechDisplay[],
     [keys],
   );
 
@@ -90,7 +88,6 @@ const ProjectContentPreview = React.memo(function ProjectContentPreview({
           <TechChips keys={data.techKeys} className="mt-3 " />
         </div>
       </div>
-
 
       {data.content && <MarkdownPreview content={data.content} />}
     </div>

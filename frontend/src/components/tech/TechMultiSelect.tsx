@@ -210,5 +210,3 @@ export default function TechMultiSelect({
     </div>
   );
 }
-
-

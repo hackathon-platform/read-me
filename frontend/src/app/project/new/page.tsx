@@ -50,12 +50,19 @@ import TechMultiSelect from "@/components/tech/TechMultiSelect";
 const PROJECT_BUCKET = "project";
 
 const schema = z.object({
-  title: z.string().min(1, "タイトルは必須です").max(100, "タイトルは100文字以内です"),
+  title: z
+    .string()
+    .min(1, "タイトルは必須です")
+    .max(100, "タイトルは100文字以内です"),
   summary: z
     .string()
     .min(1, "概要は必須です")
     .max(SUMMARY_LIMIT, `概要は${SUMMARY_LIMIT}文字以内です`),
-  eventSlug: z.string().max(100, "イベントスラッグは100文字以内です").optional().or(z.literal("")),
+  eventSlug: z
+    .string()
+    .max(100, "イベントスラッグは100文字以内です")
+    .optional()
+    .or(z.literal("")),
   thumbnailUrl: z.string().url().nullable().optional(),
   markdown: z.string().optional(),
   techKeys: z.array(z.string()).optional(), // ← プロジェクト用に単一配列
@@ -147,17 +154,16 @@ export default function CreateProjectPage() {
       const createdProjectId = data.id;
 
       // 2) Insert selected tech keys for this project (kind = "project")
-      const techKeys = (form.getValues("techKeys") as string[] | undefined) ?? [];
+      const techKeys =
+        (form.getValues("techKeys") as string[] | undefined) ?? [];
       if (techKeys.length) {
-        const { error: techInsErr } = await supabase
-          .from("tech")
-          .insert(
-            techKeys.map((key) => ({
-              kind: "project",
-              key,
-              ref: createdProjectId,
-            })),
-          );
+        const { error: techInsErr } = await supabase.from("tech").insert(
+          techKeys.map((key) => ({
+            kind: "project",
+            key,
+            ref: createdProjectId,
+          })),
+        );
         if (techInsErr) {
           await deleteProjectCascade(supabase, createdProjectId);
           const msg =

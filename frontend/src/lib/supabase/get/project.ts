@@ -50,11 +50,16 @@ export async function getProjectsByProfileId(profileId: string) {
   if (techErr) {
     // tech が落ちても最低限プロジェクトは返す
     console.error("[getProjectsByProfileId] tech error:", techErr);
-    return { data: list.map((p) => ({ ...p, techKeys: [] })), error: null as any };
+    return {
+      data: list.map((p) => ({ ...p, techKeys: [] })),
+      error: null as any,
+    };
   }
 
   // 3) ref → key[] にまとめて付与
-  const techKeysByRef = toKeyMap((techRows ?? []) as Array<{ ref: string; key: string }>);
+  const techKeysByRef = toKeyMap(
+    (techRows ?? []) as Array<{ ref: string; key: string }>,
+  );
   const withTech = list.map((p) => ({
     ...p,
     techKeys: techKeysByRef[p.id] ?? [],
