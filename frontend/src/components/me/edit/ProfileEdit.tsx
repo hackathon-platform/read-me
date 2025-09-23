@@ -183,7 +183,7 @@ export function ProfileEdit({
     onSave();
 
     if (values.username !== initialData.username) {
-      router.replace(`/profile/${values.username}`);
+      router.replace(`/me/${values.username}`);
     } else {
       router.refresh();
     }

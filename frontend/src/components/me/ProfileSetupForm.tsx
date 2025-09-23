@@ -120,7 +120,7 @@ export function ProfileSetupForm() {
       setIsSaving(false);
     } else {
       toast.success("プロフィールを登録しました。");
-      router.replace(`/profile/${username.trim()}`);
+      router.replace(`/me/${username.trim()}`);
     }
   };
 
