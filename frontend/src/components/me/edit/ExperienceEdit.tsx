@@ -230,7 +230,7 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                             <Input
                               {...field}
                               placeholder="例：株式会社ABC"
-                              className="h-9"
+                              className="text-base h-9"
                             />
                           </FormControl>
                           <FormMessage />
@@ -268,7 +268,10 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                             <Calendar className="h-3.5 w-3.5" /> 開始月
                           </FormLabel>
                           <FormControl>
-                            <Input {...field} type="month" className="h-9" />
+                            <Input
+                              {...field}
+                              type="month"
+                              className="text-base h-9" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -288,7 +291,7 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                               type="month"
                               value={field.value ?? ""}
                               placeholder="現職の場合は空欄"
-                              className="h-9"
+                              className="text-base h-9"
                             />
                           </FormControl>
                           <FormMessage />
@@ -313,7 +316,7 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                             {...field}
                             value={field.value ?? ""}
                             rows={3}
-                            className="text-sm resize-none"
+                            className="text-base resize-none"
                           />
                         </FormControl>
                         <FormMessage />
