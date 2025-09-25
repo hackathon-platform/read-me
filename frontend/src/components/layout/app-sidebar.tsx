@@ -3,26 +3,26 @@
 import * as React from "react";
 import Link from "next/link";
 import {
+  Code2,
+  Home,
   User,
+  SquarePlus,
   Megaphone,
   LifeBuoy,
   MessageSquare,
-  Home,
-  SquarePlus,
-  Code2,
 } from "lucide-react";
-
-import { NavMain } from "@/components/ui/nav-main";
-import { NavSecondary } from "@/components/ui/nav-secondary";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import { NavMain } from "@/components/ui/nav-main";
+import { NavSecondary } from "@/components/ui/nav-secondary";
+import { useSupabase } from "@/components/supabase-provider";
+import { NavUser, type NavUserView } from "@/components/ui/nav-user";
 
 const data = {
   navMain: [
@@ -48,30 +48,47 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const { user, signOut, loading } = useSupabase();
+  const { isMobile } = useSidebar();
+
+  const view: NavUserView | undefined = React.useMemo(() => {
+    if (!user) return undefined;
+    const first = user.first_name ?? "";
+    const last = user.last_name ?? "";
+    const name =
+      first && last ? `${last} ${first}` : (user.full_name ?? "ユーザー");
+    return {
+      name,
+      email: user.email ?? "",
+      avatarUrl: user.image_url ?? "",
+      initial: (last?.charAt(0) || "U").toUpperCase(),
+    };
+  }, [
+    user?.first_name,
+    user?.last_name,
+    user?.full_name,
+    user?.email,
+    user?.image_url,
+  ]);
+
+  const onSignOut = React.useCallback(() => signOut(), [signOut]);
+
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            {/* `tooltip` shows on hover when collapsed */}
-            <SidebarMenuButton asChild tooltip="ReadME">
-              <Link href="/" className="flex items-center gap-2">
-                <Code2 className="h-6 w-6 shrink-0" />
-                {/* Hide name only when collapsed to icon mode */}
-                <span className="text-xl font-bold group-data-[collapsible=icon]:hidden">
-                  ReadME
-                </span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
+
+      <SidebarFooter>
+        <NavUser
+          view={view}
+          loading={loading}
+          isMobile={isMobile}
+          onSignOut={onSignOut}
+        />
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

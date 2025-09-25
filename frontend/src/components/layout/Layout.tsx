@@ -4,7 +4,6 @@ import React, { ReactNode, useMemo } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Layout/app-sidebar";
 import { useSupabase } from "@/components/supabase-provider";
-import Header from "@/components/Layout/Header";
 import { Toaster } from "@/components/ui/sonner";
 
 type Props = { children: ReactNode };
@@ -21,7 +20,6 @@ export default function Layout({ children }: Props) {
 
   return (
     <div className="flex w-full flex-col">
-      {/* <Header /> */}
       <div className="w-full">
         <div
           style={
@@ -32,7 +30,7 @@ export default function Layout({ children }: Props) {
         >
           <SidebarProvider>
             {sidebar}
-            <SidebarInset className="flex-1 min-h-0 overflow-y-auto mt-[3rem] h-[calc(100vh-3rem)]">
+            <SidebarInset className="flex-1 overflow-y-auto mt-[2.7rem] h-[calc(100vh-2.7rem)]">
               <main>{children}</main>
             </SidebarInset>
           </SidebarProvider>

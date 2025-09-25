@@ -1,15 +1,14 @@
 "use client";
 
+import * as React from "react";
+import Link from "next/link";
 import {
   BadgeCheck,
   CalendarDays,
   ChevronsUpDown,
   LogOut,
-  User,
+  User as UserIcon,
 } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -24,103 +23,40 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
-import { useSupabase } from "@/components/supabase-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-interface User {
-  id: string;
+export type NavUserView = {
+  name: string;
   email: string;
-  first_name?: string;
-  last_name?: string;
-  image_url?: string;
-}
+  avatarUrl?: string;
+  initial: string;
+};
 
-interface UserData {
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  email: string;
-  imageUrl: string;
-}
+type NavUserProps = {
+  view?: NavUserView; // undefined => guest
+  loading?: boolean; // true => skeleton
+  isMobile?: boolean; // controls dropdown side
+  onSignOut?: () => void | Promise<void>;
+};
 
-const USER_DATA_KEY = "nav-user-data";
-
-export function NavUser() {
-  const { isMobile } = useSidebar();
-  const { user, signOut: originalSignOut, loading } = useSupabase();
-
-  const prevUserRef = useRef<User | null>(null);
-
-  const defaultUserData = (): UserData => ({
-    firstName: "",
-    lastName: "",
-    fullName: "",
-    email: "",
-    imageUrl: "",
-  });
-
-  const [userData, setUserData] = useState<UserData>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const cached = localStorage.getItem(USER_DATA_KEY);
-        return cached ? JSON.parse(cached) : defaultUserData();
-      } catch {
-        return defaultUserData();
-      }
-    }
-    return defaultUserData();
-  });
-
-  const getInitial = (lastName?: string) =>
-    lastName?.charAt(0).toUpperCase() || "U";
-
-  const hasCachedData = userData.email !== "";
-
-  const signOut = async () => {
-    localStorage.removeItem(USER_DATA_KEY);
-    setUserData(defaultUserData());
-    await originalSignOut();
-  };
-
-  useEffect(() => {
-    if (!user && !loading) {
-      localStorage.removeItem(USER_DATA_KEY);
-      setUserData(defaultUserData());
-      prevUserRef.current = null;
-      return;
-    }
-
-    if (user && JSON.stringify(prevUserRef.current) !== JSON.stringify(user)) {
-      const newFirstName = user.first_name || "";
-      const newLastName = user.last_name || "";
-      const fullName = `${newLastName} ${newFirstName}`.trim();
-
-      const newUserData: UserData = {
-        firstName: newFirstName,
-        lastName: newLastName,
-        fullName,
-        email: user.email || "",
-        imageUrl: user.image_url || "",
-      };
-
-      setUserData(newUserData);
-      localStorage.setItem(USER_DATA_KEY, JSON.stringify(newUserData));
-      prevUserRef.current = user;
-    }
-  }, [user, loading]);
-
-  if (loading && !hasCachedData) {
+export const NavUser = React.memo(function NavUser({
+  view,
+  loading = false,
+  isMobile = false,
+  onSignOut,
+}: NavUserProps) {
+  // Loading state — lightweight skeleton
+  if (loading && !view) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" disabled>
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarFallback className="rounded-lg">...</AvatarFallback>
+              <AvatarFallback className="rounded-lg">…</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">Loading...</span>
+              <span className="truncate font-semibold">Loading…</span>
             </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -128,7 +64,8 @@ export function NavUser() {
     );
   }
 
-  if (!user && !hasCachedData) {
+  // Guest
+  if (!view) {
     return (
       <SidebarMenu>
         <SidebarMenuItem>
@@ -136,7 +73,7 @@ export function NavUser() {
             <SidebarMenuButton size="lg">
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarFallback className="rounded-lg">
-                  <User className="h-4 w-4" />
+                  <UserIcon className="h-4 w-4" />
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -160,22 +97,17 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                {userData.imageUrl ? (
-                  <AvatarImage
-                    src={userData.imageUrl}
-                    alt={userData.fullName}
-                  />
+                {view.avatarUrl ? (
+                  <AvatarImage src={view.avatarUrl} alt={view.name} />
                 ) : (
                   <AvatarFallback className="rounded-lg">
-                    {getInitial(userData.lastName)}
+                    {view.initial}
                   </AvatarFallback>
                 )}
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {userData.fullName || "ユーザー"}
-                </span>
-                <span className="truncate text-xs">{userData.email}</span>
+                <span className="truncate font-semibold">{view.name}</span>
+                <span className="truncate text-xs">{view.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -190,22 +122,17 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  {userData.imageUrl ? (
-                    <AvatarImage
-                      src={userData.imageUrl}
-                      alt={userData.fullName}
-                    />
+                  {view.avatarUrl ? (
+                    <AvatarImage src={view.avatarUrl} alt={view.name} />
                   ) : (
                     <AvatarFallback className="rounded-lg">
-                      {getInitial(userData.lastName)}
+                      {view.initial}
                     </AvatarFallback>
                   )}
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">
-                    {userData.fullName || "ユーザー"}
-                  </span>
-                  <span className="truncate text-xs">{userData.email}</span>
+                  <span className="truncate font-semibold">{view.name}</span>
+                  <span className="truncate text-xs">{view.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -218,10 +145,10 @@ export function NavUser() {
                   プロフィール
                 </DropdownMenuItem>
               </Link>
-              <Link href="/events/registered">
+              <Link href="/event">
                 <DropdownMenuItem>
                   <CalendarDays className="mr-2 h-4 w-4" />
-                  登録済みイベント
+                  イベント（開発中）
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
@@ -237,7 +164,7 @@ export function NavUser() {
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOut}>
+            <DropdownMenuItem onClick={onSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               ログアウト
             </DropdownMenuItem>
@@ -246,4 +173,4 @@ export function NavUser() {
       </SidebarMenuItem>
     </SidebarMenu>
   );
-}
+});

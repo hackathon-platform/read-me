@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Rocket, Users, Eye, ArrowRight } from "lucide-react";
+import PageHeader from "@/components/Layout/PageHeader";
 
 /* ---------- memoized subcomponents to avoid churn ---------- */
 
@@ -108,6 +109,7 @@ export default function Page() {
 
   return (
     <div className="relative">
+      <PageHeader breadcrumbs={[{ label: "ホーム", current: true }]} />
       {/* ===== Background ornaments ===== */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-primary/25 to-purple-500/25 blur-3xl" />

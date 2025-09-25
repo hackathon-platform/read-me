@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,7 +11,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import React from "react";
 
 type BreadcrumbType =
   | { label: string; href?: string }
@@ -18,45 +18,44 @@ type BreadcrumbType =
 
 interface PageHeaderProps {
   breadcrumbs: BreadcrumbType[];
-  className?: string;
 }
 
-export default function PageHeader({
-  breadcrumbs,
-  className = "",
-}: PageHeaderProps) {
+export default function PageHeader({ breadcrumbs }: PageHeaderProps) {
   return (
-    <header
-      className={`fixed w-full h-[3rem] top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center gap-2 p-2 ${className}`}
-    >
-      <div className="flex items-center gap-2 px-1">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-[orientation=vertical]:h-4"
-        />
-        <Breadcrumb>
-          <BreadcrumbList>
-            {breadcrumbs.map((item, idx) => (
-              <React.Fragment key={item.label}>
-                {"href" in item ? (
-                  <BreadcrumbItem className={idx === 0 ? "black" : ""}>
-                    <BreadcrumbLink href={item.href}>
-                      {item.label}
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                ) : (
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                  </BreadcrumbItem>
-                )}
-                {idx < breadcrumbs.length - 1 && (
-                  <BreadcrumbSeparator className={idx === 0 ? "block" : ""} />
-                )}
-              </React.Fragment>
-            ))}
-          </BreadcrumbList>
-        </Breadcrumb>
+    <header className={"fixed top-0 z-40 h-[2.7rem]"}>
+      <div className="flex h-full items-center gap-2 px-4">
+        {/* LEFT: trigger + divider + scrollable breadcrumb, occupies all remaining space */}
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <SidebarTrigger className="-ml-1 shrink-0" />
+          <Separator orientation="vertical" className="h-4 shrink-0" />
+          <div
+            className={[
+              "relative min-w-0 flex-1 overflow-x-auto",
+              "whitespace-nowrap",
+            ].join(" ")}
+          >
+            <Breadcrumb className="w-full">
+              <BreadcrumbList className="inline-flex min-w-max flex-nowrap pr-2">
+                {breadcrumbs.map((item, idx) => (
+                  <Fragment key={`${item.label}-${idx}`}>
+                    {"href" in item ? (
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href={item.href}>
+                          {item.label}
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                    ) : (
+                      <BreadcrumbItem>
+                        <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    )}
+                    {idx < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                  </Fragment>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </div>
       </div>
     </header>
   );
