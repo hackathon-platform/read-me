@@ -106,7 +106,7 @@ export const SupabaseProvider = ({
       }
 
       if (data.user) {
-        await supabase.from("profile").upsert({
+        await (supabase.from as any)("profile").upsert({
           id: data.user.id,
           full_name: name,
           email: email,

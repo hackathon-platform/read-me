@@ -271,7 +271,8 @@ export function ExperienceEdit({ profileId, initialData, onSave }: Props) {
                             <Input
                               {...field}
                               type="month"
-                              className="text-base h-9" />
+                              className="text-base h-9"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
