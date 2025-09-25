@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useMemo } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/Layout/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { useSupabase } from "@/components/supabase-provider";
 import { Toaster } from "@/components/ui/sonner";
 

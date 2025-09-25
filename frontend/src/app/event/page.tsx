@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Calendar, Plus } from "lucide-react";
-import PageHeader from "@/components/Layout/PageHeader";
+import PageHeader from "@/components/layout/PageHeader";
 
 export const revalidate = 120;
 

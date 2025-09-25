@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import PageHeader from "@/components/Layout/PageHeader";
+import PageHeader from "@/components/layout/PageHeader";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { getEventByOwner } from "@/lib/supabase/get/event-by-owner";
 

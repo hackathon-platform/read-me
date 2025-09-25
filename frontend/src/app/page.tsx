@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Rocket, Users, Eye, ArrowRight } from "lucide-react";
-import PageHeader from "@/components/Layout/PageHeader";
+import PageHeader from "@/components/layout/PageHeader";
 
 /* ---------- memoized subcomponents to avoid churn ---------- */
 

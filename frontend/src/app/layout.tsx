@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google";
 import Providers from "./providers";
-import Layout from "@/components/Layout/Layout";
+import Layout from "@/components/layout/Layout";
 
 export const metadata: Metadata = {
   title: "ReadME",
