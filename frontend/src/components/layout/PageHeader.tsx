@@ -27,7 +27,7 @@ export default function PageHeader({
 }: PageHeaderProps) {
   return (
     <header
-      className={`flex shrink-0 items-center gap-2 border-b p-2 ${className}`}
+      className={`fixed w-full h-[3rem] top-0 z-40 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center gap-2 p-2 ${className}`}
     >
       <div className="flex items-center gap-2 px-1">
         <SidebarTrigger className="-ml-1" />

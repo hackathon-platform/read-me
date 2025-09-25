@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import PageHeader from "@/components/layout/PageHeader";
+import PageHeader from "@/components/Layout/PageHeader";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import {
   getEventBySlug,

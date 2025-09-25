@@ -1,7 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_JP } from "next/font/google";
 import Providers from "./providers";
+import Layout from "@/components/Layout/Layout";
 
 export const metadata: Metadata = {
   title: "ReadME",
@@ -14,20 +15,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// JP font for CJK glyphs
+const notoSansJP = Noto_Sans_JP({
+  variable: "--font-noto-sans-jp",
+  weight: ["300", "400", "500", "700", "900"], // pick what you use
+  display: "swap",
+  preload: false, // CJK fonts are big; avoid blocking
+});
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang="ja" className="h-full antialiased" suppressHydrationWarning>
       <body
-        className={`
-          ${geistSans.variable} ${geistMono.variable} antialiased
-        `}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable}`}
         suppressHydrationWarning
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <Layout>{children}</Layout>
+        </Providers>
       </body>
     </html>
   );

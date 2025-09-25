@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/supabaseClient";
 import { toast } from "sonner";
-import PageHeader from "@/components/layout/PageHeader";
+import PageHeader from "@/components/Layout/PageHeader";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -4,9 +4,6 @@ import { ReactNode } from "react";
 import { SupabaseProvider } from "@/components/supabase-provider";
 import { AuthProvider } from "@/hooks/useSupabaseAuth";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/layout/header";
-import { Toaster } from "@/components/ui/sonner";
-import PageLayout from "@/components/layout/pageLayout";
 import AuthWatcher from "@/components/auth/AuthWatcher";
 
 interface ProvidersProps {
@@ -18,10 +15,8 @@ export default function Providers({ children }: ProvidersProps) {
     <SupabaseProvider>
       <AuthProvider>
         <ThemeProvider attribute="class" defaultTheme="system">
-          <Header />
           <AuthWatcher />
-          <PageLayout>{children}</PageLayout>
-          <Toaster richColors closeButton />
+          {children}
         </ThemeProvider>
       </AuthProvider>
     </SupabaseProvider>

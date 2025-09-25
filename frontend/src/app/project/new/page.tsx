@@ -1,10 +1,9 @@
-// frontend/src/app/project/new/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import PageHeader from "@/components/layout/PageHeader";
+import PageHeader from "@/components/Layout/PageHeader";
 import ThumbnailPicker from "@/components/media/ThumbnailPicker";
 import MarkdownReadmeEditor from "@/components/markdown/MarkdownReadmeEditor";
 import { Button } from "@/components/ui/button";

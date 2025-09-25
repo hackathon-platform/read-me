@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import PageHeader from "@/components/layout/PageHeader";
+import PageHeader from "@/components/Layout/PageHeader";
 import { ProjectPreview } from "@/components/project/ProjectPreview";
 import { getExperienceBySlug } from "@/lib/supabase/get/project";
 
