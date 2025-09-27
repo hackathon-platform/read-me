@@ -54,14 +54,10 @@ const TechChips = React.memo(function TechChips({
 
 const ProjectContentPreview = React.memo(function ProjectContentPreview({
   data,
-  className,
-  imageHeightClass = "h-56",
-  imageFit: fit = "object-contain",
+  className
 }: {
   data: ProjectPreviewData;
   className?: string;
-  imageHeightClass?: string;
-  imageFit?: "object-contain" | "object-cover";
 }) {
   return (
     <div className={cn("px-4 pb-6", className)}>
@@ -75,9 +71,7 @@ const ProjectContentPreview = React.memo(function ProjectContentPreview({
               loading="lazy"
               decoding="async"
               className={cn(
-                "w-full bg-black/5 rounded-md border",
-                imageHeightClass,
-                fit,
+                "w-full bg-black/5 rounded-sm border aspect-[16/9]",
               )}
             />
           </div>
