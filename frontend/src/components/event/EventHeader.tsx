@@ -19,7 +19,7 @@ export default function EventHeader({
         <img
           src={event.bannerUrl}
           alt={`${event.name} banner`}
-          className="aspect-[13/3] object-cover"
+          className="aspect-[13/3] object-cover w-full max-h-80"
         />
       )}
 
