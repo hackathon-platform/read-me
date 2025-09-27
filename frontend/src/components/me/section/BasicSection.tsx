@@ -21,25 +21,37 @@ import { useCanEditProfile } from "@/hooks/useCanEdit";
 interface BasicSectionProps {
   profileId: string;
   basic: Basic;
+  /** Force mobile layout even on large screens */
+  isCompact?: boolean;
 }
 
-export function BasicSection({ profileId, basic }: BasicSectionProps) {
+export function BasicSection({ profileId, basic, isCompact = false }: BasicSectionProps) {
   const [open, setOpen] = useState(false);
   const formId = "profile-edit-form";
   const canEdit = useCanEditProfile(profileId);
 
   return (
-    <div className="relative">
-      <BasicDisplay profileId={profileId} basic={basic} />
+    <div className="relative" data-compact={isCompact ? "true" : "false"}>
+      <BasicDisplay profileId={profileId} basic={basic} isCompact={isCompact} />
+
       {canEdit && (
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
-            <button className="absolute top-2 right-2 md:top-4 md:right-4">
+            <button
+              className={
+                isCompact
+                  ? "absolute top-2 right-2"
+                  : "absolute top-2 right-2 md:top-4 md:right-4"
+              }
+              aria-label="プロフィール編集"
+            >
               <EditIcon size={16} />
             </button>
           </DrawerTrigger>
 
-          <DrawerContent className="max-h-[90vh] lg:px-40">
+          <DrawerContent
+            className={`max-h-[90vh] ${isCompact ? "px-4" : "lg:px-40"}`}
+          >
             <DrawerHeader>
               <DrawerTitle>プロフィール編集</DrawerTitle>
               <DrawerDescription>
@@ -54,7 +66,7 @@ export function BasicSection({ profileId, basic }: BasicSectionProps) {
                 initialData={basic}
                 onSave={() => setOpen(false)}
                 onCancel={() => setOpen(false)}
-                key={open ? "open" : "closed"} // 閉じたら初期値に戻したい場合に再マウント
+                key={open ? "open" : "closed"}
               />
             </div>
 

@@ -69,5 +69,5 @@ export function ProfileLoader({ username }: Props) {
     );
   }
 
-  return <ProfileContent profile={profile} />;
+  return <ProfileContent profile={profile} isCompact={true}/>;
 }

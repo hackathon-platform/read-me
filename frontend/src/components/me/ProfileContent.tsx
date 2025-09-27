@@ -10,21 +10,32 @@ import ProjectGallery from "@/components/me/section/ProjectGallery";
 import { FollowRail } from "@/components/follow/FollowRail";
 import { Profile } from "@/lib/types";
 
-export function ProfileContent({ profile }: { profile: Profile }) {
+type Props = {
+  profile: Profile;
+  /** Force mobile layout even on large screens */
+  isCompact?: boolean;
+};
+
+export function ProfileContent({ profile, isCompact = false }: Props) {
   if (!profile) return notFound();
 
+  const gridClasses = isCompact ? "grid grid-cols-1" : "grid lg:grid-cols-12";
+  const leftColClasses = isCompact
+    ? "col-span-12 space-y-4 p-4"
+    : "space-y-4 lg:col-span-4 m-4";
+  const rightColClasses = isCompact ? "col-span-12" : "lg:col-span-8";
+
   return (
-    <div className="w-full">
-      {/* Mobile: 1 col (stacks); Desktop: 12-col grid */}
-      <div className="grid lg:grid-cols-12">
-        {/* Left column (md: span 4) — Basic + Follow */}
-        <div className="space-y-4 lg:col-span-4 m-4">
-          <BasicSection profileId={profile.id} basic={profile.basic} />
-          <FollowRail />
+    <div className="w-full" data-compact={isCompact ? "true" : "false"}>
+      <div className={gridClasses}>
+        {/* Left column — Basic + Follow */}
+        <div className={leftColClasses}>
+          <BasicSection profileId={profile.id} basic={profile.basic} isCompact={isCompact} />
+          {!isCompact && <FollowRail />}
         </div>
 
-        {/* Right column (md: span 8) — Tabs */}
-        <div className="lg:col-span-8">
+        {/* Right column — Tabs */}
+        <div className={rightColClasses}>
           <Tabs defaultValue="projects" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="projects">プロジェクト</TabsTrigger>
