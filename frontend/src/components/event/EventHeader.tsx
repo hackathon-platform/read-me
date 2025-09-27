@@ -16,13 +16,11 @@ export default function EventHeader({
     <>
       {/* Banner */}
       {event.bannerUrl && (
-        <div className="relative h-48">
-          <img
-            src={event.bannerUrl}
-            alt={`${event.name} banner`}
-            className="w-full h-full object-cover"
-          />
-        </div>
+        <img
+          src={event.bannerUrl}
+          alt={`${event.name} banner`}
+          className="aspect-[13/3] object-cover"
+        />
       )}
 
       {/* Meta row under banner */}
